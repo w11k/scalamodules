@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.scalamodules</groupId>
+    <artifactId>scalamodules.pom-bundle</artifactId>
+    <version>1.0.0</version>
+    <relativePath>../../pom-bundle.xml</relativePath>
+  </parent>
+
+  <artifactId>scalamodules.core</artifactId>
+  <name>ScalaModules Core</name>
+  <description>ScalaModules Core provides a domain specific language for general OSGi concepts like life cycle or service usage.</description>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules.util</artifactId>
+      <version>${scalamodules.util.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Export-Package>org.scalamodules.core;version="1.0"</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

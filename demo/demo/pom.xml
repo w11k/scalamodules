@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.scalamodules</groupId>
+    <artifactId>scalamodules.pom-bundle</artifactId>
+    <version>1.0.0</version>
+    <relativePath>../../pom-bundle.xml</relativePath>
+  </parent>
+
+  <artifactId>scalamodules.demo</artifactId>
+  <name>ScalaModules Demo</name>
+  <description>Demo for ScalaModules.</description>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Export-Package>org.scalamodules.demo;version="1.0"</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

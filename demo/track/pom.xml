@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.scalamodules</groupId>
+    <artifactId>scalamodules.pom-bundle</artifactId>
+    <version>1.0.0</version>
+    <relativePath>../../pom-bundle.xml</relativePath>
+  </parent>
+
+  <artifactId>scalamodules.demo.track</artifactId>
+  <name>ScalaModules Demo - Track</name>
+  <description>Demo for ScalaModules: Tracks services.</description>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules.core</artifactId>
+      <version>${scalamodules.core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules.demo</artifactId>
+      <version>${scalamodules.demo.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Private-Package>org.scalamodules.demo.track.internal</Private-Package>
+            <Bundle-Activator>org.scalamodules.demo.track.internal.Activator</Bundle-Activator>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
