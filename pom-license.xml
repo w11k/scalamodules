@@ -25,6 +25,7 @@
           <failIfMissing>true</failIfMissing>
           <excludes>
             <exclude>.git/**</exclude>
+            <exclude>.manager/**</exclude>
           </excludes>
           <useDefaultExcludes>true</useDefaultExcludes>
           <mapping>

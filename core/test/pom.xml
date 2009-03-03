@@ -21,6 +21,12 @@
       <artifactId>scalamodules.core</artifactId>
       <version>${scalamodules.core.version}</version>
     </dependency>
+    <!-- This transitive dependency is just necessary for Eclipse Maven plugin! -->
+    <dependency>
+      <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules.util</artifactId>
+      <version>${scalamodules.util.version}</version>
+    </dependency>
   </dependencies>
 
 </project>
