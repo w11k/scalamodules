@@ -39,6 +39,15 @@ class RegisterAs[T](context: BundleContext,
   def withProperties(properties: Map[String, Any]) =
     new RegisterAs(context, serviceInterface, properties)
 
+
+  /**
+   * Provides declaring a dependency.
+   */
+  def dependOn[S](dependee: Class[S]) = { 
+    require(dependee != null, "Dependee on must not be null!")
+    new DependOn(context, serviceInterface, properties, dependee)
+  }
+
   /**
    * Registers the given service.
    */

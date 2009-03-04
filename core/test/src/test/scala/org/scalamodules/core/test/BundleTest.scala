@@ -17,7 +17,9 @@ package org.scalamodules.core.test
 
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.ops4j.pax.exam.CoreOptions._
 import org.ops4j.pax.exam.Inject
+import org.ops4j.pax.exam.junit.Configuration
 import org.ops4j.pax.exam.junit.JUnit4TestRunner
 import org.osgi.framework.BundleContext
 import org.scalamodules.core._
@@ -30,6 +32,9 @@ class BundleTest extends ExamTest {
   addWrappedBundle("org.ops4j.pax.exam", "pax-exam-junit", "0.3.0-SNAPSHOT")
   addBundle("org.scalamodules", "scalamodules.util", "1.0.0")
   addBundle("org.scalamodules", "scalamodules.core", "1.0.0")
+  
+  @Configuration
+  override def configuration = options(equinox, provision(bundles.toArray: _*))
 
   @Inject
   private var context: BundleContext = _
@@ -100,5 +105,14 @@ class BundleTest extends ExamTest {
     greetingStatus = "WRONG"
     track.stop()
     assert(greetingStatus == "REMOVED")
+    
+    context registerAs classOf[Greeting] withProperties Map("name" -> "dependee") dependOn classOf[String] theService {
+      s => new Greeting { override def greet = s }
+    }
+    assert((context getMany classOf[Greeting] withFilter "(name=dependee)" andApply { _ => }) == None) 
+    val dependeeRegistration = context registerAs classOf[String] theService { "Hi from the dependee ;-)" }
+    assert((context getMany classOf[Greeting] withFilter "(name=dependee)" andApply { _ => }) != None) 
+    dependeeRegistration.unregister()
+    assert((context getMany classOf[Greeting] withFilter "(name=dependee)" andApply { _ => }) == None)
   }
 }
