@@ -59,24 +59,4 @@
     </plugins>
   </build>
 
-  <pluginRepositories>
-    <!--
-    <pluginRepository>
-      <id>apache.snapshots</id>
-      <name>snapshot plugins</name>
-      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-    -->
-    <pluginRepository>
-      <id>bundleplugin.staging</id>
-      <url>http://people.apache.org/~mcculls/releases/felix/maven-bundle-plugin/2.0.0</url>
-    </pluginRepository>
-  </pluginRepositories>
-
 </project>
