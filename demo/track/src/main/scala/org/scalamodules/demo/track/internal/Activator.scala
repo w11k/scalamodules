@@ -23,11 +23,10 @@ import org.scalamodules.demo.Greeting
 class Activator extends BundleActivator {
   
   override def start(context: BundleContext) {
-    
     track = context track classOf[Greeting] onEvent {
-      case AddingEvent(greeting, _)   => println("Adding Greeting: " + greeting.greet)
-      case ModifiedEvent(greeting, _) => println("Modified Greeting :" + greeting.greet)
-      case RemovedEvent(greeting, _)  => println("Removed Greeting: " + greeting.greet)
+      case AddingEvent(greeting, _)   => println("Adding Greeting: " + greeting.welcome)
+      case ModifiedEvent(greeting, _) =>
+      case RemovedEvent(greeting, _)  => println("Removed Greeting: " + greeting.goodbye)
     }
   }
   

@@ -11,6 +11,7 @@
 
   <modules>
     <module>demo</module>
+    <module>depend</module>
     <module>register</module>
     <module>track</module>
   </modules>

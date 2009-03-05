@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalamodules.demo.register.internal
+package org.scalamodules.demo.depend.internal
 
 import org.osgi.framework.{BundleActivator, BundleContext}
 import org.scalamodules.core.RichBundleContext.fromBundleContext
@@ -22,20 +22,9 @@ import org.scalamodules.demo.Greeting
 class Activator extends BundleActivator {
 
   override def start(context: BundleContext) {
-    
-    // Register "Hello!" Greeting
-    val hello = new Greeting {
-      override def welcome = "Hello!"
-      override def goodbye = "See you!";
+    context registerAs classOf[String] dependOn classOf[Greeting] theService {
+      greeting => greeting.welcome + "/" + greeting.goodbye
     }
-    context registerAs classOf[Greeting] theService hello
-    
-    // Register "Welcome!" Greeting with properties
-    val welcome = new Greeting {
-      override def welcome = "Welcome!"
-      override def goodbye = "Good bye!"
-    }
-    context registerAs classOf[Greeting] withProperties Map("name" -> "welcome") theService welcome
   }
   
   override def stop(context: BundleContext) { // Nothing!

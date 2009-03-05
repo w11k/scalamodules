@@ -106,13 +106,29 @@ class BundleTest extends ExamTest {
     track.stop()
     assert(greetingStatus == "REMOVED")
     
-    context registerAs classOf[Greeting] withProperties Map("name" -> "dependee") dependOn classOf[String] theService {
-      s => new Greeting { override def greet = s }
+    context registerAs classOf[String] withProperties Map("test" -> "test") dependOn classOf[BigInt] theService {
+      _ => "test"
     }
-    assert((context getMany classOf[Greeting] withFilter "(name=dependee)" andApply { _ => }) == None) 
-    val dependeeRegistration = context registerAs classOf[String] theService { "Hi from the dependee ;-)" }
-    assert((context getMany classOf[Greeting] withFilter "(name=dependee)" andApply { _ => }) != None) 
-    dependeeRegistration.unregister()
-    assert((context getMany classOf[Greeting] withFilter "(name=dependee)" andApply { _ => }) == None)
+    var result = context getMany classOf[String] withFilter "(test=*)" andApply { _ => }
+    assert(result == None) 
+    
+    val dependeeRegistration1 = context registerAs classOf[BigInt] theService { BigInt(1) }
+    result = context getMany classOf[String] withFilter "(test=*)" andApply { _ => }
+    assert(result != None) 
+    assert(result.get.size == 1)
+    
+    val dependeeRegistration2 = context registerAs classOf[BigInt] theService { BigInt(2) }
+    result = context getMany classOf[String] withFilter "(test=*)" andApply { _ => }
+    assert(result != None) 
+    assert(result.get.size == 1)
+    
+    dependeeRegistration2.unregister()
+    result = context getMany classOf[String] withFilter "(test=*)" andApply { _ => }
+    assert(result != None) 
+    assert(result.get.size == 1)
+
+    dependeeRegistration1.unregister()
+    result = context getMany classOf[String] withFilter "(test=*)" andApply { _ => }
+    assert(result == None) 
   }
 }

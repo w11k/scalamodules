@@ -16,13 +16,14 @@
 package org.scalamodules.core
 
 import scala.collection.Map
-import org.osgi.framework.{BundleContext, ServiceRegistration}
+import org.osgi.framework.{BundleContext, ServiceReference, ServiceRegistration}
+import org.osgi.util.tracker.ServiceTracker
 import org.scalamodules.core._
 import org.scalamodules.core.RichBundleContext.fromBundleContext
 import org.scalamodules.util.jcl.Conversions.mapToJavaDictionary
 
 /**
- * Provides declaring a dependency.
+ * Provides declaring a dependency for a service to be registered.
  */
 class DependOn[T, S](context: BundleContext,
                      serviceInterface: Class[T],
@@ -38,13 +39,24 @@ class DependOn[T, S](context: BundleContext,
    */
   def theService(f: S => T) = {
     require(f != null, "Factory function must not be null!")
-    context track dependeeInterface onEvent {
-      case AddingEvent(dependee, dependeeProperties)   => registration = 
-        context.registerService(serviceInterface.getName, f(dependee), properties)
-      case ModifiedEvent(dependee, dependeeProperties) => // Nothing!
-      case RemovedEvent(dependee, dependeeProperties)  =>  registration.unregister()
+    val tracker = new ServiceTracker(context, dependeeInterface.getName, null) {
+      override def addingService(ref: ServiceReference) = satisfied match {
+        case true  => null
+        case false => {
+          satisfied = true
+          context.registerService(serviceInterface.getName, 
+                                  f(context.getService(ref).asInstanceOf[S]), 
+                                  properties)
+        }
+      }
+      override def removedService(ref: ServiceReference, registration: AnyRef) = {
+        registration.asInstanceOf[ServiceRegistration].unregister()
+        satisfied = false
+        context.ungetService(ref)
+      }
     }
+    tracker.open()
   }
 
-  private var registration: ServiceRegistration = _
+  @volatile private var satisfied = false
 }

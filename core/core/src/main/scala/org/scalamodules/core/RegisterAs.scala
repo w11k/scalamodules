@@ -41,7 +41,7 @@ class RegisterAs[T](context: BundleContext,
 
 
   /**
-   * Provides declaring a dependency.
+   * Provides declaring a dependency for a service to be registered.
    */
   def dependOn[S](dependee: Class[S]) = { 
     require(dependee != null, "Dependee on must not be null!")
