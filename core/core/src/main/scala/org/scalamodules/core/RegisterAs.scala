@@ -15,6 +15,7 @@
  */
 package org.scalamodules.core
 
+import scala.collection.Map
 import org.osgi.framework.{BundleContext, ServiceRegistration}
 import org.scalamodules.util.jcl.Conversions.mapToJavaDictionary
 
