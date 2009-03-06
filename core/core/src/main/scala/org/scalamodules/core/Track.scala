@@ -44,20 +44,20 @@ class Track[T](context: BundleContext,
   /**
    * Handles a TrackEvent.
    */
-  def onEvent(f: TrackEvent[T] => Unit): Track[T] = {
+  def on(f: TrackEvent[T] => Unit): Track[T] = {
     require(f != null, "TrackEvent handler function must not be null!")
     tracker = new ServiceTracker(context, createFilter, null) {
       override def addingService(ref: ServiceReference) = {
         val service = context.getService(ref)  // Cannot be null (-> spec.)
-        f(AddingEvent(service.asInstanceOf[T], ref.properties))
+        f(Adding(service.asInstanceOf[T], ref.properties))
         service
       }
       override def modifiedService(ref: ServiceReference, service: AnyRef) = {
-        f(ModifiedEvent(service.asInstanceOf[T], ref.properties))
+        f(Modified(service.asInstanceOf[T], ref.properties))
         context.ungetService(ref)
       }
       override def removedService(ref: ServiceReference, service: AnyRef) = {
-        f(RemovedEvent(service.asInstanceOf[T], ref.properties))
+        f(Removed(service.asInstanceOf[T], ref.properties))
         context.ungetService(ref)
       }
     }
@@ -92,20 +92,20 @@ sealed abstract class TrackEvent[T](service: T,
 /**
  * A service is being added to the tracked services.
  */
-case class AddingEvent[T](service: T, 
+case class Adding[T](service: T, 
                           properties: Map[String, AnyRef]) 
   extends TrackEvent[T](service, properties)
 
 /**
  * A tracked service was modified.
  */
-case class ModifiedEvent[T](service: T, 
+case class Modified[T](service: T, 
                             properties: Map[String, AnyRef]) 
   extends TrackEvent[T](service, properties)
 
 /**
  * A service was removed from  the tracked services.
  */
-case class RemovedEvent[T](service: T, 
+case class Removed[T](service: T, 
                           properties: Map[String, AnyRef]) 
   extends TrackEvent[T](service, properties)

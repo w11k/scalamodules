@@ -44,10 +44,10 @@ class BundleTest extends ExamTest {
 
     // Start tracking
     var greetingStatus = "NONE" 
-    val track = context track classOf[Greeting] onEvent {
-      case AddingEvent(service, properties)   => greetingStatus = "ADDING" 
-      case ModifiedEvent(service, properties) => greetingStatus = "MODIFIED"
-      case RemovedEvent(service, properties)  => greetingStatus = "REMOVED"
+    val track = context track classOf[Greeting] on {
+      case Adding(service, properties)   => greetingStatus = "ADDING" 
+      case Modified(service, properties) => greetingStatus = "MODIFIED"
+      case Removed(service, properties)  => greetingStatus = "REMOVED"
     }
     
     // Get one service should result in None
