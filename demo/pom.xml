@@ -12,6 +12,7 @@
   <modules>
     <module>demo</module>
     <module>depend</module>
+    <module>get</module>
     <module>register</module>
     <module>track</module>
   </modules>
