@@ -18,7 +18,7 @@
       <plugin>
         <groupId>com.google.code.maven-license-plugin</groupId>
         <artifactId>maven-license-plugin</artifactId>
-        <version>1.4.0</version>
+        <version>1.4.0</version> <!-- Version has to be specified, because maven metadata for that project not up to date :-( -->
         <configuration>
           <header>${basedir}/../../header.txt</header>
           <quiet>false</quiet>
