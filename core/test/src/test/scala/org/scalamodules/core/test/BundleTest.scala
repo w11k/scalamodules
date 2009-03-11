@@ -15,6 +15,7 @@
  */
 package org.scalamodules.core.test
 
+import java.util.Dictionary
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.ops4j.pax.exam.CoreOptions._
@@ -22,6 +23,7 @@ import org.ops4j.pax.exam.Inject
 import org.ops4j.pax.exam.junit.Configuration
 import org.ops4j.pax.exam.junit.JUnit4TestRunner
 import org.osgi.framework.BundleContext
+import org.osgi.service.cm._
 import org.scalamodules.core._
 import org.scalamodules.core.RichBundleContext.fromBundleContext
 import org.scalamodules.exam.ExamTest
@@ -32,9 +34,10 @@ class BundleTest extends ExamTest {
   addWrappedBundle("org.ops4j.pax.exam", "pax-exam-junit", "0.3.0-SNAPSHOT")
   addBundle("org.scalamodules", "scalamodules.util", "1.0.0")
   addBundle("org.scalamodules", "scalamodules.core", "1.0.0")
+  addBundle("org.apache.felix", "org.apache.felix.configadmin", "1.0.10")
   
-  @Configuration
-  override def configuration = options(equinox, provision(bundles.toArray: _*))
+//  @Configuration
+//  override def configuration = options(equinox, provision(bundles.toArray: _*))
 
   @Inject
   private var context: BundleContext = _
@@ -102,6 +105,7 @@ class BundleTest extends ExamTest {
     welcomeRegistration.unregister()
     assert(greetingStatus == "REMOVED")
 
+    // Stopping the tracking should result in greetingStatus == "REMOVED" 
     greetingStatus = "WRONG"
     track.stop()
     assert(greetingStatus == "REMOVED")
@@ -130,5 +134,28 @@ class BundleTest extends ExamTest {
     dependeeRegistration1.unregister()
     result = context getMany classOf[String] withFilter "(test=*)" andApply { _ => }
     assert(result == None) 
+
+    // Register a managed service
+    val greeting = new Greeting with ManagedService {
+      override def updated(properties: Dictionary[_, _]) {
+        properties.get("message") match {
+          case null  => 
+          case value => message = value.toString
+        }
+      }
+      override def greet = message
+      private var message = "DEFAULT"
+    }
+    context registerAs classOf[Greeting] withProperties 
+      Map("name" -> "CM", "service.pid" -> "CM") theService greeting
+    
+    // Update greeting service via config admin
+    context configure "CM" updateWith (Map("message" -> "test"))
+    Thread.sleep(3000)
+
+    // Get many services with filter (name=CM)) should result in Some(List("test"))
+    val cmResult = 
+      context getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
+    assert(Some(List("test")) == cmResult, "Was " + cmResult)
   }
 }

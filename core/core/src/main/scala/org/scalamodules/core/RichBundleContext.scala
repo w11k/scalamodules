@@ -64,6 +64,12 @@ class RichBundleContext(context: BundleContext) {
     new Track[T](context, serviceInterface)
 
   /**
+   * Provides configuration via Configuration Admin service. 
+   */
+  def configure(pid: String) =
+    new Configure(context, pid)
+
+  /**
    * Gets the service for the given service reference 
    * and applies the given function if the service exists.
    */
