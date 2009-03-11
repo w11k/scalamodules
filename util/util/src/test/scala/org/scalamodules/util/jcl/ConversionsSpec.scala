@@ -15,12 +15,57 @@
  */
 package org.scalamodules.util.jcl
 
+import java.util.Hashtable
 import org.easymock.EasyMock
 import org.scalatest.Spec
 
 class ConversionsSpec extends Spec {
 
-  "The function toJavaDictionary" -- {
+  "The function dictionaryToMap" -- {
+
+    "should result in null for a null Dictionary" - {
+      var result = Conversions.dictionaryToMap(null)
+      assert(null == result)
+    }
+
+    "should result in Set((1, 11), (2, 12)) as elements for a Dictionary(1 -> 11, 2 -> 12)" - {
+      val dictionary = new Hashtable[Int, Int]
+      dictionary.put(1, 11)
+      dictionary.put(2, 12)
+      var result = Conversions.dictionaryToMap(dictionary)
+      assert(null != result)
+      val elements = result.elements
+      assert(null != elements)
+      assert(elements.hasNext)
+      val next1 = elements.next
+      assert(elements.hasNext)
+      val next2 = elements.next
+      assert(!elements.hasNext)
+      assert(Set((1, 11), (2, 12)) == Set(next1, next2))
+    }
+
+    "should result in 1->11, 2->12 for a Dictionary(1 -> 11, 2 -> 12)" - {
+      val dictionary = new Hashtable[Int, Int]
+      dictionary.put(1, 11)
+      dictionary.put(2, 12)
+      var result = Conversions.dictionaryToMap(dictionary)
+      assert(null != result)
+      assert(None == result.get(0))
+      assert(Some(11) == result.get(1))
+      assert(Some(12) == result.get(2))
+    }
+
+    "should result in (2 == size) for a Dictionary(1 -> 11, 2 -> 12)" - {
+      val dictionary = new Hashtable[Int, Int]
+      dictionary.put(1, 11)
+      dictionary.put(2, 12)
+      var result = Conversions.dictionaryToMap(dictionary)
+      assert(null != result)
+      assert(2 == result.size)
+    }
+  }
+
+  "The function mapToJavaDictionary" -- {
 
     "should result in null for a null Scala Map" - {
       var result = Conversions.mapToJavaDictionary(null)
