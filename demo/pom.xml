@@ -16,6 +16,7 @@
     <module>get</module>
     <module>register</module>
     <module>track</module>
+    <module>java</module>
   </modules>
 
 </project>

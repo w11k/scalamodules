@@ -24,7 +24,9 @@ class Activator extends BundleActivator {
   override def start(context: BundleContext) {
 
     // Get one service
-    context getOne classOf[Greeting] andApply { _.welcome } match {
+    context getOne classOf[Greeting] andApply { 
+      _.welcome
+    } match {
       case None          => noGreetingService() 
       case Some(welcome) => println(welcome)
     }
@@ -44,7 +46,9 @@ class Activator extends BundleActivator {
     }
 
     // Get many services with filter
-    context getMany classOf[Greeting] withFilter "(name=*)" andApply { _.welcome } match {
+    context getMany classOf[Greeting] withFilter "(name=*)" andApply { 
+      _.welcome
+    } match {
       case None           => noGreetingService()
       case Some(welcomes) => welcomes.foreach { println }
     }
