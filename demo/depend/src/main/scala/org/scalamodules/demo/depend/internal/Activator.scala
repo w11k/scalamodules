@@ -15,6 +15,8 @@
  */
 package org.scalamodules.demo.depend.internal
 
+import java.io.PrintStream
+import org.apache.felix.shell.Command
 import org.osgi.framework.{BundleActivator, BundleContext}
 import org.scalamodules.core.RichBundleContext.fromBundleContext
 import org.scalamodules.demo.Greeting
@@ -22,11 +24,31 @@ import org.scalamodules.demo.Greeting
 class Activator extends BundleActivator {
 
   override def start(context: BundleContext) {
-    context registerAs classOf[String] dependOn classOf[Greeting] theService {
-      greeting => greeting.welcome + "/" + greeting.goodbye
+
+    // For Felix
+    try {
+      context registerAs classOf[Command] dependOn classOf[Greeting] theService {
+        greeting => new Command {
+          override def getName = "greet"
+          override def getShortDescription = "Invoke Greeting"
+          override def getUsage = "greet [welcome | goodbye]"
+          override def execute(cmdLine: String, out: PrintStream, err: PrintStream) {
+            cmdLine match {
+              case "greet welcome" => out.println(greeting.welcome)
+              case "greet goodbye" => out.println(greeting.goodbye)
+              case _               => err.printf("Illegal usage! Try \"%s\"%n", getUsage)
+            }
+          }
+        }
+      }
+    } catch {
+      case _ => // Optional import "org.apache.felix.shell" not satisfied: Ignore!
     }
+
+    // For Equinox
+    // TODO
   }
-  
+
   override def stop(context: BundleContext) { // Nothing!
   }
 }

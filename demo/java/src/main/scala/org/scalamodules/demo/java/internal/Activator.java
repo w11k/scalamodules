@@ -75,7 +75,7 @@ public class Activator implements BundleActivator {
         // Register "Welcome!" Greeting with properties
         //  val welcome = new Greeting {
         //    override def welcome = "Welcome!"
-        //    override def goodbye = "Good bye!"
+        //    override def goodbye = "Goodbye!"
         //  }
         //  context registerAs classOf[Greeting] withProperties Map("name" -> "welcome") theService welcome
         Greeting welcome = new Greeting() {
@@ -83,7 +83,7 @@ public class Activator implements BundleActivator {
                 return "Welcome!";
             }
             public String goodbye() { 
-                return "Good bye!";
+                return "Goodbye!";
             }
         };
         Dictionary<String, Object> properties = new Hashtable<String, Object>();

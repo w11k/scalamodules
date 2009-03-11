@@ -27,6 +27,11 @@
       <artifactId>scalamodules.demo</artifactId>
       <version>${scalamodules.demo.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.shell</artifactId>
+      <version>1.0.2</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -37,6 +42,7 @@
         <configuration>
           <instructions>
             <Private-Package>org.scalamodules.demo.depend.internal</Private-Package>
+            <Import-Package>*,org.apache.felix.shell;resolution:=optional</Import-Package>
             <Bundle-Activator>org.scalamodules.demo.depend.internal.Activator</Bundle-Activator>
           </instructions>
         </configuration>

@@ -24,6 +24,6 @@ class Activator extends BundleActivator {
   }
   
   override def stop(context: BundleContext) {
-    println("Good-bye!")
+    println("Goodbye!")
   }
 }

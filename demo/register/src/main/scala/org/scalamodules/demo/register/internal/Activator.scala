@@ -33,7 +33,7 @@ class Activator extends BundleActivator {
     // Register "Welcome!" Greeting with properties
     val welcome = new Greeting {
       override def welcome = "Welcome!"
-      override def goodbye = "Good bye!"
+      override def goodbye = "Goodbye!"
     }
     context registerAs classOf[Greeting] withProperties Map("name" -> "welcome") theService welcome
   }
