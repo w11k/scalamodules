@@ -83,7 +83,7 @@ trait Registerer3[T1, T2, T3] {
   /**
    * Registers the given service.
    */
-  def theService(service: T): ServiceRegistration = {
+  def theService(service: T1 with T2 with T3): ServiceRegistration = {
     require(service != null, "Service to be registered must not be null!")
     context.registerService(Array(t1.getName, t2.getName, t3.getName), 
                             service, 

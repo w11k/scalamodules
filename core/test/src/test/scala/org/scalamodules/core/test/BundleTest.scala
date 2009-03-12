@@ -119,7 +119,6 @@ class BundleTest extends ExamTest {
     welcomeRegistration.unregister()
     assert(greetingStatus == "REMOVED")
 
-    // Stopping the tracker should result in greetingStatus == "REMOVED" 
     greetingStatus = "WRONG"
     track.stop()
     assert(greetingStatus == "REMOVED")

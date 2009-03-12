@@ -21,18 +21,29 @@ import org.scalamodules.core.RichBundleContext.fromBundleContext
 import org.scalamodules.demo.Greeting
 
 class Activator extends BundleActivator {
-  
+
   override def start(context: BundleContext) {
-    track = context track classOf[Greeting] on {
+
+    // Track Greetings
+    greetingTrack = context track classOf[Greeting] on {
       case Adding(greeting, _)   => println("Adding Greeting: " + greeting.welcome)
       case Modified(greeting, _) =>
       case Removed(greeting, _)  => println("Removed Greeting: " + greeting.goodbye)
     }
+
+    // Track Introductions
+    introductionTrack = context track classOf[Introduction] on {
+      case Adding(intro, _)   => println("Adding Introduction: " + intro.introduce)
+      case Modified(intro, _) =>
+      case Removed(intro, _)  => println("Removed Introduction: " + intro.introduce)
+    }
   }
-  
+
   override def stop(context: BundleContext) {
-    track.stop()
+    greetingTrack.stop()
+    introductionTrack.stop()
   }
-  
-  private var track: Track[Greeting] = _
+
+  private var greetingTrack: Track[Greeting] = _
+  private var introductionTrack: Track[Introduction] = _
 }

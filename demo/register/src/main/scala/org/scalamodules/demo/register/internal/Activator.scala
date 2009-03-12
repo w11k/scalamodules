@@ -17,27 +17,35 @@ package org.scalamodules.demo.register.internal
 
 import org.osgi.framework.{BundleActivator, BundleContext}
 import org.scalamodules.core.RichBundleContext.fromBundleContext
-import org.scalamodules.demo.Greeting
+import org.scalamodules.demo._
 
 class Activator extends BundleActivator {
 
   override def start(context: BundleContext) {
-    
-    // Register "Hello!" Greeting
+
+    // Register Greeting
     val hello = new Greeting {
       override def welcome = "Hello!"
       override def goodbye = "See you!";
     }
     context registerAs classOf[Greeting] theService hello
-    
-    // Register "Welcome!" Greeting with properties
-    val welcome = new Greeting {
-      override def welcome = "Welcome!"
-      override def goodbye = "Goodbye!"
-    }
-    context registerAs classOf[Greeting] withProperties Map("name" -> "welcome") theService welcome
+
+    // Register Greeting + Introduction
+    context registerAs classOf[Greeting] andAs classOf[Introduction] theService
+      new Greeting with Introduction {
+        override def welcome = "Howdy!"
+        override def goodbye = "Bye!"
+        override def introduce = "I am soo cool.";
+      }
+
+    // Register Greeting with properties
+    context registerAs classOf[Greeting] withProperties Map("name" -> "welcome") theService
+      new Greeting  {
+        override def welcome = "Welcome!"
+        override def goodbye = "Goodbye!"
+      }
   }
-  
+
   override def stop(context: BundleContext) { // Nothing!
   }
 }

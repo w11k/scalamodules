@@ -19,3 +19,7 @@ trait Greeting {
   def welcome: String
   def goodbye: String
 }
+
+trait Introduction {
+  def introduce: String
+}
