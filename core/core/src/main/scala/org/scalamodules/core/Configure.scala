@@ -19,27 +19,45 @@ import scala.collection.Map
 import scala.collection.immutable
 import org.osgi.framework.BundleContext
 import org.osgi.service.cm.{Configuration, ConfigurationAdmin}
+import org.scalamodules.core.RichConfiguration.fromConfiguration
 import org.scalamodules.core.RichBundleContext.fromBundleContext
 import org.scalamodules.util.jcl.Conversions.mapToJavaDictionary
 
+/**
+ * Provides configuration via Configuration Admin service. 
+ */
 class Configure(context: BundleContext,
                 pid: String) {
 
   require(context != null, "Bundle context must not be null!")
   require(pid != null, "PID must not be null!")
 
+  /**
+   * Updates the configuration with the given properties. 
+   */
   def updateWith(properties: Map[String, Any]) {
     require(properties != null, "Properties must not be null!")
     context getOne classOf[ConfigurationAdmin] andApply {
       (configAdmin: ConfigurationAdmin) => {
         val config = configAdmin.getConfiguration(pid, null)
-        if (config != null) {
-          val current = config.getProperties match {
-            case null    => immutable.Map[String, Any]()
-            case current => immutable.Map[String, Any]() ++ current.asInstanceOf[Map[String, Any]]
-          }
-          config.update(current ++ properties)
+        val current = config.properties match {
+          case None        => immutable.Map[String, Any]()
+          case Some(props) => immutable.Map[String, Any]() ++ props
         }
+        config.update(current ++ properties)
+      }
+    }
+  }
+
+  /**
+   * Replaces the configuration with the given properties. 
+   */
+  def replaceWith(properties: Map[String, Any]) {
+    require(properties != null, "Properties must not be null!")
+    context getOne classOf[ConfigurationAdmin] andApply {
+      (configAdmin: ConfigurationAdmin) => {
+        val config = configAdmin.getConfiguration(pid, null)
+        config.update(properties)
       }
     }
   }

@@ -160,24 +160,49 @@ class BundleTest extends ExamTest {
     // Register a managed service
     val greeting = new Greeting with ManagedService {
       override def updated(properties: Dictionary[_, _]) {
-        properties.get("message") match {
-          case null  => 
-          case value => message = value.toString
+        properties match {
+          case null => salutation = "SALUTATION"; message = "MESSAGE"
+          case _    => {
+            properties.get("salutation") match {
+              case null  => salutation = "SALUTATION"
+              case value => salutation = value.toString;
+            }
+            properties.get("message") match {
+              case null  => message = "MESSAGE"
+              case value => message = value.toString
+            }
+          }
         }
       }
-      override def greet = message
-      private var message = "DEFAULT"
+      override def greet = salutation + " " + message
+      private var salutation = "SALUTATION"
+      private var message = "MESSAGE"
     }
-    context registerAs classOf[Greeting] withProperties 
+    context registerAs classOf[Greeting] andAs classOf[ManagedService] withProperties 
       Map("name" -> "CM", "service.pid" -> "CM") theService greeting
-    
-    // Update greeting service via config admin
-    context configure "CM" updateWith (Map("message" -> "test"))
-    Thread.sleep(3000)
 
-    // Get many services with filter (name=CM)) should result in Some(List("test"))
-    val cmResult = 
+    // Replace configuration for greeting service
+    context configure "CM" replaceWith (Map("salutation" -> "REPLACED"))
+    Thread sleep 1000
+    // Get many services with filter (name=CM)) should result in Some(List("REPLACED MESSAGE"))
+    var cmResult = 
       context getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
-    assert(Some(List("test")) == cmResult, "Was " + cmResult)
+    assert(Some(List("REPLACED MESSAGE")) == cmResult, "Was " + cmResult)
+
+    // Update configuration for greeting service
+    context configure "CM" updateWith (Map("message" -> "REPLACED"))
+    Thread sleep 1000
+    // Get many services with filter (name=CM)) should result in Some(List("test"))
+    cmResult = 
+      context getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
+    assert(Some(List("REPLACED REPLACED")) == cmResult, "Was " + cmResult)
+
+    // Replace configuration for greeting service once more
+    context configure "CM" replaceWith (Map("salutation" -> "REPLACED"))
+    Thread sleep 1000
+    // Get many services with filter (name=CM)) should result in Some(List("REPLACED MESSAGE"))
+    cmResult = 
+      context getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
+    assert(Some(List("REPLACED MESSAGE")) == cmResult, "Was " + cmResult)
   }
 }
