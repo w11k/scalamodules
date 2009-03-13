@@ -18,3 +18,11 @@ package org.scalamodules.core.test
 trait Greeting {
   def greet: String
 }
+
+trait Introduction {
+  def myNameIs: String
+}
+
+trait Interested {
+  def andYours: String
+}

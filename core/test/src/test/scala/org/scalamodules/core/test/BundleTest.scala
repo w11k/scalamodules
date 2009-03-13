@@ -90,16 +90,33 @@ class BundleTest extends ExamTest {
     }
     assert(welcomeResult == Some("Welcome-Greeting sais: Welcome!"), "Was: " + welcomeResult)
 
+    context registerAs classOf[Greeting] andAs classOf[Introduction] andAs classOf[Interested] theService
+      new Greeting with Introduction with Interested {
+        override def greet = "Howdy!"
+        override def myNameIs = "Multi-interface Service."
+        override def andYours = "And what's your name?"
+      }
+    
+    // Get one for Introduction should result in a successful look-up
+    val introductionResult = context getOne classOf[Introduction] andApply { _ => true }
+    assert(Some(true) == introductionResult, "But was: " + introductionResult)
+
+    // Get one for Interested should result in a successful look-up
+    val interestedResult = context getOne classOf[Interested] andApply { _ => true }
+    assert(Some(true) == interestedResult, "But was: " + interestedResult)
+
     // Get many services should result in Some(List("Hello!", "Welcome!"))
     val greetingsResult = context getMany classOf[Greeting] andApply { _.greet }
     assert(greetingsResult != None)
     val sorter = (s1: String, s2: String) => s1 < s2
-    assert(List("Hello!", "Welcome!").sort(sorter) ==  greetingsResult.get.sort(sorter))
+    assert(List("Hello!", "Welcome!", "Howdy!").sort(sorter) == greetingsResult.get.sort(sorter), 
+           "But was: " + greetingsResult)
 
-    // Get many services with filter (!(name=*)) should result in Some(List("Hello!"))
+    // Get many services with filter (!(name=*)) should result in Some(List("Hello!", "Howdy!"))
     val filteredGreetingsResult = 
       context getMany classOf[Greeting] withFilter "(!(name=*))" andApply { _.greet }
-    assert(filteredGreetingsResult == Some(List("Hello!")))
+    assert(List("Hello!", "Howdy!").sort(sorter) == filteredGreetingsResult.get.sort(sorter), 
+           "But was: " + filteredGreetingsResult)
     
     // Unregistering a service should result in greetingStatus == "REMOVED" 
     welcomeRegistration.unregister()
@@ -110,29 +127,34 @@ class BundleTest extends ExamTest {
     track.stop()
     assert(greetingStatus == "REMOVED")
     
-    context registerAs classOf[String] withProperties Map("test" -> "test") dependOn classOf[BigInt] theService {
-      _ => "test"
+    context registerAs classOf[Greeting] andAs classOf[Introduction] andAs classOf[Interested] withProperties 
+      Map("feature" -> "dependOn") dependOn classOf[BigInt] theService { _ => 
+        new Greeting with Introduction with Interested {
+          override def greet = "Howdy!"
+          override def myNameIs = "Multi-interface Service."
+          override def andYours = "And what's your name?"
+        }
     }
-    var result = context getMany classOf[String] withFilter "(test=*)" andApply { _ => }
+    var result = context getMany classOf[Greeting] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result == None) 
     
     val dependeeRegistration1 = context registerAs classOf[BigInt] theService { BigInt(1) }
-    result = context getMany classOf[String] withFilter "(test=*)" andApply { _ => }
+    result = context getMany classOf[Greeting] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result != None) 
     assert(result.get.size == 1)
     
     val dependeeRegistration2 = context registerAs classOf[BigInt] theService { BigInt(2) }
-    result = context getMany classOf[String] withFilter "(test=*)" andApply { _ => }
+    result = context getMany classOf[Introduction] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result != None) 
     assert(result.get.size == 1)
     
     dependeeRegistration2.unregister()
-    result = context getMany classOf[String] withFilter "(test=*)" andApply { _ => }
+    result = context getMany classOf[Interested] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result != None) 
     assert(result.get.size == 1)
 
     dependeeRegistration1.unregister()
-    result = context getMany classOf[String] withFilter "(test=*)" andApply { _ => }
+    result = context getMany classOf[Greeting] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result == None) 
 
     // Register a managed service

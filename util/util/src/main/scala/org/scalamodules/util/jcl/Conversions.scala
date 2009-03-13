@@ -25,6 +25,31 @@ import scala.collection.Map
 object Conversions {
 
   /**
+   * Implicitly converts from Java Dictionary to Scala Map.
+   */
+  implicit def dictionaryToMap[K, V](dictionary: Dictionary[K, V]): Map[K, V] = {
+    dictionary match {
+      case null => null
+      case _    => new Map[K, V] {
+        override def elements = new Iterator[(K, V)] {
+          override def hasNext = keys.hasMoreElements
+          override def next = {
+            val key = keys.nextElement
+            val value = dictionary.get(key)
+            (key, value)
+          }
+          private val keys = dictionary.keys
+        }
+        override def get(key: K) = dictionary.get(key) match {
+          case null  => None
+          case value => Some(value)
+        }
+        override def size = dictionary.size
+      }
+    }
+  }
+
+  /**
    * Implicitly converts from Scala Iterator to Java Enumeration.
    */
   implicit def iteratorToJavaEnumeration[T](iterator: Iterator[T]) = 
