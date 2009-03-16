@@ -31,12 +31,15 @@ class Activator extends BundleActivator {
         greeting => new Command {
           override def getName = "greet"
           override def getShortDescription = "Invoke Greeting"
-          override def getUsage = "greet [welcome | goodbye]"
+          override def getUsage = "greet [welcome | goodbye | configure <WELCOME> <GOODBYE>]"
           override def execute(cmdLine: String, out: PrintStream, err: PrintStream) {
-            cmdLine match {
-              case "greet welcome" => out.println(greeting.welcome)
-              case "greet goodbye" => out.println(greeting.goodbye)
-              case _               => err.printf("Illegal usage! Try \"%s\"%n", getUsage)
+            cmdLine split " " match {
+              case Array("greet", "welcome") => out println greeting.welcome
+              case Array("greet", "goodbye") => out println greeting.goodbye
+              case Array("greet", "configure", welcome, goodbye) => 
+                context configure "managedGreeting" updateWith 
+                  Map("welcome" -> welcome, "goodbye" -> goodbye)
+              case _ => err.printf("Illegal usage! Try \"%s\"%n", getUsage)
             }
           }
         }

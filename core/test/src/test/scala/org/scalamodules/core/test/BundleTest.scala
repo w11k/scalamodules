@@ -16,6 +16,8 @@
 package org.scalamodules.core.test
 
 import java.util.Dictionary
+import scala.collection.Map
+import scala.collection.immutable
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.ops4j.pax.exam.CoreOptions._
@@ -23,7 +25,7 @@ import org.ops4j.pax.exam.Inject
 import org.ops4j.pax.exam.junit.Configuration
 import org.ops4j.pax.exam.junit.JUnit4TestRunner
 import org.osgi.framework.BundleContext
-import org.osgi.service.cm._
+import org.osgi.service.cm.ManagedService
 import org.scalamodules.core._
 import org.scalamodules.core.RichBundleContext.fromBundleContext
 import org.scalamodules.exam.ExamTest
@@ -72,8 +74,8 @@ class BundleTest extends ExamTest {
     val welcome = new Greeting {
       override def greet = "Welcome!"
     }
-    val properties = Map("service.ranking" -> 1, 
-                         "name" -> "Welcome-Greeting")
+    val properties = immutable.Map("service.ranking" -> 1, 
+                                   "name" -> "Welcome-Greeting")
     val welcomeRegistration = 
       context registerAs classOf[Greeting] withProperties properties theService welcome
     assert(greetingStatus == "ADDING")
@@ -128,7 +130,7 @@ class BundleTest extends ExamTest {
     assert(greetingStatus == "REMOVED")
     
     context registerAs classOf[Greeting] andAs classOf[Introduction] andAs classOf[Interested] withProperties 
-      Map("feature" -> "dependOn") dependOn classOf[BigInt] theService { _ => 
+      immutable.Map("feature" -> "dependOn") dependOn classOf[BigInt] theService { _ => 
         new Greeting with Introduction with Interested {
           override def greet = "Howdy!"
           override def myNameIs = "Multi-interface Service."
@@ -158,18 +160,18 @@ class BundleTest extends ExamTest {
     assert(result == None) 
 
     // Register a managed service
-    val greeting = new Greeting with ManagedService {
-      override def updated(properties: Dictionary[_, _]) {
+    val greeting = new Greeting with BaseManagedService {
+      override def handleUpdate(properties: Option[Map[String, Any]]) {
         properties match {
-          case null => salutation = "SALUTATION"; message = "MESSAGE"
-          case _    => {
-            properties.get("salutation") match {
-              case null  => salutation = "SALUTATION"
-              case value => salutation = value.toString;
+          case None        => salutation = "SALUTATION"; message = "MESSAGE"
+          case Some(props) => {
+            props.get("salutation") match {
+              case None        => salutation = "SALUTATION"
+              case Some(value) => salutation = value.toString;
             }
-            properties.get("message") match {
-              case null  => message = "MESSAGE"
-              case value => message = value.toString
+            props.get("message") match {
+              case None        => message = "MESSAGE"
+              case Some(value) => message = value.toString
             }
           }
         }
@@ -179,10 +181,10 @@ class BundleTest extends ExamTest {
       private var message = "MESSAGE"
     }
     context registerAs classOf[Greeting] andAs classOf[ManagedService] withProperties 
-      Map("name" -> "CM", "service.pid" -> "CM") theService greeting
+      immutable.Map("name" -> "CM", "service.pid" -> "CM") theService greeting
 
     // Replace configuration for greeting service
-    context configure "CM" replaceWith (Map("salutation" -> "REPLACED"))
+    context configure "CM" replaceWith (immutable.Map("salutation" -> "REPLACED"))
     Thread sleep 1000
     // Get many services with filter (name=CM)) should result in Some(List("REPLACED MESSAGE"))
     var cmResult = 
@@ -190,7 +192,7 @@ class BundleTest extends ExamTest {
     assert(Some(List("REPLACED MESSAGE")) == cmResult, "Was " + cmResult)
 
     // Update configuration for greeting service
-    context configure "CM" updateWith (Map("message" -> "REPLACED"))
+    context configure "CM" updateWith (immutable.Map("message" -> "REPLACED"))
     Thread sleep 1000
     // Get many services with filter (name=CM)) should result in Some(List("test"))
     cmResult = 
@@ -198,7 +200,7 @@ class BundleTest extends ExamTest {
     assert(Some(List("REPLACED REPLACED")) == cmResult, "Was " + cmResult)
 
     // Replace configuration for greeting service once more
-    context configure "CM" replaceWith (Map("salutation" -> "REPLACED"))
+    context configure "CM" replaceWith (immutable.Map("salutation" -> "REPLACED"))
     Thread sleep 1000
     // Get many services with filter (name=CM)) should result in Some(List("REPLACED MESSAGE"))
     cmResult = 
