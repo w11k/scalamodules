@@ -22,11 +22,12 @@
   </licenses>
 
   <modules>
-    <module>assembly</module>
-    <module>core</module>
-    <module>demo</module>
-    <module>exam</module>
     <module>util</module>
+    <module>exam</module>
+    <module>core</module>
+    <module>services</module>
+    <module>demo</module>
+    <module>assembly</module>
   </modules>
 
   <dependencies>

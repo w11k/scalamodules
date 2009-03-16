@@ -24,6 +24,11 @@
     </dependency>
     <dependency>
       <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules.services</artifactId>
+      <version>${scalamodules.services.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
       <artifactId>scalamodules.demo</artifactId>
       <version>${scalamodules.demo.version}</version>
     </dependency>

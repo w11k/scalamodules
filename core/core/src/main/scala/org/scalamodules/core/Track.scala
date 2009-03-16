@@ -18,7 +18,7 @@ package org.scalamodules.core
 import scala.collection.Map
 import org.osgi.framework.{BundleContext, Filter, ServiceReference}
 import org.osgi.util.tracker.ServiceTracker
-import org.scalamodules.core.RichServiceReference.fromServiceReference
+import org.scalamodules.core.RichServiceReference.toRichServiceReference
 
 /**
  * Provides service tracking. 

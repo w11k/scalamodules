@@ -30,6 +30,7 @@
       <outputDirectory>bundles</outputDirectory>
       <includes>
         <include>org.scalamodules:scalamodules.core</include>
+        <include>org.scalamodules:scalamodules.services</include>
         <include>org.scalamodules:scalamodules.scala-library</include>
         <include>org.scalamodules:scalamodules.util</include>
       </includes>

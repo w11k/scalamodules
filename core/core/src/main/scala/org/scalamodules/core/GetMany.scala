@@ -17,7 +17,7 @@ package org.scalamodules.core
 
 import scala.collection.Map
 import org.osgi.framework.{BundleContext, ServiceReference}
-import org.scalamodules.core.RichBundleContext.fromBundleContext
+import org.scalamodules.core.RichBundleContext.toRichBundleContext
 
 /**
  * Provides service consumption for multiple service.

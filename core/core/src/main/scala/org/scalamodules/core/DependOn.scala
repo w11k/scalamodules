@@ -18,8 +18,8 @@ package org.scalamodules.core
 import scala.collection.Map
 import org.osgi.framework.{BundleContext, ServiceReference, ServiceRegistration}
 import org.osgi.util.tracker.ServiceTracker
-import org.scalamodules.core.RichBundleContext.fromBundleContext
-import org.scalamodules.core.RichServiceReference.fromServiceReference
+import org.scalamodules.core.RichBundleContext.toRichBundleContext
+import org.scalamodules.core.RichServiceReference.toRichServiceReference
 import org.scalamodules.util.jcl.Conversions.mapToJavaDictionary
 
 /**

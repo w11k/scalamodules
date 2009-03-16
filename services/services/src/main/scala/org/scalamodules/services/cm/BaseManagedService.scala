@@ -13,21 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalamodules.core
+package org.scalamodules.services.cm
 
 import java.util.Dictionary
 import scala.collection.Map
-import org.osgi.service.cm.{Configuration, ManagedService}
+import org.osgi.service.cm.ManagedService
 import org.scalamodules.util.jcl.Conversions.dictionaryToMap
 
+/**
+ * Makes handling managed services more convenient.
+ */
 trait BaseManagedService extends ManagedService {
 
+  /**
+   * Handles update.
+   */
+  def handleUpdate(properties: Option[Map[String, Any]])
+
+  /**
+   * Delegates to handleUpdate which takes an Option of typed Scala Map.
+   */
   override def updated(properties: Dictionary[_, _]) {
     properties match {
       case null => handleUpdate(None)
       case _    => handleUpdate(Some(properties.asInstanceOf[Dictionary[String, Any]]))
     }
   }
-  
-  def handleUpdate(properties: Option[Map[String, Any]])
 }

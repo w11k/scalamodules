@@ -18,7 +18,8 @@ package org.scalamodules.demo.depend.internal
 import java.io.PrintStream
 import org.apache.felix.shell.Command
 import org.osgi.framework.{BundleActivator, BundleContext}
-import org.scalamodules.core.RichBundleContext.fromBundleContext
+import org.scalamodules.core.RichBundleContext.toRichBundleContext
+import org.scalamodules.services.ServicesRichBundleContext.toServicesRichBundleContext
 import org.scalamodules.demo.Greeting
 
 class Activator extends BundleActivator {

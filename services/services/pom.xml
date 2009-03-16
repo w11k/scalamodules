@@ -10,27 +10,22 @@
     <relativePath>../../pom-bundle.xml</relativePath>
   </parent>
 
-  <artifactId>scalamodules.demo.register</artifactId>
-  <name>ScalaModules Demo - Register</name>
-  <description>Demo for ScalaModules: Registers services.</description>
+  <artifactId>scalamodules.services</artifactId>
+  <name>ScalaModules Services</name>
+  <description>ScalaModules Services provides a domain specific language for OSGi compendium services, e.g. Configuration Admin, Event Admin, etc.</description>
   <version>1.0.0</version>
   <packaging>jar</packaging>
 
   <dependencies>
     <dependency>
       <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules.util</artifactId>
+      <version>${scalamodules.util.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
       <artifactId>scalamodules.core</artifactId>
       <version>${scalamodules.core.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.scalamodules</groupId>
-      <artifactId>scalamodules.services</artifactId>
-      <version>${scalamodules.services.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.scalamodules</groupId>
-      <artifactId>scalamodules.demo</artifactId>
-      <version>${scalamodules.demo.version}</version>
     </dependency>
   </dependencies>
 
@@ -41,8 +36,7 @@
         <artifactId>maven-bundle-plugin</artifactId>
         <configuration>
           <instructions>
-            <Private-Package>org.scalamodules.demo.register.internal</Private-Package>
-            <Bundle-Activator>org.scalamodules.demo.register.internal.Activator</Bundle-Activator>
+            <Export-Package>org.scalamodules.services;version="1.0",org.scalamodules.services.cm;version="1.0"</Export-Package>
           </instructions>
         </configuration>
       </plugin>

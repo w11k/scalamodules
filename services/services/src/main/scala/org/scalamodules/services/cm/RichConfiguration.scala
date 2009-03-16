@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalamodules.core
+package org.scalamodules.services.cm
 
 import java.util.Dictionary
 import scala.collection.Map
@@ -28,7 +28,7 @@ object RichConfiguration {
   /**
    * Implicitly converts the given Configuration to RichConfiguration.
    */
-  implicit def fromConfiguration(config: Configuration) = 
+  implicit def toRichConfiguration(config: Configuration) = 
     new RichConfiguration(config) 
 }
 
@@ -43,10 +43,10 @@ class RichConfiguration(config: Configuration) {
   /**
    * Get properties as optional Scala Map.
    */
-  def properties: Option[Map[String, AnyRef]] = {
+  def properties: Option[Map[String, Any]] = {
     config.getProperties match {
       case null  => None
-      case props => Some(props.asInstanceOf[Dictionary[String, AnyRef]])
+      case props => Some(props.asInstanceOf[Dictionary[String, Any]])
     }
   }
 }

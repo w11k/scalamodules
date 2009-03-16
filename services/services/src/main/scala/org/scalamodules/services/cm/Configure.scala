@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalamodules.core
+package org.scalamodules.services.cm
 
 import scala.collection.Map
 import scala.collection.immutable
 import org.osgi.framework.BundleContext
 import org.osgi.service.cm.{Configuration, ConfigurationAdmin}
-import org.scalamodules.core.RichConfiguration.fromConfiguration
-import org.scalamodules.core.RichBundleContext.fromBundleContext
+import org.scalamodules.core.RichBundleContext.toRichBundleContext
+import org.scalamodules.services.cm.RichConfiguration.toRichConfiguration
 import org.scalamodules.util.jcl.Conversions.mapToJavaDictionary
 
 /**

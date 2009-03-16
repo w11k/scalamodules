@@ -19,6 +19,7 @@
     <scalamodules.core.version>1.0.0</scalamodules.core.version>
     <scalamodules.demo.version>1.0.0</scalamodules.demo.version>
     <scalamodules.exam.version>1.0.0</scalamodules.exam.version>
+    <scalamodules.services.version>1.0.0</scalamodules.services.version>
     <scalamodules.util.version>1.0.0</scalamodules.util.version>
   </properties>
 

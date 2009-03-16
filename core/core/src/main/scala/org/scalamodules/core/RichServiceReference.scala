@@ -26,7 +26,7 @@ object RichServiceReference {
   /**
    * Implicitly converts the given ServiceReference to RichServiceReference.
    */
-  implicit def fromServiceReference(ref: ServiceReference) = 
+  implicit def toRichServiceReference(ref: ServiceReference) = 
     new RichServiceReference(ref) 
 }
 

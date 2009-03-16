@@ -19,8 +19,8 @@ import scala.collection.Map
 import scala.collection.immutable
 import org.osgi.framework.{BundleActivator, BundleContext}
 import org.osgi.service.cm.ManagedService
-import org.scalamodules.core.BaseManagedService
-import org.scalamodules.core.RichBundleContext.fromBundleContext
+import org.scalamodules.services.cm.BaseManagedService
+import org.scalamodules.core.RichBundleContext.toRichBundleContext
 import org.scalamodules.demo._
 
 class Activator extends BundleActivator {

@@ -17,7 +17,7 @@ package org.scalamodules.demo.track.internal
 
 import org.osgi.framework.{BundleActivator, BundleContext}
 import org.scalamodules.core._
-import org.scalamodules.core.RichBundleContext.fromBundleContext
+import org.scalamodules.core.RichBundleContext.toRichBundleContext
 import org.scalamodules.demo.Greeting
 
 class Activator extends BundleActivator {

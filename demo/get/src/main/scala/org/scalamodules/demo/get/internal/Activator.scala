@@ -16,7 +16,7 @@
 package org.scalamodules.demo.get.internal
 
 import org.osgi.framework.{BundleActivator, BundleContext}
-import org.scalamodules.core.RichBundleContext.fromBundleContext
+import org.scalamodules.core.RichBundleContext.toRichBundleContext
 import org.scalamodules.demo.Greeting
 
 class Activator extends BundleActivator {

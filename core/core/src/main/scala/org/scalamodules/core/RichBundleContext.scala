@@ -17,7 +17,7 @@ package org.scalamodules.core
 
 import scala.collection.Map
 import org.osgi.framework.{BundleContext, ServiceReference}
-import org.scalamodules.core.RichServiceReference.fromServiceReference
+import org.scalamodules.core.RichServiceReference.toRichServiceReference
   
 /**
  * Companion object for RichBundleContext.
@@ -27,7 +27,7 @@ object RichBundleContext {
   /**
    * Implicitly converts the given BundleContext to RichBundleContext.
    */
-  implicit def fromBundleContext(context: BundleContext) = 
+  implicit def toRichBundleContext(context: BundleContext) =
     new RichBundleContext(context) 
 }
 
@@ -62,12 +62,6 @@ class RichBundleContext(context: BundleContext) {
    */
   def track[T](serviceInterface: Class[T]) =
     new Track[T](context, serviceInterface)
-
-  /**
-   * Provides configuration via Configuration Admin service. 
-   */
-  def configure(pid: String) =
-    new Configure(context, pid)
 
   /**
    * Gets the service for the given service reference 
