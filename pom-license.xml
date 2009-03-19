@@ -26,6 +26,7 @@
           <excludes>
             <exclude>.git/**</exclude>
             <exclude>.manager/**</exclude>
+            <exclude>*.txt</exclude>
           </excludes>
           <useDefaultExcludes>true</useDefaultExcludes>
           <mapping>
