@@ -5,9 +5,9 @@
 
   <parent>
     <groupId>org.scalamodules</groupId>
-    <artifactId>scalamodules.pom-exam</artifactId>
+    <artifactId>scalamodules.exam-pom</artifactId>
+    <relativePath>../../poms/exam/pom.xml</relativePath>
     <version>1.0.0</version>
-    <relativePath>../../pom-exam.xml</relativePath>
   </parent>
 
   <artifactId>scalamodules.core.test</artifactId>

@@ -4,9 +4,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.scalamodules</groupId>
-  <artifactId>scalamodules.parent</artifactId>
-  <name>ScalaModules - Parent</name>
-  <description>Scala DSL to ease OSGi development.</description>
+  <artifactId>scalamodules.root-pom</artifactId>
+  <name>ScalaModules - Root POM</name>
+  <description>Root POM for ScalaModules.</description>
   <version>1.0.0</version>
   <packaging>pom</packaging>
 
@@ -22,13 +22,24 @@
   </licenses>
 
   <modules>
-    <module>util</module>
+    <module>poms</module>
     <module>exam</module>
+    <module>util</module>
     <module>core</module>
     <module>services</module>
     <module>demo</module>
     <module>assembly</module>
   </modules>
+
+  <properties>
+    <scala.version>2.7.3</scala.version>
+    <scalatest.version>0.9.4</scalatest.version>
+    <scalamodules.core.version>1.0.0</scalamodules.core.version>
+    <scalamodules.demo.version>1.0.0</scalamodules.demo.version>
+    <scalamodules.exam.version>1.0.0</scalamodules.exam.version>
+    <scalamodules.services.version>1.0.0</scalamodules.services.version>
+    <scalamodules.util.version>1.0.0</scalamodules.util.version>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -43,9 +54,22 @@
       <version>2.4</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>${scala.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalatest</groupId>
+      <artifactId>scalatest</artifactId>
+      <version>${scalatest.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
+    <sourceDirectory>src/main/scala</sourceDirectory>
+    <testSourceDirectory>src/test/scala</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -55,7 +79,65 @@
           <target>1.5</target>
         </configuration>
       </plugin>
+      <!--
+      <plugin>
+        <groupId>com.google.code.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <version>1.4.0</version> Version has to be specified, because maven metadata for that project not up to date :-(
+        <configuration>
+          <header>${basedir}/../../header.txt</header>
+          <quiet>false</quiet>
+          <failIfMissing>true</failIfMissing>
+          <excludes>
+            <exclude>.git/**</exclude>
+            <exclude>.manager/**</exclude>
+            <exclude>*.txt</exclude>
+          </excludes>
+          <useDefaultExcludes>true</useDefaultExcludes>
+          <mapping>
+            <scala>JAVADOC_STYLE</scala>
+          </mapping>
+          <useDefaultMapping>true</useDefaultMapping>
+          <encoding>UTF-8</encoding>
+        </configuration>
+        <executions>
+          <execution>
+            <id>format-headers</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>format</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      -->
+      <plugin>
+        <groupId>org.scala-tools</groupId>
+        <artifactId>maven-scala-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <args>
+            <arg>-target:jvm-1.5</arg>
+          </args>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+
+  <!-- For ScalaTest -->
+  <repositories>
+    <repository>
+      <id>scala-tools.org</id>
+      <name>Scala-Tools Maven2 Repository</name>
+      <url>http://scala-tools.org/repo-releases</url>
+    </repository>
+  </repositories>
 
 </project>

@@ -5,12 +5,15 @@
 
   <parent>
     <groupId>org.scalamodules</groupId>
-    <artifactId>scalamodules.pom-scala</artifactId>
+    <artifactId>scalamodules.root-pom</artifactId>
     <version>1.0.0</version>
-    <relativePath>./pom-scala.xml</relativePath>
   </parent>
 
-  <artifactId>scalamodules.pom-exam</artifactId>
+  <groupId>org.scalamodules</groupId>
+  <artifactId>scalamodules.exam-pom</artifactId>
+  <name>ScalaModules - Exam POM</name>
+  <description>Exam POM for ScalaModules.</description>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
 
   <dependencies>

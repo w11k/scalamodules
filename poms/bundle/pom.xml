@@ -5,12 +5,16 @@
 
   <parent>
     <groupId>org.scalamodules</groupId>
-    <artifactId>scalamodules.pom-scala</artifactId>
+    <artifactId>scalamodules.root-pom</artifactId>
+    <relativePath>../../pom.xml</relativePath>
     <version>1.0.0</version>
-    <relativePath>./pom-scala.xml</relativePath>
   </parent>
 
-  <artifactId>scalamodules.pom-bundle</artifactId>
+  <groupId>org.scalamodules</groupId>
+  <artifactId>scalamodules.bundle-pom</artifactId>
+  <name>ScalaModules - Bundle POM</name>
+  <description>Bundle POM for ScalaModules.</description>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
 
   <dependencies>
@@ -31,7 +35,6 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <!-- <version>2.0.0</version> -->
         <extensions>true</extensions>
         <configuration>
           <instructions>
