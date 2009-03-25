@@ -13,7 +13,7 @@
   <artifactId>scalamodules.demo.depend</artifactId>
   <name>ScalaModules Demo - Depend</name>
   <description>Demo for ScalaModules: Registers services depending on others.</description>
-  <version>1.0.0</version>
+  <version>${scalamodules.demo.version}</version>
   <packaging>jar</packaging>
 
   <dependencies>

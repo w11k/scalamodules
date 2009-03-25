@@ -13,7 +13,7 @@
   <artifactId>scalamodules.core</artifactId>
   <name>ScalaModules Core</name>
   <description>ScalaModules Core provides a domain specific language for general OSGi concepts like life cycle or service usage.</description>
-  <version>1.0.0</version>
+  <version>${scalamodules.core.version}</version>
   <packaging>jar</packaging>
 
   <dependencies>

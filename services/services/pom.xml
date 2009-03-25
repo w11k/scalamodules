@@ -13,7 +13,7 @@
   <artifactId>scalamodules.services</artifactId>
   <name>ScalaModules Services</name>
   <description>ScalaModules Services provides a domain specific language for OSGi compendium services, e.g. Configuration Admin, Event Admin, etc.</description>
-  <version>1.0.0</version>
+  <version>${scalamodules.services.version}</version>
   <packaging>jar</packaging>
 
   <dependencies>

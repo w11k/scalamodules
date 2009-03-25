@@ -13,7 +13,7 @@
   <artifactId>scalamodules.exam</artifactId>
   <name>ScalaModules Exam</name>
   <description>ScalaModules Exam provides support for integration testing.</description>
-  <version>1.0.0</version>
+  <version>${scalamodules.exam.version}</version>
   <packaging>jar</packaging>
 
   <dependencies>

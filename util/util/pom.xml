@@ -13,7 +13,7 @@
   <artifactId>scalamodules.util</artifactId>
   <name>ScalaModules Util</name>
   <description>ScalaModules Util provides some utilities for ScalaModules and other Scala software.</description>
-  <version>1.0.0</version>
+  <version>${scalamodules.util.version}</version>
   <packaging>jar</packaging>
 
   <build>

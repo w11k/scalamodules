@@ -13,7 +13,7 @@
   <artifactId>scalamodules.demo.track</artifactId>
   <name>ScalaModules Demo - Track</name>
   <description>Demo for ScalaModules: Tracks services.</description>
-  <version>1.0.0</version>
+  <version>${scalamodules.demo.version}</version>
   <packaging>jar</packaging>
 
   <dependencies>

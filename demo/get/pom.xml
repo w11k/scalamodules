@@ -13,7 +13,7 @@
   <artifactId>scalamodules.demo.get</artifactId>
   <name>ScalaModules Demo - Get</name>
   <description>Demo for ScalaModules: Getting services.</description>
-  <version>1.0.0</version>
+  <version>${scalamodules.demo.version}</version>
   <packaging>jar</packaging>
 
   <dependencies>
