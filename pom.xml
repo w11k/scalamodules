@@ -22,6 +22,7 @@
   </licenses>
 
   <modules>
+    <module>scala</module>
     <module>poms</module>
     <module>exam</module>
     <module>util</module>
