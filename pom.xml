@@ -7,7 +7,7 @@
   <artifactId>scalamodules.root-pom</artifactId>
   <name>ScalaModules - Root POM</name>
   <description>Root POM for ScalaModules.</description>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <packaging>pom</packaging>
 
   <organization>
@@ -37,7 +37,7 @@
     <scalatest.version>0.9.4</scalatest.version>
     <scalamodules.core.version>1.0.0</scalamodules.core.version>
     <scalamodules.demo.version>1.0.0</scalamodules.demo.version>
-    <scalamodules.exam.version>1.0.0</scalamodules.exam.version>
+    <scalamodules.exam.version>1.0.1</scalamodules.exam.version>
     <scalamodules.services.version>1.0.0</scalamodules.services.version>
     <scalamodules.util.version>1.0.0</scalamodules.util.version>
   </properties>

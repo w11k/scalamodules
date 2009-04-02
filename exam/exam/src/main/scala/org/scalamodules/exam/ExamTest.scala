@@ -49,7 +49,7 @@ class ExamTest {
    * Bundles to be provisioned.
    */
   protected val bundles = Set(
-    mavenUrl("org.scalamodules", "scalamodules.exam", "1.0.0"),
+    mavenUrl("org.scalamodules", "scalamodules.exam", "1.0.1"),
     mavenUrl("org.scalamodules", "scalamodules.scala-library", "2.7.3"))
 
   private def mavenUrl(groupId: String, artifactId: String, version: String) =

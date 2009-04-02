@@ -33,7 +33,7 @@ import org.scalamodules.exam.ExamTest
 @RunWith(classOf[JUnit4TestRunner])
 class BundleTest extends ExamTest {
 
-  addWrappedBundle("org.ops4j.pax.exam", "pax-exam-junit", "0.3.0-SNAPSHOT")
+  addWrappedBundle("org.ops4j.pax.exam", "pax-exam-junit", "0.3.0")
   addBundle("org.scalamodules", "scalamodules.util", "1.0.0")
   addBundle("org.scalamodules", "scalamodules.core", "1.0.0")
   addBundle("org.apache.felix", "org.apache.felix.configadmin", "1.0.10")
