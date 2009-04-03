@@ -18,6 +18,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.scala-lang-osgi</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>${scala.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.scalamodules</groupId>
       <artifactId>scalamodules.core</artifactId>
       <version>${scalamodules.core.version}</version>
@@ -56,11 +61,6 @@
       <groupId>org.scalamodules</groupId>
       <artifactId>scalamodules.exam</artifactId>
       <version>${scalamodules.exam.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.scalamodules</groupId>
-      <artifactId>scalamodules.scala-library</artifactId>
-      <version>${scala.version}</version>
     </dependency>
     <dependency>
       <groupId>org.scalamodules</groupId>

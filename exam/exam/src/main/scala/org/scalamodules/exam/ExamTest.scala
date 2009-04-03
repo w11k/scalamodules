@@ -21,7 +21,7 @@ import org.ops4j.pax.exam.junit.Configuration
 
 /**
  * Base for integration tests.
- * Already adds this bundle and scalamodules.scala-library.
+ * Already adds this bundle and org.scala-lang-osgi:scala-library.
  */
 class ExamTest {
 
@@ -50,7 +50,7 @@ class ExamTest {
    */
   protected val bundles = Set(
     mavenUrl("org.scalamodules", "scalamodules.exam", "1.0.1"),
-    mavenUrl("org.scalamodules", "scalamodules.scala-library", "2.7.3"))
+    mavenUrl("org.scala-lang-osgi", "scala-library", "2.7.3"))
 
   private def mavenUrl(groupId: String, artifactId: String, version: String) =
     mavenBundle.groupId(groupId).artifactId(artifactId).version(version).getURL
