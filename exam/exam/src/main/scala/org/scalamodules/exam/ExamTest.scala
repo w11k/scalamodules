@@ -49,6 +49,7 @@ class ExamTest {
    * Bundles to be provisioned.
    */
   protected val bundles = Set(
+    wrappedUrl(mavenUrl("org.ops4j.pax.exam", "pax-exam-junit", "0.4.0")),
     mavenUrl("org.scalamodules", "scalamodules.exam", "1.0.1"),
     mavenUrl("org.scala-lang-osgi", "scala-library", "2.7.3"))
 
