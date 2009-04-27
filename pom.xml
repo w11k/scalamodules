@@ -7,7 +7,7 @@
   <artifactId>scalamodules.root-pom</artifactId>
   <name>ScalaModules - Root POM</name>
   <description>Root POM for ScalaModules.</description>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <packaging>pom</packaging>
 
   <organization>
@@ -23,7 +23,6 @@
 
   <modules>
     <module>poms</module>
-    <module>exam</module>
     <module>util</module>
     <module>core</module>
     <module>services</module>
@@ -32,13 +31,12 @@
   </modules>
 
   <properties>
-    <scala.version>2.7.3</scala.version>
+    <scala.version>2.7.4</scala.version>
     <scalatest.version>0.9.4</scalatest.version>
-    <scalamodules.core.version>1.0.0</scalamodules.core.version>
-    <scalamodules.demo.version>1.0.0</scalamodules.demo.version>
-    <scalamodules.exam.version>1.0.1</scalamodules.exam.version>
-    <scalamodules.services.version>1.0.0</scalamodules.services.version>
-    <scalamodules.util.version>1.0.0</scalamodules.util.version>
+    <scalamodules.core.version>1.0.1</scalamodules.core.version>
+    <scalamodules.demo.version>1.0.1</scalamodules.demo.version>
+    <scalamodules.services.version>1.0.1</scalamodules.services.version>
+    <scalamodules.util.version>1.0.1</scalamodules.util.version>
   </properties>
 
   <dependencies>
@@ -132,13 +130,23 @@
     </plugins>
   </build>
 
-  <!-- For ScalaTest -->
   <repositories>
     <repository>
       <id>scala-tools.org</id>
       <name>Scala-Tools Maven2 Repository</name>
       <url>http://scala-tools.org/repo-releases</url>
     </repository>
+    <repository>
+      <id>opsj4</id>
+      <url>http://repository.ops4j.org/maven2</url>
+    </repository>
   </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>opsj4</id>
+      <url>http://repository.ops4j.org/maven2</url>
+    </pluginRepository>
+  </pluginRepositories>
 
 </project>

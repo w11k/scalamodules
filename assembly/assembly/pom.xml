@@ -7,7 +7,7 @@
     <groupId>org.scalamodules</groupId>
     <artifactId>scalamodules.root-pom</artifactId>
     <relativePath>../../pom.xml</relativePath>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
   </parent>
 
   <artifactId>scalamodules.assembly</artifactId>
@@ -59,11 +59,6 @@
     </dependency>
     <dependency>
       <groupId>org.scalamodules</groupId>
-      <artifactId>scalamodules.exam</artifactId>
-      <version>${scalamodules.exam.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.scalamodules</groupId>
       <artifactId>scalamodules.services</artifactId>
       <version>${scalamodules.services.version}</version>
     </dependency>
@@ -81,7 +76,6 @@
         <configuration>
           <descriptors>
             <descriptor>runtime.xml</descriptor>
-            <descriptor>test.xml</descriptor>
             <descriptor>demo.xml</descriptor>
           </descriptors>
         </configuration>

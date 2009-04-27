@@ -22,26 +22,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.ops4j.pax.exam.CoreOptions._
 import org.ops4j.pax.exam.Inject
-import org.ops4j.pax.exam.junit.Configuration
-import org.ops4j.pax.exam.junit.JUnit4TestRunner
+import org.ops4j.pax.exam.junit._
 import org.osgi.framework.BundleContext
 import org.osgi.service.cm.ManagedService
 import org.scalamodules.core._
 import org.scalamodules.core.RichBundleContext.toRichBundleContext
-import org.scalamodules.exam.ExamTest
 
-@RunWith(classOf[JUnit4TestRunner])
-class BundleTest extends ExamTest {
-
-  addBundle("org.scalamodules", "scalamodules.util", "1.0.0")
-  addBundle("org.scalamodules", "scalamodules.core", "1.0.0")
-  addBundle("org.apache.felix", "org.apache.felix.configadmin", "1.0.10")
-  
-//  @Configuration
-//  override def configuration = options(equinox, provision(bundles.toArray: _*))
-
-  @Inject
-  private var context: BundleContext = _
+@RunWith(classOf[MavenConfiguredJUnit4TestRunner])
+class BundleTest {
   
   @Test
   def test() {
@@ -206,4 +194,7 @@ class BundleTest extends ExamTest {
 //      context getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
 //    assert(Some(List("REPLACED MESSAGE")) == cmResult, "Was " + cmResult)
   }
+
+  @Inject
+  private var context: BundleContext = _
 }

@@ -5,9 +5,8 @@
 
   <parent>
     <groupId>org.scalamodules</groupId>
-    <artifactId>scalamodules.exam-pom</artifactId>
-    <relativePath>../../poms/exam/pom.xml</relativePath>
-    <version>1.0.0</version>
+    <artifactId>scalamodules.root-pom</artifactId>
+    <version>1.0.2</version>
   </parent>
 
   <artifactId>scalamodules.services.test</artifactId>
@@ -15,22 +14,106 @@
   <version>1.0.0</version>
   <packaging>jar</packaging>
 
+  <properties>
+    <pax-exam.version>0.4.0</pax-exam.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.scalamodules</groupId>
       <artifactId>scalamodules.services</artifactId>
       <version>${scalamodules.services.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.scalamodules</groupId>
       <artifactId>scalamodules.core</artifactId>
       <version>${scalamodules.core.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.scalamodules</groupId>
       <artifactId>scalamodules.util</artifactId>
       <version>${scalamodules.util.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-lang-osgi</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>${scala.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.configadmin</artifactId>
+      <version>1.0.10</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam</artifactId>
+      <version>${pax-exam.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-junit</artifactId>
+      <version>${pax-exam.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-container-default</artifactId>
+      <version>${pax-exam.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>maven-paxexam-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-paxexam-config</id>
+            <goals>
+              <goal>generate-paxexam-config</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <settings>
+            <platform>felix</platform>
+          </settings>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <id>surefire-test</id>
+            <phase>test</phase>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </execution>
+          <execution>
+            <id>surefire-itest</id>
+            <phase>integration-test</phase>
+            <configuration>
+              <skip>false</skip>
+            </configuration>
+            <goals>
+              <goal>test</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
