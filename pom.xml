@@ -132,21 +132,32 @@
 
   <repositories>
     <repository>
-      <id>scala-tools.org</id>
-      <name>Scala-Tools Maven2 Repository</name>
+      <id>scala-tools-releases</id>
       <url>http://scala-tools.org/repo-releases</url>
     </repository>
     <repository>
-      <id>opsj4</id>
+      <id>opsj4-releases</id>
       <url>http://repository.ops4j.org/maven2</url>
     </repository>
   </repositories>
 
   <pluginRepositories>
     <pluginRepository>
-      <id>opsj4</id>
+      <id>opsj4-releases</id>
       <url>http://repository.ops4j.org/maven2</url>
     </pluginRepository>
   </pluginRepositories>
+
+  <profiles>
+    <profile>
+      <id>scala-tools.org</id>
+      <distributionManagement>
+        <repository>
+          <id>scala-tools.org</id>
+          <url>http://nexus.scala-tools.org/content/repositories/releases</url>
+        </repository>
+      </distributionManagement>
+    </profile>
+  </profiles>
 
 </project>
