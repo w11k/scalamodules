@@ -27,6 +27,9 @@
           </instructions>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+      </plugin>
     </plugins>
   </build>
 
