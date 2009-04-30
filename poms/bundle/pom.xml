@@ -41,7 +41,7 @@
           <configuration>
             <instructions>
               <Bundle-RequiredExecutionEnvironment>J2SE-1.5</Bundle-RequiredExecutionEnvironment>
-              <_versionpolicy>[$(version;==;$(@)),$(version;=+;$(@)))</_versionpolicy>
+              <_versionpolicy>[$(@),$(version;=+;$(@)))</_versionpolicy>
             </instructions>
           </configuration>
           <executions>
