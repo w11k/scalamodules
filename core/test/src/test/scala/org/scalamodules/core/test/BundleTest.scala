@@ -74,10 +74,10 @@ class BundleTest {
           case None    => "UNKNOWN"
           case Some(s) => s
         }
-        name + " sais: " + greeting.greet
+        name + " says: " + greeting.greet
       }
     }
-    assert(welcomeResult == Some("Welcome-Greeting sais: Welcome!"), "Was: " + welcomeResult)
+    assert(welcomeResult == Some("Welcome-Greeting says: Welcome!"), "Was: " + welcomeResult)
 
     context registerAs classOf[Greeting] andAs classOf[Introduction] andAs classOf[Interested] theService
       new Greeting with Introduction with Interested {

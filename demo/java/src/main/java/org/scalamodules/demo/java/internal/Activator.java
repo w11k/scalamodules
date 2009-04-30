@@ -122,7 +122,7 @@ public class Activator implements BundleActivator {
         //       case None    => "UNKNOWN"
         //       case Some(s) => s
         //     }
-        //     name + " sais: " + greeting.welcome
+        //     name + " says: " + greeting.welcome
         //   }
         // } match {
         //   case None           => noGreetingService()
@@ -139,7 +139,7 @@ public class Activator implements BundleActivator {
                         Object name = (ref.getProperty("name") != null) 
                                 ? ref.getProperty("name") 
                                 : "UNKNOWN";
-                        String message = name + " sais: " + greeting.welcome();
+                        String message = name + " says: " + greeting.welcome();
                         System.out.println(message);
                     }
                 }

@@ -38,7 +38,7 @@ class Activator extends BundleActivator {
           case None    => "UNKNOWN"
           case Some(s) => s
         }
-        name + " sais: " + greeting.welcome
+        name + " says: " + greeting.welcome
       }
     } match {
       case None           => noGreetingService()
