@@ -68,6 +68,13 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>com.google.code.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <configuration>
+          <header>${basedir}/../../header.txt</header>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.ops4j.pax.exam</groupId>
         <artifactId>maven-paxexam-plugin</artifactId>
         <executions>
