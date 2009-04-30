@@ -14,10 +14,6 @@
   <version>1.0.0</version>
   <packaging>jar</packaging>
 
-  <properties>
-    <pax-exam.version>0.4.0</pax-exam.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.scalamodules</groupId>
@@ -70,9 +66,9 @@
         <artifactId>maven-paxexam-plugin</artifactId>
         <executions>
           <execution>
-            <id>generate-paxexam-config</id>
+            <id>generate-config</id>
             <goals>
-              <goal>generate-paxexam-config</goal>
+              <goal>generate-config</goal>
             </goals>
           </execution>
         </executions>
