@@ -5,22 +5,29 @@
 
   <parent>
     <groupId>org.scalamodules</groupId>
-    <artifactId>scalamodules.bundle-pom</artifactId>
-    <relativePath>../../poms/bundle/pom.xml</relativePath>
-    <version>1.0.0</version>
+    <artifactId>scalamodules</artifactId>
+    <version>1.1-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>scalamodules.core</artifactId>
+  <artifactId>scalamodules-core</artifactId>
   <name>ScalaModules Core</name>
   <description>ScalaModules Core provides a domain specific language for general OSGi concepts like life cycle or service usage.</description>
-  <version>${scalamodules.core.version}</version>
   <packaging>jar</packaging>
 
   <dependencies>
     <dependency>
       <groupId>org.scalamodules</groupId>
-      <artifactId>scalamodules.util</artifactId>
-      <version>${scalamodules.util.version}</version>
+      <artifactId>scalamodules-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.osgi.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
     </dependency>
   </dependencies>
 

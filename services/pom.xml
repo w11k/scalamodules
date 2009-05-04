@@ -5,14 +5,13 @@
 
   <parent>
     <groupId>org.scalamodules</groupId>
-    <artifactId>scalamodules.root-pom</artifactId>
-    <version>1.0.2</version>
+    <artifactId>scalamodules</artifactId>
+    <version>1.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.scalamodules</groupId>
-  <artifactId>scalamodules.services.parent</artifactId>
-  <name>ScalaModules Services - Parent</name>
-  <version>1.0.0</version>
+  <artifactId>scalamodules-services-build</artifactId>
+  <name>ScalaModules Services - Build POM</name>
   <packaging>pom</packaging>
 
   <modules>

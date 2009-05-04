@@ -12,7 +12,7 @@
       <unpack>false</unpack>
       <outputDirectory>bundles</outputDirectory>
       <includes>
-        <include>org.scalamodules:scalamodules.demo*</include>
+        <include>org.scalamodules:scalamodules-demo*</include>
       </includes>
     </dependencySet>
   </dependencySets>

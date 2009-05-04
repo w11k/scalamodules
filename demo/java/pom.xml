@@ -5,22 +5,34 @@
 
   <parent>
     <groupId>org.scalamodules</groupId>
-    <artifactId>scalamodules.bundle-pom</artifactId>
-    <relativePath>../../poms/bundle/pom.xml</relativePath>
-    <version>1.0.0</version>
+    <artifactId>scalamodules</artifactId>
+    <version>1.1-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>scalamodules.demo.java</artifactId>
+  <artifactId>scalamodules-demo-java</artifactId>
   <name>ScalaModules Demo - Java</name>
   <description>Demo for ScalaModules: Java equivalent for other demos.</description>
-  <version>${scalamodules.demo.version}</version>
   <packaging>jar</packaging>
 
   <dependencies>
     <dependency>
       <groupId>org.scalamodules</groupId>
-      <artifactId>scalamodules.demo</artifactId>
-      <version>${scalamodules.demo.version}</version>
+      <artifactId>scalamodules-demo</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.osgi.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
     </dependency>
   </dependencies>
 

@@ -5,22 +5,87 @@
 
   <parent>
     <groupId>org.scalamodules</groupId>
-    <artifactId>scalamodules.root-pom</artifactId>
-    <version>1.0.2</version>
+    <artifactId>scalamodules</artifactId>
+    <version>1.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.scalamodules</groupId>
-  <artifactId>scalamodules.assembly.parent</artifactId>
-  <name>ScalaModules Assembly - Parent</name>
-  <version>1.0.0</version>
+  <artifactId>scalamodules-assembly</artifactId>
+  <name>ScalaModules Assembly</name>
+  <description>Assembles the ScalaModules distribution.</description>
   <packaging>pom</packaging>
 
-  <modules>
-    <module>assembly</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>org.scala-lang-osgi</groupId>
+      <artifactId>scala-library</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules-services</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules-demo-hello</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules-demo</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules-demo-depend</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules-demo-get</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules-demo-register</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules-demo-track</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>runtime.xml</descriptor>
+            <descriptor>demo.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>directory-inline</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>

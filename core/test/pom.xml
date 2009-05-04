@@ -5,57 +5,47 @@
 
   <parent>
     <groupId>org.scalamodules</groupId>
-    <artifactId>scalamodules.root-pom</artifactId>
-    <version>1.0.2</version>
+    <artifactId>scalamodules</artifactId>
+    <version>1.1-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>scalamodules.core.test</artifactId>
+  <artifactId>scalamodules-core-test</artifactId>
   <name>ScalaModules Core - Test</name>
-  <version>1.0.0</version>
   <packaging>jar</packaging>
 
   <dependencies>
     <dependency>
       <groupId>org.scalamodules</groupId>
-      <artifactId>scalamodules.core</artifactId>
-      <version>${scalamodules.core.version}</version>
+      <artifactId>scalamodules-core</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.scalamodules</groupId>
-      <artifactId>scalamodules.util</artifactId>
-      <version>${scalamodules.util.version}</version>
+      <artifactId>scalamodules-util</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.scala-lang-osgi</groupId>
       <artifactId>scala-library</artifactId>
-      <version>${scala.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.configadmin</artifactId>
-      <version>1.0.10</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
       <artifactId>pax-exam</artifactId>
-      <version>${pax-exam.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
       <artifactId>pax-exam-junit</artifactId>
-      <version>${pax-exam.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
       <artifactId>pax-exam-container-default</artifactId>
-      <version>${pax-exam.version}</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
