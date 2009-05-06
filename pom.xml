@@ -116,6 +116,9 @@
   </dependencyManagement>
 
   <build>
+    <!-- This helps for importing Maven projects into Eclipse. -->
+    <sourceDirectory>src/main/scala</sourceDirectory>
+    <testSourceDirectory>src/test/scala</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.scala-tools</groupId>
@@ -231,10 +234,16 @@
     <repository>
       <id>scala-tools-releases</id>
       <url>http://scala-tools.org/repo-releases</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
     <repository>
       <id>opsj4-releases</id>
       <url>http://repository.ops4j.org/maven2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
   </repositories>
 
@@ -242,6 +251,9 @@
     <pluginRepository>
       <id>opsj4-releases</id>
       <url>http://repository.ops4j.org/maven2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </pluginRepository>
   </pluginRepositories>
 

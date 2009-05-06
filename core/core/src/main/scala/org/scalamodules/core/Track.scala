@@ -44,20 +44,23 @@ class Track[T](context: BundleContext,
   /**
    * Handles a TrackEvent.
    */
-  def on(f: TrackEvent[T] => Unit): Track[T] = {
+  def on(f: PartialFunction[TrackEvent[T], Unit]): Track[T] = {
     require(f != null, "TrackEvent handler function must not be null!")
     tracker = new ServiceTracker(context, createFilter, null) {
       override def addingService(ref: ServiceReference) = {
         val service = context.getService(ref)  // Cannot be null (-> spec.)
-        f(Adding(service.asInstanceOf[T], ref.properties))
+        val trackEvent = Adding(service.asInstanceOf[T], ref.properties)
+        if (f.isDefinedAt(trackEvent)) f(trackEvent)
         service
       }
       override def modifiedService(ref: ServiceReference, service: AnyRef) = {
-        f(Modified(service.asInstanceOf[T], ref.properties))
+        val trackEvent = Modified(service.asInstanceOf[T], ref.properties)
+        if (f.isDefinedAt(trackEvent)) f(trackEvent)
         context.ungetService(ref)
       }
       override def removedService(ref: ServiceReference, service: AnyRef) = {
-        f(Removed(service.asInstanceOf[T], ref.properties))
+        val trackEvent = Removed(service.asInstanceOf[T], ref.properties) 
+        if (f.isDefinedAt(trackEvent)) f(trackEvent)
         context.ungetService(ref)
       }
     }
@@ -74,7 +77,7 @@ class Track[T](context: BundleContext,
   
   private var tracker: ServiceTracker = _
 
-  private def createFilter: Filter =  {
+  private def createFilter: Filter = {
     val filterString = filter match {
       case null => String.format("(objectClass=%s)", serviceInterface.getName)
       case s    => String.format("(&(objectClass=%s)%s)", serviceInterface.getName, s)
@@ -93,19 +96,19 @@ sealed abstract class TrackEvent[T](service: T,
  * A service is being added to the tracked services.
  */
 case class Adding[T](service: T, 
-                          properties: Map[String, AnyRef]) 
+                     properties: Map[String, AnyRef])
   extends TrackEvent[T](service, properties)
 
 /**
  * A tracked service was modified.
  */
 case class Modified[T](service: T, 
-                            properties: Map[String, AnyRef]) 
+                       properties: Map[String, AnyRef])
   extends TrackEvent[T](service, properties)
 
 /**
  * A service was removed from  the tracked services.
  */
 case class Removed[T](service: T, 
-                          properties: Map[String, AnyRef]) 
+                      properties: Map[String, AnyRef])
   extends TrackEvent[T](service, properties)

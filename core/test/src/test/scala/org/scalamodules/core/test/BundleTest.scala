@@ -27,6 +27,7 @@ import org.osgi.framework.BundleContext
 import org.osgi.service.cm.ManagedService
 import org.scalamodules.core._
 import org.scalamodules.core.RichBundleContext.toRichBundleContext
+import org.scalamodules.util.jcl.Conversions.mapToJavaDictionary
 
 @RunWith(classOf[MavenConfiguredJUnit4TestRunner])
 class BundleTest {
@@ -38,7 +39,6 @@ class BundleTest {
     var greetingStatus = "NONE" 
     val track = context track classOf[Greeting] on {
       case Adding(service, properties)   => greetingStatus = "ADDING" 
-      case Modified(service, properties) => greetingStatus = "MODIFIED"
       case Removed(service, properties)  => greetingStatus = "REMOVED"
     }
     
@@ -106,8 +106,11 @@ class BundleTest {
       context getMany classOf[Greeting] withFilter "(!(name=*))" andApply { _.greet }
     assert(List("Hello!", "Howdy!").sort(sorter) == filteredGreetingsResult.get.sort(sorter), 
            "But was: " + filteredGreetingsResult)
+
+    // Because of the partial function support this must not throw an error!
+    welcomeRegistration.setProperties(properties)
     
-    // Unregistering a service should result in greetingStatus == "REMOVED" 
+    // Unregistering a service should result in greetingStatus == "REMOVED"
     welcomeRegistration.unregister()
     assert(greetingStatus == "REMOVED")
 

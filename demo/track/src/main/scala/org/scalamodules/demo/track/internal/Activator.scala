@@ -26,7 +26,6 @@ class Activator extends BundleActivator {
     // Track Greetings
     greetingTrack = context track classOf[Greeting] on {
       case Adding(greeting, _)   => println("Adding Greeting: " + greeting.welcome)
-      case Modified(greeting, _) =>
       case Removed(greeting, _)  => println("Removed Greeting: " + greeting.goodbye)
     }
   }
