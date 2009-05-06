@@ -42,13 +42,10 @@
       <version>${scala.version}</version>
     </dependency>
   </dependencies>
+
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>org.apache.felix.shell</artifactId>
-        <version>1.2.0</version>
-      </dependency>
+      <!-- For integration testing (Pax Exam) only. -->
       <dependency>
         <groupId>org.scala-lang-osgi</groupId>
         <artifactId>scala-library</artifactId>
@@ -64,6 +61,12 @@
       <dependency>
         <groupId>org.apache.felix</groupId>
         <artifactId>org.osgi.compendium</artifactId>
+        <version>1.2.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.shell</artifactId>
         <version>1.2.0</version>
         <scope>provided</scope>
       </dependency>
