@@ -17,7 +17,7 @@ package org.scalamodules.services.test;
 
 import java.util.Dictionary
 import scala.collection.Map
-import scala.collection.immutable
+import scala.collection.immutable.{Map => IMap}
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.ops4j.pax.exam.CoreOptions._
@@ -56,10 +56,10 @@ class BundleTest {
       private var message = "MESSAGE"
     }
     context registerAs classOf[Greeting] andAs classOf[ManagedService] withProperties 
-      immutable.Map("name" -> "CM", "service.pid" -> "CM") theService greeting
+      ("name" -> "CM", "service.pid" -> "CM") theService greeting
 
     // Replace configuration for greeting service
-    context configure "CM" replaceWith (immutable.Map("salutation" -> "REPLACED"))
+    context configure "CM" replaceWith (IMap("salutation" -> "REPLACED"))
     Thread sleep 1000
     // Get many services with filter (name=CM)) should result in Some(List("REPLACED MESSAGE"))
     var cmResult = 
@@ -67,7 +67,7 @@ class BundleTest {
     assert(Some(List("REPLACED MESSAGE")) == cmResult, "Was " + cmResult)
 
     // Update configuration for greeting service
-    context configure "CM" updateWith (immutable.Map("message" -> "REPLACED"))
+    context configure "CM" updateWith (("message" -> "REPLACED"))
     Thread sleep 1000
     // Get many services with filter (name=CM)) should result in Some(List("test"))
     cmResult = 
@@ -75,7 +75,7 @@ class BundleTest {
     assert(Some(List("REPLACED REPLACED")) == cmResult, "Was " + cmResult)
 
     // Replace configuration for greeting service once more
-    context configure "CM" replaceWith (immutable.Map("salutation" -> "REPLACED"))
+    context configure "CM" replaceWith (("salutation" -> "REPLACED"))
     Thread sleep 1000
     // Get many services with filter (name=CM)) should result in Some(List("REPLACED MESSAGE"))
     cmResult = 

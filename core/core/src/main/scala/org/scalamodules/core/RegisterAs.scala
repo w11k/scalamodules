@@ -16,6 +16,7 @@
 package org.scalamodules.core
 
 import scala.collection.Map
+import scala.collection.immutable.{Map => IMap}
 import org.osgi.framework.{BundleContext, ServiceRegistration}
 import org.scalamodules.util.jcl.Conversions.mapToJavaDictionary
 
@@ -43,6 +44,16 @@ class RegisterAs[T](val context: BundleContext,
       override protected val context = this.context
       override protected val t = this.t
       override protected val properties = props
+    } with Registerer[T]
+
+  /**
+   * Adds the given service properties.
+   */
+  def withProperties(props: (String, Any)*): Registerer[T] =
+    new {
+      override protected val context = this.context
+      override protected val t = this.t
+      override protected val properties = IMap[String, Any](props: _*)
     } with Registerer[T]
 
   override protected val properties = null
@@ -77,6 +88,17 @@ class RegisterAs2[T1, T2](protected val context: BundleContext,
       override protected val properties = props
     } with Registerer2[T1, T2]
 
+  /**
+   * Adds the given service properties.
+   */
+  def withProperties(props: (String, Any)*): Registerer2[T1, T2] =
+    new {
+      override protected val context = this.context
+      override protected val t1 = this.t1
+      override protected val t2 = this.t2
+      override protected val properties = IMap[String, Any](props: _*)
+    } with Registerer2[T1, T2]
+
   override protected val properties = null
 }
 
@@ -104,6 +126,18 @@ class RegisterAs3[T1, T2, T3](protected val context: BundleContext,
       override protected val t2 = this.t2
       override protected val t3 = this.t3
       override protected val properties = props 
+    } with Registerer3[T1, T2, T3]
+
+  /**
+   * Adds the given service properties.
+   */
+  def withProperties(props: (String, Any)*): Registerer3[T1, T2, T3] =
+    new {
+      override protected val context = this.context
+      override protected val t1 = this.t1
+      override protected val t2 = this.t2
+      override protected val t3 = this.t3
+      override protected val properties = IMap[String, Any](props: _*) 
     } with Registerer3[T1, T2, T3]
 
   override protected val properties = null

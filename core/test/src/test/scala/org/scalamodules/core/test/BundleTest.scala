@@ -61,10 +61,10 @@ class BundleTest {
     val welcome = new Greeting {
       override def greet = "Welcome!"
     }
-    val properties = immutable.Map("service.ranking" -> 1, 
-                                   "name" -> "Welcome-Greeting")
+
     val welcomeRegistration = 
-      context registerAs classOf[Greeting] withProperties properties theService welcome
+      context registerAs classOf[Greeting] withProperties 
+        ("service.ranking" -> 1, "name" -> "Welcome-Greeting") theService welcome
     assert(greetingStatus == "ADDING")
 
     // Get one service should result in Some("Welcome...")
@@ -108,7 +108,7 @@ class BundleTest {
            "But was: " + filteredGreetingsResult)
 
     // Because of the partial function support this must not throw an error!
-    welcomeRegistration.setProperties(properties)
+    welcomeRegistration.setProperties(immutable.Map("" -> ""))
     
     // Unregistering a service should result in greetingStatus == "REMOVED"
     welcomeRegistration.unregister()

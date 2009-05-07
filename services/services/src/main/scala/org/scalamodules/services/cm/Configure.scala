@@ -16,7 +16,7 @@
 package org.scalamodules.services.cm
 
 import scala.collection.Map
-import scala.collection.immutable
+import scala.collection.immutable.{Map => IMap}
 import org.osgi.framework.BundleContext
 import org.osgi.service.cm.{Configuration, ConfigurationAdmin}
 import org.scalamodules.core.RichBundleContext.toRichBundleContext
@@ -41,8 +41,25 @@ class Configure(context: BundleContext,
       (configAdmin: ConfigurationAdmin) => {
         val config = configAdmin.getConfiguration(pid, null)
         val current = config.properties match {
-          case None        => immutable.Map[String, Any]()
-          case Some(props) => immutable.Map[String, Any]() ++ props
+          case None        => IMap[String, Any]()
+          case Some(props) => IMap[String, Any]() ++ props
+        }
+        config.update(current ++ properties)
+      }
+    }
+  }
+
+  /**
+   * Updates the configuration with the given properties. 
+   */
+  def updateWith(properties: (String, Any)*) {
+    require(properties != null, "Properties must not be null!")
+    context getOne classOf[ConfigurationAdmin] andApply {
+      (configAdmin: ConfigurationAdmin) => {
+        val config = configAdmin.getConfiguration(pid, null)
+        val current = config.properties match {
+          case None        => IMap[String, Any]()
+          case Some(props) => IMap[String, Any]() ++ props
         }
         config.update(current ++ properties)
       }
@@ -58,6 +75,19 @@ class Configure(context: BundleContext,
       (configAdmin: ConfigurationAdmin) => {
         val config = configAdmin.getConfiguration(pid, null)
         config.update(properties)
+      }
+    }
+  }
+
+  /**
+   * Replaces the configuration with the given properties. 
+   */
+  def replaceWith(properties: (String, Any)*) {
+    require(properties != null, "Properties must not be null!")
+    context getOne classOf[ConfigurationAdmin] andApply {
+      (configAdmin: ConfigurationAdmin) => {
+        val config = configAdmin.getConfiguration(pid, null)
+        config.update(IMap(properties: _*))
       }
     }
   }

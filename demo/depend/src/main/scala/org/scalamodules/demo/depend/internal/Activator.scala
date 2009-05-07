@@ -39,7 +39,7 @@ class Activator extends BundleActivator {
               case Array("greet", "goodbye") => out println greeting.goodbye
               case Array("greet", "configure", welcome, goodbye) => 
                 context configure "managedGreeting" updateWith 
-                  Map("welcome" -> welcome, "goodbye" -> goodbye)
+                  ("welcome" -> welcome, "goodbye" -> goodbye)
               case _ => err.printf("Illegal usage! Try \"%s\"%n", getUsage)
             }
           }

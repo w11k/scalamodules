@@ -16,7 +16,7 @@
 package org.scalamodules.demo.register.internal
 
 import scala.collection.Map
-import scala.collection.immutable
+import scala.collection.immutable.{Map => IMap}
 import org.osgi.framework.{BundleActivator, BundleContext}
 import org.osgi.service.cm.ManagedService
 import org.scalamodules.services.cm.BaseManagedService
@@ -35,7 +35,7 @@ class Activator extends BundleActivator {
 
     // Register Greeting with properties
     context registerAs classOf[Greeting] withProperties 
-      immutable.Map("name" -> "welcome") theService new Greeting {
+      IMap("name" -> "welcome") theService new Greeting {
         override def welcome = "Welcome!"
         override def goodbye = "Goodbye!"
       }
@@ -65,7 +65,7 @@ class Activator extends BundleActivator {
       private val Bye = "Bye!"
     }
     context registerAs classOf[Greeting] andAs classOf[ManagedService] withProperties 
-      immutable.Map("service.pid" -> "managedGreeting") theService managedGreeting 
+      ("service.pid" -> "managedGreeting") theService managedGreeting 
   }
 
   override def stop(context: BundleContext) { // Nothing!
