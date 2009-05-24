@@ -32,7 +32,7 @@
   <properties>
     <scala.version>2.7.4</scala.version>
     <scalatest.version>0.9.4</scalatest.version>
-    <pax-exam.version>0.5.0</pax-exam.version>
+    <pax-exam.version>0.6.0</pax-exam.version>
   </properties>
 
   <dependencies>
@@ -245,6 +245,13 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
+    <repository>
+      <id>opsj4-snapshots</id>
+      <url>http://repository.ops4j.org/mvn-snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
   </repositories>
 
   <pluginRepositories>
@@ -254,6 +261,13 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>opsj4-snapshots</id>
+      <url>http://repository.ops4j.org/mvn-snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
     </pluginRepository>
   </pluginRepositories>
 
