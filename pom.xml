@@ -146,6 +146,7 @@
           <artifactId>maven-license-plugin</artifactId>
           <version>1.4.0</version>
           <configuration>
+            <header>${basedir}/../../header.txt</header>
             <quiet>false</quiet>
             <failIfMissing>true</failIfMissing>
             <excludes>
@@ -213,6 +214,14 @@
           <groupId>org.ops4j.pax.exam</groupId>
           <artifactId>maven-paxexam-plugin</artifactId>
           <version>${pax-exam.version}</version>
+          <executions>
+            <execution>
+              <id>generate-config</id>
+              <goals>
+                <goal>generate-config</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <artifactId>maven-source-plugin</artifactId>

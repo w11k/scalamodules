@@ -26,10 +26,6 @@
       <artifactId>scalamodules-util</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!--dependency>
-      <groupId>org.apache.felix</groupId>
-      <artifactId>org.osgi.core</artifactId>
-    </dependency-->
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.osgi.compendium</artifactId>
@@ -41,9 +37,6 @@
       <plugin>
         <groupId>com.google.code.maven-license-plugin</groupId>
         <artifactId>maven-license-plugin</artifactId>
-        <configuration>
-          <header>${basedir}/../../header.txt</header>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.felix</groupId>

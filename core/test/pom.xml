@@ -54,51 +54,10 @@
       <plugin>
         <groupId>com.google.code.maven-license-plugin</groupId>
         <artifactId>maven-license-plugin</artifactId>
-        <configuration>
-          <header>${basedir}/../../header.txt</header>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.ops4j.pax.exam</groupId>
         <artifactId>maven-paxexam-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>generate-config</id>
-            <goals>
-              <goal>generate-config</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <settings>
-            <platform>felix</platform>
-          </settings>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-        <executions>
-          <execution>
-            <id>surefire-test</id>
-            <phase>test</phase>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </execution>
-          <execution>
-            <id>surefire-itest</id>
-            <phase>integration-test</phase>
-            <configuration>
-              <skip>false</skip>
-            </configuration>
-            <goals>
-              <goal>test</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
