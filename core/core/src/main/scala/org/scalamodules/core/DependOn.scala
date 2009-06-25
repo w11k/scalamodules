@@ -26,6 +26,7 @@ import org.scalamodules.util.jcl.Conversions.mapToJavaDictionary
  * Declares a dependency for a service to be registered 
  * with one service interface. 
  */
+@deprecated
 class DependOn[T, S](context: BundleContext,
                      dependee: Class[S],
                      t: Class[T],

@@ -23,6 +23,7 @@ import org.scalamodules.util.jcl.Conversions.mapToJavaDictionary
 /**
  * Provides service registration for one service interface.
  */
+@deprecated
 class RegisterAs[T](val context: BundleContext,
                     val t: Class[T])
     extends Registerer[T] {

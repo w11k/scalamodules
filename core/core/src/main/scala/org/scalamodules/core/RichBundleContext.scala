@@ -15,83 +15,63 @@
  */
 package org.scalamodules.core
 
-import scala.collection.Map
-import org.osgi.framework.{BundleContext, ServiceReference}
+import org.osgi.framework.{BundleContext, ServiceReference, ServiceRegistration}
 import org.scalamodules.core.RichServiceReference.toRichServiceReference
-  
+import org.scalamodules.util.jcl.Conversions.mapToJavaDictionary
+
 /**
- * Companion object for RichBundleContext.
+ * Companion object for RichBundleContext providing implicit conversions.
  */
 object RichBundleContext {
 
   /**
    * Implicitly converts the given BundleContext to RichBundleContext.
    */
-  implicit def toRichBundleContext(context: BundleContext) =
-    new RichBundleContext(context) 
+  implicit def toRichBundleContext(ctx: BundleContext) = new RichBundleContext(ctx) 
 }
 
 /**
  * Rich wrapper for BundleContext: 
  * Makes service handling more convenient and enables the ScalaModules DSL.
  */
-class RichBundleContext(context: BundleContext) {
+class RichBundleContext(ctx: BundleContext) {
   
-  require(context != null, "Bundle context must not be null!")
+  require(ctx != null, "BundleContext must not be null!")
+
+  @deprecated
+  def registerAs[T](srvIntf: Class[T]) = new RegisterAs[T](ctx, srvIntf)
 
   /**
-   * Provides service registration.
+   * Register a service.
    */
-  def registerAs[T](serviceInterface: Class[T]) =
-    new RegisterAs[T](context, serviceInterface)
-
-  /**
-   * Provides service consumption for a single service.
-   */
-  def getOne[T](serviceInterface: Class[T]) =
-    new GetOne[T](context, serviceInterface)
-
-  /**
-   * Provides service consumption for multiple service.
-   */
-  def getMany[T](serviceInterface: Class[T]) =
-    new GetMany[T](context, serviceInterface)
-
-  /**
-   * Provides service tracking. 
-   */
-  def track[T](serviceInterface: Class[T]) =
-    new Track[T](context, serviceInterface)
-
-  /**
-   * Gets the service for the given service reference 
-   * and applies the given function if the service exists.
-   */
-  def applyWithRef[T, S](ref: ServiceReference, 
-                         f: T => S): Option[S] = {
-    assert(ref != null, "ServiceReference must not be null!")
-    assert(f != null, "Function to be applied must not be null!")
-    try {
-      context.getService(ref) match {  // Might be null even if ref is not null
-        case null       => None
-        case service: T => Some(f(service))
-      }
-    } finally context.ungetService(ref)  // Must be called
+  def register[I <: AnyRef, S <: I, D](regInfo: RegInfo[I, S, D]) {
+    val srvIntfs = regInfo.srvIntf match {
+      case Some(srvIntf) => Array(srvIntf.getName)
+      case None          => regInfo.srv.getClass.getInterfaces map { _.getName }
+    }
+    val props = regInfo.props match {
+      case Some(props) => mapToJavaDictionary(props)
+      case None        => null
+    }
+    
+    regInfo.depIntf match {
+      case None => ctx.registerService(srvIntfs, regInfo.srv, props) 
+      case Some(depIntf) => 
+    }
   }
 
   /**
-   * Gets the service and its properties for the given service reference 
-   * and applies the give function if the service exists.
+   * Consume a single service.
    */
-  def applyWithRef[T, S](ref: ServiceReference,
-                         f: (T, Map[String, AnyRef]) => S): Option[S] = {
-    assert(ref != null, "ServiceReference must not be null!")
-    assert(f != null, "Function to be applied must not be null!")
-    try {
-      context.getService(ref) match {  // Might be null even if ref is not null
-        case null       => None
-        case service: T => Some(f(service, ref.properties))
-      }
-    } finally context.ungetService(ref)  // Must be called
-  }
+  def getOne[I](srvIntf: Class[I]) = new GetOne[I](ctx, srvIntf)
+
+  /**
+   * Consume multiple services.
+   */
+  def getMany[I](srvIntf: Class[I]) = new GetMany[I](ctx, srvIntf)
+
+  /**
+   * Track a service. 
+   */
+  def track[I](srvIntf: Class[I]) = new Track[I](ctx, srvIntf)
 }

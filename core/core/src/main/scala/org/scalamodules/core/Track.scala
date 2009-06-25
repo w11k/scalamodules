@@ -23,45 +23,39 @@ import org.scalamodules.core.RichServiceReference.toRichServiceReference
 /**
  * Provides service tracking. 
  */
-class Track[T](context: BundleContext, 
-               serviceInterface: Class[T],
-               filter: String) {
+class Track[I](ctx: BundleContext, srvIntf: Class[I], filter: String) {
 
-  require(context != null, "Bundle context must not be null!")
-  require(serviceInterface != null, "Service interface must not be null!")
+  require(ctx != null, "BundleContext must not be null!")
+  require(srvIntf != null, "Service interface must not be null!")
   
-  def this(context: BundleContext, 
-           serviceInterface: Class[T]) {
-    this(context, serviceInterface, null)
-  }
+  def this(ctx: BundleContext, srvIntf: Class[I]) = this(ctx, srvIntf, null)
 
   /**
    * Sets the given filter for service look-ups.
    */
-  def withFilter(filter: String) =
-    new Track(context, serviceInterface, filter)
+  def withFilter(filter: String) = new Track(ctx, srvIntf, filter)
 
   /**
    * Handles a TrackEvent.
    */
-  def on(f: PartialFunction[TrackEvent[T], Unit]): Track[T] = {
+  def on(f: PartialFunction[TrackEvent[I], Unit]): Track[I] = {
     require(f != null, "TrackEvent handler function must not be null!")
-    tracker = new ServiceTracker(context, createFilter, null) {
+    tracker = new ServiceTracker(ctx, createFilter, null) {
       override def addingService(ref: ServiceReference) = {
-        val service = context.getService(ref)  // Cannot be null (-> spec.)
-        val trackEvent = Adding(service.asInstanceOf[T], ref.properties)
+        val service = ctx.getService(ref)  // Cannot be null (-> spec.)
+        val trackEvent = Adding(service.asInstanceOf[I], ref.properties)
         if (f.isDefinedAt(trackEvent)) f(trackEvent)
         service
       }
       override def modifiedService(ref: ServiceReference, service: AnyRef) = {
-        val trackEvent = Modified(service.asInstanceOf[T], ref.properties)
+        val trackEvent = Modified(service.asInstanceOf[I], ref.properties)
         if (f.isDefinedAt(trackEvent)) f(trackEvent)
-        context.ungetService(ref)
+        ctx.ungetService(ref)
       }
       override def removedService(ref: ServiceReference, service: AnyRef) = {
-        val trackEvent = Removed(service.asInstanceOf[T], ref.properties) 
+        val trackEvent = Removed(service.asInstanceOf[I], ref.properties) 
         if (f.isDefinedAt(trackEvent)) f(trackEvent)
-        context.ungetService(ref)
+        ctx.ungetService(ref)
       }
     }
     tracker.open()
@@ -71,44 +65,38 @@ class Track[T](context: BundleContext,
   /**
    * Stops tracking.
    */
-  def stop() {
-    if (tracker != null) tracker.close()
-  }
+  def stop() { if (tracker != null) tracker.close() }
   
   private var tracker: ServiceTracker = _
 
   private def createFilter: Filter = {
     val filterString = filter match {
-      case null => String.format("(objectClass=%s)", serviceInterface.getName)
-      case s    => String.format("(&(objectClass=%s)%s)", serviceInterface.getName, s)
+      case null => String.format("(objectClass=%s)", srvIntf.getName)
+      case s    => String.format("(&(objectClass=%s)%s)", srvIntf.getName, s)
     }
-    context.createFilter(filterString)
+    ctx.createFilter(filterString)
   } 
 }
 
 /**
  * Super class for service tracking events.
  */
-sealed abstract class TrackEvent[T](service: T, 
-                                    properties: Map[String, AnyRef])
+sealed abstract class TrackEvent[I](srv: I, props: Map[String, Any])
 
 /**
  * A service is being added to the tracked services.
  */
-case class Adding[T](service: T, 
-                     properties: Map[String, AnyRef])
-  extends TrackEvent[T](service, properties)
+case class Adding[I](srv: I, props: Map[String, Any]) 
+  extends TrackEvent[I](srv, props)
 
 /**
  * A tracked service was modified.
  */
-case class Modified[T](service: T, 
-                       properties: Map[String, AnyRef])
-  extends TrackEvent[T](service, properties)
+case class Modified[I](srv: I, props: Map[String, Any])
+  extends TrackEvent[I](srv, props)
 
 /**
  * A service was removed from  the tracked services.
  */
-case class Removed[T](service: T, 
-                      properties: Map[String, AnyRef])
-  extends TrackEvent[T](service, properties)
+case class Removed[I](srv: I, props: Map[String, Any])
+  extends TrackEvent[I](srv, props)

@@ -19,7 +19,7 @@ import scala.collection.Map
 import org.osgi.framework.ServiceReference
 
 /**
- * Companion object for RichServiceReference.
+ * Companion object for RichServiceReference providing implicit conversions.
  */
 object RichServiceReference {
   
@@ -41,7 +41,7 @@ class RichServiceReference(ref: ServiceReference) {
   /**
    * Get service properties as Scala Map.
    */
-  def properties: Map[String, AnyRef] = new Map[String, AnyRef] {
+  def properties: Map[String, Any] = new Map[String, Any] {
     override def get(s: String) = ref.getProperty(s) match {
       case null          => None
       case value: AnyRef => Some(value)

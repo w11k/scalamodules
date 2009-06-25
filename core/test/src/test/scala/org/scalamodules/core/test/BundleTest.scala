@@ -26,12 +26,13 @@ import org.ops4j.pax.exam.junit._
 import org.osgi.framework.BundleContext
 import org.osgi.service.cm.ManagedService
 import org.scalamodules.core._
+import org.scalamodules.core.RegInfo.toRegisterInfo
 import org.scalamodules.core.RichBundleContext.toRichBundleContext
 import org.scalamodules.util.jcl.Conversions.mapToJavaDictionary
 
 @RunWith(classOf[MavenConfiguredJUnit4TestRunner])
 class BundleTest {
-  
+
   @Test
   def test() {
 
@@ -41,30 +42,28 @@ class BundleTest {
       case Adding(service, properties)   => greetingStatus = "ADDING" 
       case Removed(service, properties)  => greetingStatus = "REMOVED"
     }
-    
+
     // Get one service should result in None
     val noGreeting = context getOne classOf[Greeting] andApply { _ => }
     assert(noGreeting == None)
-    
+
     // Register a service
     val hello = new Greeting {
       override def greet = "Hello!"
     }
-    val helloRegistration = context registerAs classOf[Greeting] theService hello
+    val helloRegistration = context register hello
     assert(greetingStatus == "ADDING")
-    
+
     // Get one service should result in Some("Hello!")
     val helloResult = context getOne classOf[Greeting] andApply { _.greet }
     assert(helloResult == Some("Hello!"))
-    
+
     // Register another service with properties
     val welcome = new Greeting {
       override def greet = "Welcome!"
     }
-
     val welcomeRegistration = 
-      context registerAs classOf[Greeting] withProperties 
-        ("service.ranking" -> 1, "name" -> "Welcome-Greeting") theService welcome
+      context register (welcome as classOf[Greeting] withProps ("service.ranking" -> 1, "name" -> "Welcome-Greeting"))
     assert(greetingStatus == "ADDING")
 
     // Get one service should result in Some("Welcome...")
@@ -79,13 +78,13 @@ class BundleTest {
     }
     assert(welcomeResult == Some("Welcome-Greeting says: Welcome!"), "Was: " + welcomeResult)
 
-    context registerAs classOf[Greeting] andAs classOf[Introduction] andAs classOf[Interested] theService
+    context register
       new Greeting with Introduction with Interested {
         override def greet = "Howdy!"
         override def myNameIs = "Multi-interface Service."
         override def andYours = "And what's your name?"
       }
-    
+
     // Get one for Introduction should result in a successful look-up
     val introductionResult = context getOne classOf[Introduction] andApply { _ => true }
     assert(Some(true) == introductionResult, "But was: " + introductionResult)
@@ -109,7 +108,7 @@ class BundleTest {
 
     // Because of the partial function support this must not throw an error!
     welcomeRegistration.setProperties(immutable.Map("" -> ""))
-    
+
     // Unregistering a service should result in greetingStatus == "REMOVED"
     welcomeRegistration.unregister()
     assert(greetingStatus == "REMOVED")
@@ -118,8 +117,8 @@ class BundleTest {
     greetingStatus = "WRONG"
     track.stop()
     assert(greetingStatus == "REMOVED")
-    
-    context registerAs classOf[Greeting] andAs classOf[Introduction] andAs classOf[Interested] withProperties 
+
+    context register classOf[Greeting] andAs classOf[Introduction] andAs classOf[Interested] withProps 
       immutable.Map("feature" -> "dependOn") dependOn classOf[BigInt] theService { _ => 
         new Greeting with Introduction with Interested {
           override def greet = "Howdy!"
@@ -129,17 +128,17 @@ class BundleTest {
     }
     var result = context getMany classOf[Greeting] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result == None) 
-    
-    val dependeeRegistration1 = context registerAs classOf[BigInt] theService { BigInt(1) }
+
+    val dependeeRegistration1 = context register BigInt(1)
     result = context getMany classOf[Greeting] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result != None) 
     assert(result.get.size == 1)
-    
-    val dependeeRegistration2 = context registerAs classOf[BigInt] theService { BigInt(2) }
+
+    val dependeeRegistration2 = context register BigInt(2)
     result = context getMany classOf[Introduction] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result != None) 
     assert(result.get.size == 1)
-    
+
     dependeeRegistration2.unregister()
     result = context getMany classOf[Interested] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result != None) 

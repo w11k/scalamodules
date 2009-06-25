@@ -149,12 +149,18 @@
             <header>${basedir}/../../header.txt</header>
             <quiet>false</quiet>
             <failIfMissing>true</failIfMissing>
+            <includes>
+              <include>src/main/scala/**</include>
+              <include>src/test/scala/**</include>
+            </includes>
             <excludes>
               <exclude>.git/**</exclude>
-              <exclude>.manager/**</exclude>
-              <exclude>*.gitignore</exclude>
-              <exclude>*.txt</exclude>
-              <exclude>*.xml</exclude>
+              <exclude>**/.gitignore</exclude>
+              <exclude>**/.manager/**</exclude>
+              <exclude>**/*.css</exclude>
+              <exclude>**/*.txt</exclude>
+              <exclude>**/*.xhtml</exclude>
+              <exclude>**/*.xml</exclude>
             </excludes>
             <useDefaultExcludes>true</useDefaultExcludes>
             <mapping>

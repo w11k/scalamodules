@@ -23,6 +23,7 @@ import org.scalamodules.util.jcl.Conversions.mapToJavaDictionary
  * Mixin for performing the service registration and dependency declaration for
  * one service interface.
  */
+@deprecated
 trait Registerer[T] {
 
   /**
