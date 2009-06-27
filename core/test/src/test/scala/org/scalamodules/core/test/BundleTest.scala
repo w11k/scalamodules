@@ -26,7 +26,7 @@ import org.ops4j.pax.exam.junit._
 import org.osgi.framework.BundleContext
 import org.osgi.service.cm.ManagedService
 import org.scalamodules.core._
-import org.scalamodules.core.RegInfo.toRegisterInfo
+import org.scalamodules.core.RegInfo._
 import org.scalamodules.core.RichBundleContext.toRichBundleContext
 import org.scalamodules.util.jcl.Conversions.mapToJavaDictionary
 
@@ -118,14 +118,21 @@ class BundleTest {
     track.stop()
     assert(greetingStatus == "REMOVED")
 
-    context register classOf[Greeting] andAs classOf[Introduction] andAs classOf[Interested] withProps 
-      immutable.Map("feature" -> "dependOn") dependOn classOf[BigInt] theService { _ => 
-        new Greeting with Introduction with Interested {
-          override def greet = "Howdy!"
-          override def myNameIs = "Multi-interface Service."
-          override def andYours = "And what's your name?"
-        }
-    }
+    context register ({ big: BigInt => 
+      new Greeting with Introduction with Interested {
+        override def greet = "Howdy!"
+        override def myNameIs = "Multi-interface Service."
+        override def andYours = "And what's your name?"
+      }
+    } withProps immutable.Map("feature" -> "dependOn") dependOn classOf[BigInt])
+//    context register classOf[Greeting] andAs classOf[Introduction] andAs classOf[Interested] withProps 
+//      immutable.Map("feature" -> "dependOn") dependOn classOf[BigInt] theService { _ => 
+//        new Greeting with Introduction with Interested {
+//          override def greet = "Howdy!"
+//          override def myNameIs = "Multi-interface Service."
+//          override def andYours = "And what's your name?"
+//        }
+//    }
     var result = context getMany classOf[Greeting] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result == None) 
 

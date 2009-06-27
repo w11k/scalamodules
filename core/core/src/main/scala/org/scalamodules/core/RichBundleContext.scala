@@ -16,6 +16,7 @@
 package org.scalamodules.core
 
 import org.osgi.framework.{BundleContext, ServiceReference, ServiceRegistration}
+import org.osgi.util.tracker.ServiceTracker
 import org.scalamodules.core.RichServiceReference.toRichServiceReference
 import org.scalamodules.util.jcl.Conversions.mapToJavaDictionary
 
@@ -42,22 +43,33 @@ class RichBundleContext(ctx: BundleContext) {
   def registerAs[T](srvIntf: Class[T]) = new RegisterAs[T](ctx, srvIntf)
 
   /**
-   * Register a service.
+   * Register an immediate service.
    */
-  def register[I <: AnyRef, S <: I, D](regInfo: RegInfo[I, S, D]) {
-    val srvIntfs = regInfo.srvIntf match {
+  def register[I <: AnyRef, S <: I](info: ImdRegInfo[I, S]) = {
+    val srvIntfs = info.srvIntf match {
       case Some(srvIntf) => Array(srvIntf.getName)
-      case None          => regInfo.srv.getClass.getInterfaces map { _.getName }
+      case None          => info.srv.getClass.getInterfaces map { _.getName }
     }
-    val props = regInfo.props match {
+    val props = info.props match {
       case Some(props) => mapToJavaDictionary(props)
       case None        => null
     }
-    
-    regInfo.depIntf match {
-      case None => ctx.registerService(srvIntfs, regInfo.srv, props) 
-      case Some(depIntf) => 
+    ctx.registerService(srvIntfs, info.srv, props)
+  }
+
+  /**
+   * Register a depending service.
+   */
+  def register[I <: AnyRef, S <: I, D](info: DepRegInfo[I, S, D]) = {
+    val srvIntfs = info.srvIntf match {
+      case Some(srvIntf) => Array(srvIntf.getName)
+      case None          => info.srv.getClass.getInterfaces map { _.getName }
     }
+    val props = info.props match {
+      case Some(props) => mapToJavaDictionary(props)
+      case None        => null
+    }
+    new ServiceTracker(ctx, "", null)
   }
 
   /**
