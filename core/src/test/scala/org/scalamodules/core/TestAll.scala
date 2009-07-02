@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalamodules.util
+package org.scalamodules.core
+
+import internal.UtilSpec
 
 import org.junit.Test
-import org.scalamodules.util.jcl.ConversionsSpec
-import org.scalatest._
+import org.scalatest.{Report, Reporter, Stopper, Suite}
 
 class TestAll {
   
@@ -34,7 +35,12 @@ class TestAll {
       }
     }
     val suite = new Suite {
-      override def nestedSuites = List(new ConversionsSpec)
+      override def nestedSuites = 
+        UtilSpec :: 
+        GetSpec :: 
+        GetOneSpec ::
+        GetManySpec ::
+        Nil
     }
     suite.execute(None, reporter, new Stopper {}, Set[String](), Set[String](), 
                   Map[String, Any](), None)

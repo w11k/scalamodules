@@ -7,26 +7,48 @@
     <groupId>org.scalamodules</groupId>
     <artifactId>scalamodules</artifactId>
     <version>1.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.scalamodules</groupId>
-  <artifactId>scalamodules-services-build</artifactId>
-  <name>ScalaModules Services - Build POM</name>
-  <packaging>pom</packaging>
+  <artifactId>scalamodules-services</artifactId>
+  <name>ScalaModules Services</name>
+  <description>ScalaModules Services provides a domain specific language for OSGi compendium services, e.g. Configuration Admin, Event Admin, etc.</description>
+  <packaging>jar</packaging>
 
-  <modules>
-    <module>services</module>
-    <module>test</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalamodules</groupId>
+      <artifactId>scalamodules-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-deploy-plugin</artifactId>
+        <groupId>com.google.code.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
         <configuration>
-          <skip>true</skip>
+          <instructions>
+            <Export-Package>org.scalamodules.services;version="1.0",org.scalamodules.services.cm;version="1.0"</Export-Package>
+          </instructions>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

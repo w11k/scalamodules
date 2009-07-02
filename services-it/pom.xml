@@ -7,7 +7,7 @@
     <groupId>org.scalamodules</groupId>
     <artifactId>scalamodules</artifactId>
     <version>1.1-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>scalamodules-services-test</artifactId>

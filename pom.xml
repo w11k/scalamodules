@@ -7,7 +7,7 @@
   <artifactId>scalamodules</artifactId>
   <name>ScalaModules</name>
   <description>Root POM for ScalaModules.</description>
-  <version>1.1-SNAPSHOT</version>
+  <version>2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <organization>
@@ -22,16 +22,17 @@
   </licenses>
 
   <modules>
-    <module>util</module>
     <module>core</module>
+    <module>core-it</module>
     <module>services</module>
+    <module>services-it</module>
     <module>demo</module>
     <module>assembly</module>
   </modules>
 
   <properties>
     <scala.version>2.7.4</scala.version>
-    <scalatest.version>0.9.4</scalatest.version>
+    <scalatest.version>0.9.5</scalatest.version>
     <pax-exam.version>0.6.0</pax-exam.version>
   </properties>
 
@@ -77,7 +78,7 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>org.scalatest</groupId>
+        <groupId>org.scala-tools.testing</groupId>
         <artifactId>scalatest</artifactId>
         <version>${scalatest.version}</version>
         <scope>test</scope>
@@ -91,7 +92,7 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
-        <version>2.4</version>
+        <version>2.5.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -146,7 +147,7 @@
           <artifactId>maven-license-plugin</artifactId>
           <version>1.4.0</version>
           <configuration>
-            <header>${basedir}/../../header.txt</header>
+            <header>../header.txt</header>
             <quiet>false</quiet>
             <failIfMissing>true</failIfMissing>
             <includes>

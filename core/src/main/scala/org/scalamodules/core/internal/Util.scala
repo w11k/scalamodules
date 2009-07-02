@@ -13,38 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalamodules.util.jcl
+package org.scalamodules.core.internal
 
 import java.util.{Dictionary, Enumeration}
 import scala.Iterator
 import scala.collection.Map
 
-/**
- * Some implicit conversions from Scala to Java collection types.
- */
-object Conversions {
+object Util {
 
   /**
    * Implicitly converts from Java Dictionary to Scala Map.
    */
-  implicit def dictionaryToMap[K, V](dictionary: Dictionary[K, V]): Map[K, V] = {
-    dictionary match {
+  implicit def dictionaryToMap[K, V](dict: Dictionary[K, V]): Map[K, V] = {
+    dict match {
       case null => null
       case _    => new Map[K, V] {
         override def elements = new Iterator[(K, V)] {
           override def hasNext = keys.hasMoreElements
           override def next = {
             val key = keys.nextElement
-            val value = dictionary.get(key)
+            val value = dict.get(key)
             (key, value)
           }
-          private val keys = dictionary.keys
+          private val keys = dict.keys
         }
-        override def get(key: K) = dictionary.get(key) match {
+        override def get(key: K) = dict.get(key) match {
           case null  => None
           case value => Some(value)
         }
-        override def size = dictionary.size
+        override def size = dict.size
       }
     }
   }
@@ -52,24 +49,24 @@ object Conversions {
   /**
    * Implicitly converts from Scala Iterator to Java Enumeration.
    */
-  implicit def iteratorToJavaEnumeration[T](iterator: Iterator[T]) = 
-    iterator match {
+  implicit def iteratorToJavaEnumeration[T](iter: Iterator[T]) = 
+    iter match {
       case null => null
       case _    => new Enumeration[T] {
-        override def hasMoreElements = iterator.hasNext
-        override def nextElement = iterator.next
+        override def hasMoreElements = iter.hasNext
+        override def nextElement = iter.next
       }
     }
 
   /**
    * Implicitly converts from Scala Iterator to Java Iterator. Read-only!
    */
-  implicit def iteratorToJavaIterator[T](iterator: Iterator[T]) =
-    iterator match {
+  implicit def iteratorToJavaIterator[T](iter: Iterator[T]) =
+    iter match {
       case null => null
       case _    => new java.util.Iterator[T] {
-        override def hasNext = iterator.hasNext
-        override def next = iterator.next
+        override def hasNext = iter.hasNext
+        override def next = iter.next
         override def remove = throw new UnsupportedOperationException("Read-only!")
       }
     }
@@ -93,4 +90,5 @@ object Conversions {
         override def remove(o: Object) = throw new UnsupportedOperationException("Read-only!")
       }
     }
+
 }

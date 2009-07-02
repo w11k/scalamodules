@@ -26,20 +26,20 @@ object RegInfo {
   /**
    * Implicitly converts the given object to ImdRegInfo.
    */
-  implicit def toImdRegInfo[S <: AnyRef](srv: S) = new ImdRegInfo(srv) 
+  implicit def toRegIndepInfo[S <: AnyRef](srv: S) = new RegIndepInfo(srv) 
 
   /**
    * Implicitly converts the given function to ImdRegInfo.
    */
-  implicit def toDepRegInfo[S <: AnyRef, D](srv: D => S) = new DepRegInfo(srv) 
+  implicit def toRegDepInfo[S <: AnyRef, D](srv: D => S) = new RegDepInfo(srv) 
 }
 
 /**
- * Holds registration information and provides methods for detailing this.
+ * Registration information for an independent service.
  */
-class ImdRegInfo[I <: AnyRef, S <: I](val srv: S,
-                                      val srvIntf: Option[Class[I]],
-                                      val props: Option[Map[String, Any]]) {
+class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
+                                        val srvIntf: Option[Class[I]],
+                                        val props: Option[Map[String, Any]]) {
 
   require(srv != null, "Service to be registered must not be null!")
 
@@ -48,19 +48,19 @@ class ImdRegInfo[I <: AnyRef, S <: I](val srv: S,
   /**
    * Register a service under the given service interface.
    */
-  def as(srvIntf: Class[I]) = new ImdRegInfo(srv, toOption(srvIntf), props) 
+  def as(srvIntf: Class[I]) = new RegIndepInfo(srv, toOption(srvIntf), props) 
 
   /**
    * Register a service with the given properties.
    */
   def withProps(props: Map[String, Any]) = 
-    new ImdRegInfo(srv, srvIntf, toOption(props)) 
+    new RegIndepInfo(srv, srvIntf, toOption(props)) 
 
   /**
    * Register a service with the given properties.
    */
   def withProps(props: (String, Any)*) = 
-    new ImdRegInfo(srv, srvIntf, toOption(IMap[String, Any](props: _*))) 
+    new RegIndepInfo(srv, srvIntf, toOption(IMap[String, Any](props: _*))) 
 
   private def toOption[T](any: T) = any match {
     case null => None
@@ -69,9 +69,9 @@ class ImdRegInfo[I <: AnyRef, S <: I](val srv: S,
 }
 
 /**
- * Holds registration information and provides methods for detailing this.
+ * Registration information for a service depending on another service.
  */
-class DepRegInfo[I <: AnyRef, S <: I, D](val srv: D => S,
+class RegDepInfo[I <: AnyRef, S <: I, D](val srv: D => S,
                                          val srvIntf: Option[Class[I]],
                                          val props: Option[Map[String, Any]],
                                          val depIntf: Option[Class[D]]) {
@@ -84,25 +84,25 @@ class DepRegInfo[I <: AnyRef, S <: I, D](val srv: D => S,
    * Register a service under the given service interface.
    */
   def as(srvIntf: Class[I]) = 
-    new DepRegInfo(srv, toOption(srvIntf), props, depIntf) 
+    new RegDepInfo(srv, toOption(srvIntf), props, depIntf) 
 
   /**
    * Register a service with the given properties.
    */
   def withProps(props: Map[String, Any]) = 
-    new DepRegInfo(srv, srvIntf, toOption(props), depIntf) 
+    new RegDepInfo(srv, srvIntf, toOption(props), depIntf) 
 
   /**
    * Register a service with the given properties.
    */
   def withProps(props: (String, Any)*) = 
-    new DepRegInfo(srv, srvIntf, toOption(IMap[String, Any](props: _*)), depIntf) 
+    new RegDepInfo(srv, srvIntf, toOption(IMap[String, Any](props: _*)), depIntf) 
 
   /**
    * Register a service depending on a service with the given service interface.
    */
   def dependOn(depIntf: Class[D]) =
-    new DepRegInfo(srv, srvIntf, props, toOption(depIntf))
+    new RegDepInfo(srv, srvIntf, props, toOption(depIntf))
 
   private def toOption[T](any: T) = any match {
     case null => None

@@ -13,26 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalamodules.util.jcl
+package org.scalamodules.core.internal
 
 import java.util.Hashtable
-import org.easymock.EasyMock
 import org.scalatest.Spec
+import org.easymock.EasyMock
 
-class ConversionsSpec extends Spec {
+object UtilSpec extends Spec {
 
-  "The function dictionaryToMap" -- {
+  describe("The function dictionaryToMap") {
 
-    "should result in null for a null Dictionary" - {
-      var result = Conversions.dictionaryToMap(null)
+    it("should result in null for a null Dictionary") {
+      var result = Util.dictionaryToMap(null)
       assert(null == result)
     }
 
-    "should result in Set((1, 11), (2, 12)) as elements for a Dictionary(1 -> 11, 2 -> 12)" - {
+    it("should result in Set((1, 11), (2, 12)) as elements for a Dictionary(1 -> 11, 2 -> 12)") {
       val dictionary = new Hashtable[Int, Int]
       dictionary.put(1, 11)
       dictionary.put(2, 12)
-      var result = Conversions.dictionaryToMap(dictionary)
+      var result = Util.dictionaryToMap(dictionary)
       assert(null != result)
       val elements = result.elements
       assert(null != elements)
@@ -44,54 +44,54 @@ class ConversionsSpec extends Spec {
       assert(Set((1, 11), (2, 12)) == Set(next1, next2))
     }
 
-    "should result in 1->11, 2->12 for a Dictionary(1 -> 11, 2 -> 12)" - {
+    it("should result in 1->11, 2->12 for a Dictionary(1 -> 11, 2 -> 12)") {
       val dictionary = new Hashtable[Int, Int]
       dictionary.put(1, 11)
       dictionary.put(2, 12)
-      var result = Conversions.dictionaryToMap(dictionary)
+      var result = Util.dictionaryToMap(dictionary)
       assert(null != result)
       assert(None == result.get(0))
       assert(Some(11) == result.get(1))
       assert(Some(12) == result.get(2))
     }
 
-    "should result in (2 == size) for a Dictionary(1 -> 11, 2 -> 12)" - {
+    it("should result in (2 == size) for a Dictionary(1 -> 11, 2 -> 12)") {
       val dictionary = new Hashtable[Int, Int]
       dictionary.put(1, 11)
       dictionary.put(2, 12)
-      var result = Conversions.dictionaryToMap(dictionary)
+      var result = Util.dictionaryToMap(dictionary)
       assert(null != result)
       assert(2 == result.size)
     }
   }
 
-  "The function mapToJavaDictionary" -- {
+  describe("The function mapToJavaDictionary") {
 
-    "should result in null for a null Scala Map" - {
-      var result = Conversions.mapToJavaDictionary(null)
+    it("should result in null for a null Scala Map") {
+      var result = Util.mapToJavaDictionary(null)
       assert(null == result)
     }
 
-    "should result in (2 == size) for a Scala Map(1 -> 11, 2 -> 12)" - {
-      var result = Conversions.mapToJavaDictionary(Map(1 -> 11, 2 -> 12))
+    it("should result in (2 == size) for a Scala Map(1 -> 11, 2 -> 12)") {
+      var result = Util.mapToJavaDictionary(Map(1 -> 11, 2 -> 12))
       assert(null != result)
       assert(2 == result.size)
     }
 
-    "should result in (!isEmpty) for a Scala Map(1 -> 11, 2 -> 12)" - {
-      var result = Conversions.mapToJavaDictionary(Map(1 -> 11, 2 -> 12))
+    it("should result in (!isEmpty) for a Scala Map(1 -> 11, 2 -> 12)") {
+      var result = Util.mapToJavaDictionary(Map(1 -> 11, 2 -> 12))
       assert(null != result)
       assert(!result.isEmpty)
     }
 
-    "should result in (isEmpty) for an empty Scala Map" - {
-      var result = Conversions.mapToJavaDictionary(Map())
+    it("should result in (isEmpty) for an empty Scala Map") {
+      var result = Util.mapToJavaDictionary(Map())
       assert(null != result)
       assert(result.isEmpty)
     }
 
-    "should result in (keys = Enumeration(1, 2)) for a Scala Map(1 -> 11, 2 -> 12)" - {
-      var result = Conversions.mapToJavaDictionary(Map(1 -> 11, 2 -> 12))
+    it("should result in (keys = Enumeration(1, 2)) for a Scala Map(1 -> 11, 2 -> 12)") {
+      var result = Util.mapToJavaDictionary(Map(1 -> 11, 2 -> 12))
       assert(null != result)
       var keys = result.elements
       assert(keys.hasMoreElements)
@@ -103,8 +103,8 @@ class ConversionsSpec extends Spec {
       assert(!keys.hasMoreElements)
     }
 
-    "should result in (elements = Enumeration(11, 12)) for a Scala Map(1 -> 11, 2 -> 12)" - {
-      var result = Conversions.mapToJavaDictionary(Map(1 -> 11, 2 -> 12))
+    it("should result in (elements = Enumeration(11, 12)) for a Scala Map(1 -> 11, 2 -> 12)") {
+      var result = Util.mapToJavaDictionary(Map(1 -> 11, 2 -> 12))
       assert(null != result)
       var elements = result.elements
       assert(elements.hasMoreElements)
@@ -116,39 +116,41 @@ class ConversionsSpec extends Spec {
       assert(!elements.hasMoreElements)
     }
     
-    "should throw an UOE for calling put" - {
-      intercept(classOf[UnsupportedOperationException]) {
-        var result = Conversions.mapToJavaDictionary(Map(1 -> 11))
+    it("should throw an UOE for calling put") {
+      intercept[UnsupportedOperationException] {
+        var result = Util.mapToJavaDictionary(Map(1 -> 11))
         result.put(2, 12)
+        ()
       }
     }
     
-    "should throw an UOE for calling remove" - {
-      intercept(classOf[UnsupportedOperationException]) {
-        var result = Conversions.mapToJavaDictionary(Map(1 -> 11, 2 -> 12))
+    it("should throw an UOE for calling remove") {
+      intercept[UnsupportedOperationException] { 
+        var result = Util.mapToJavaDictionary(Map(1 -> 11, 2 -> 12))
         result.remove("")
+        ()
       }
     }
   }  
 
-  "The function toJavaEnumeration" -- {
+  describe("The function toJavaEnumeration") {
 
-    "should result in null for a null Scala Iterator" - {
-      var result = Conversions.iteratorToJavaEnumeration(null)
+    it("should result in null for a null Scala Iterator") {
+      var result = Util.iteratorToJavaEnumeration(null)
       assert(null == result)
     }
 
-    "should result in an empty Java Enumeration for an empty Scala Iterator"  - {
+    it("should result in an empty Java Enumeration for an empty Scala Iterator") {
       var iterator = createIterator()
-      var result = Conversions.iteratorToJavaEnumeration(iterator)
+      var result = Util.iteratorToJavaEnumeration(iterator)
       assert(null != result)
       assert(!result.hasMoreElements)
       EasyMock.verify(iterator)
     }
 
-    "should result in a Java Enumeration ('a', 'b') for a Scala Iterator ('a', 'b')"  - {
+    it("should result in a Java Enumeration ('a', 'b') for a Scala Iterator ('a', 'b')") {
       var iterator = createIterator("a", "b")
-      var result = Conversions.iteratorToJavaEnumeration(iterator)
+      var result = Util.iteratorToJavaEnumeration(iterator)
       assert(null != result)
       assert(result.hasMoreElements)
       assert("a" == result.nextElement)
@@ -159,24 +161,24 @@ class ConversionsSpec extends Spec {
     }
   }
 
-  "The function toJavaIterator" -- {
+  describe("The function toJavaIterator") {
 
-    "should result in null for a null Scala Iterator" - {
-      var result = Conversions.iteratorToJavaIterator(null)
+    it("should result in null for a null Scala Iterator") {
+      var result = Util.iteratorToJavaIterator(null)
       assert(null == result)
     }
 
-    "should result in an empty Java Iterator for an empty Scala Iterator"  - {
+    it("should result in an empty Java Iterator for an empty Scala Iterator") {
       var iterator = createIterator()
-      var result = Conversions.iteratorToJavaIterator(iterator)
+      var result = Util.iteratorToJavaIterator(iterator)
       assert(null != result)
       assert(!result.hasNext)
       EasyMock.verify(iterator)
     }
 
-    "should result in a Java Iterator ('a', 'b') for a Scala Iterator ('a', 'b')"  - {
+    it("should result in a Java Iterator ('a', 'b') for a Scala Iterator ('a', 'b')") {
       var iterator = createIterator("a", "b")
-      var result = Conversions.iteratorToJavaIterator(iterator)
+      var result = Util.iteratorToJavaIterator(iterator)
       assert(null != result)
       assert(result.hasNext)
       assert("a" == result.next)
@@ -186,10 +188,11 @@ class ConversionsSpec extends Spec {
       EasyMock.verify(iterator)
     }
 
-    "should throw an UOE for calling remove" - {
-      intercept(classOf[UnsupportedOperationException]) {
-        var result = Conversions.iteratorToJavaIterator(createIterator("a", "b"))
+    it("should throw an UOE for calling remove") {
+      intercept[UnsupportedOperationException] {
+        var result = Util.iteratorToJavaIterator(createIterator("a", "b"))
         result.remove
+        ()
       }
     }
   }

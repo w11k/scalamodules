@@ -13,7 +13,6 @@
       <outputDirectory>bundles</outputDirectory>
       <includes>
         <include>org.scala-lang-osgi:scala-library</include>
-        <include>org.scalamodules:scalamodules-util</include>
         <include>org.scalamodules:scalamodules-core</include>
         <include>org.scalamodules:scalamodules-services</include>
       </includes>

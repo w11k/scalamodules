@@ -15,10 +15,11 @@
  */
 package org.scalamodules.core
 
+import internal.Util.mapToJavaDictionary
+
 import org.osgi.framework.{BundleContext, ServiceReference, ServiceRegistration}
 import org.osgi.util.tracker.ServiceTracker
 import org.scalamodules.core.RichServiceReference.toRichServiceReference
-import org.scalamodules.util.jcl.Conversions.mapToJavaDictionary
 
 /**
  * Companion object for RichBundleContext providing implicit conversions.
@@ -39,13 +40,10 @@ class RichBundleContext(ctx: BundleContext) {
   
   require(ctx != null, "BundleContext must not be null!")
 
-  @deprecated
-  def registerAs[T](srvIntf: Class[T]) = new RegisterAs[T](ctx, srvIntf)
-
   /**
-   * Register an immediate service.
+   * Register an independent service.
    */
-  def register[I <: AnyRef, S <: I](info: ImdRegInfo[I, S]) = {
+  def register[I <: AnyRef, S <: I](info: RegIndepInfo[I, S]) = {
     val srvIntfs = info.srvIntf match {
       case Some(srvIntf) => Array(srvIntf.getName)
       case None          => info.srv.getClass.getInterfaces map { _.getName }
@@ -58,9 +56,9 @@ class RichBundleContext(ctx: BundleContext) {
   }
 
   /**
-   * Register a depending service.
+   * Register a service depending on another service. 
    */
-  def register[I <: AnyRef, S <: I, D](info: DepRegInfo[I, S, D]) = {
+  def register[I <: AnyRef, S <: I, D](info: RegDepInfo[I, S, D]) = {
     val srvIntfs = info.srvIntf match {
       case Some(srvIntf) => Array(srvIntf.getName)
       case None          => info.srv.getClass.getInterfaces map { _.getName }
@@ -70,6 +68,7 @@ class RichBundleContext(ctx: BundleContext) {
       case None        => null
     }
     new ServiceTracker(ctx, "", null)
+    // TODO: Finalize depending services!
   }
 
   /**

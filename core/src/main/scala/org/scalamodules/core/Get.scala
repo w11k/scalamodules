@@ -26,11 +26,11 @@ import org.scalamodules.core.RichServiceReference.toRichServiceReference
 class GetOne[I](ctx: BundleContext, srvIntf: Class[I])
     extends Get(ctx, srvIntf) {
 
-  override protected type Result[T] = T
+  override private[core] type Result[T] = Option[T]
 
-  override protected def work[T](f: ServiceReference => Option[T]): Option[Result[T]] = {
+  override private[core] def work[T](f: ServiceReference => Option[T]): Result[T] = {
     assert(f != null, "Function to be applied must not be null!")
-    ctx.getServiceReference(srvIntf.getName) match {
+    ctx getServiceReference srvIntf.getName match {
       case null => None
       case ref  => f(ref)
     }
@@ -50,27 +50,19 @@ class GetMany[I](ctx: BundleContext, srvIntf: Class[I], filter: String)
    */
   def withFilter(filter: String) = new GetMany(ctx, srvIntf, filter)
 
-  override protected type Result[T] = List[T]
+  override private[core] type Result[T] = List[T]
 
-  override protected def work[T](f: ServiceReference => Option[T]): Option[Result[T]] = {
+  override private[core] def work[T](f: ServiceReference => Option[T]): Result[T] = {
     assert(f != null, "Function to be applied must not be null!")
-    var result: List[T] = Nil
+    var result: List[Option[T]] = Nil
     ctx.getServiceReferences(srvIntf.getName, filter) match {
-      case null => result
-      case refs => refs.foreach { 
-        f(_) match {
-          case None    => result
-          case Some(s) => result = s :: result
-        }
-      }  
+      case null =>
+      case refs => refs foreach { ref => result = f(ref) :: result } 
     }
-    if (result.isEmpty) None else Some(result)
+    result flatMap { o => o }
   }
 }
 
-/**
- * Abstract superclass for consuming services.
- */
 private[core] abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
 
   require(ctx != null, "BundleContext must not be null!")
@@ -86,19 +78,19 @@ private[core] abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
    */
   def andApply[T](f: (I, Map[String, Any]) => T) = work(applyWithRef(_, f))
 
-  protected type Result[T]
+  private[core] type Result[T]
 
-  protected def work[T](f: ServiceReference => Option[T]): Option[Result[T]]
+  private[core] def work[T](f: ServiceReference => Option[T]): Result[T]
 
   private def applyWithRef[T](ref: ServiceReference, f: I => T): Option[T] = {
     assert(ref != null, "ServiceReference must not be null!")
     assert(f != null, "Function to be applied must not be null!")
     try {
-      ctx.getService(ref) match {  // Might be null even if ref is not null
+      ctx getService ref match {  // Might be null even if ref is not null
         case null            => None
         case service: AnyRef => Some(f(service.asInstanceOf[I]))
       }
-    } finally ctx.ungetService(ref)  // Must be called
+    } finally ctx ungetService ref  // Must be called
   }
 
   private def applyWithRef[T](ref: ServiceReference,
@@ -106,10 +98,10 @@ private[core] abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
     assert(ref != null, "ServiceReference must not be null!")
     assert(f != null, "Function to be applied must not be null!")
     try {
-      ctx.getService(ref) match {  // Might be null even if ref is not null
+      ctx getService ref match {  // Might be null even if ref is not null
         case null            => None
         case service: AnyRef => Some(f(service.asInstanceOf[I], ref.properties))
       }
-    } finally ctx.ungetService(ref)  // Must be called
+    } finally ctx ungetService ref  // Must be called
   }
 }

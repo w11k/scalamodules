@@ -21,11 +21,6 @@
     </dependency>
     <dependency>
       <groupId>org.scalamodules</groupId>
-      <artifactId>scalamodules-util</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.scalamodules</groupId>
       <artifactId>scalamodules-core</artifactId>
       <version>${project.version}</version>
     </dependency>
