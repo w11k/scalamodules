@@ -44,14 +44,27 @@ class RichBundleContext(ctx: BundleContext) {
    * Register an independent service.
    */
   def register[I <: AnyRef, S <: I](info: RegIndepInfo[I, S]) = {
+    
+    require(info != null, "RegIndepInfo must not be null!")
+
+    def interfacesOrClass(srv: S): Array[String] = {
+      val intfs = srv.getClass.getInterfaces filter { _ != classOf[ScalaObject] }
+      intfs.isEmpty match {
+        case true  => Array(srv.getClass.getName)
+        case false => intfs map { clazz => clazz.getName }
+      }
+    }
+
     val srvIntfs = info.srvIntf match {
       case Some(srvIntf) => Array(srvIntf.getName)
-      case None          => info.srv.getClass.getInterfaces map { _.getName }
+      case None          => interfacesOrClass(info.srv)
     }
+
     val props = info.props match {
       case Some(props) => mapToJavaDictionary(props)
       case None        => null
     }
+
     ctx.registerService(srvIntfs, info.srv, props)
   }
 
@@ -59,14 +72,19 @@ class RichBundleContext(ctx: BundleContext) {
    * Register a service depending on another service. 
    */
   def register[I <: AnyRef, S <: I, D](info: RegDepInfo[I, S, D]) = {
+
+    require(info != null, "RegIndepInfo must not be null!")
+
     val srvIntfs = info.srvIntf match {
       case Some(srvIntf) => Array(srvIntf.getName)
       case None          => info.srv.getClass.getInterfaces map { _.getName }
     }
+    
     val props = info.props match {
       case Some(props) => mapToJavaDictionary(props)
       case None        => null
     }
+    
     new ServiceTracker(ctx, "", null)
     // TODO: Finalize depending services!
   }

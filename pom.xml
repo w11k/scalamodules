@@ -31,7 +31,7 @@
   </modules>
 
   <properties>
-    <scala.version>2.7.4</scala.version>
+    <scala.version>2.7.5</scala.version>
     <scalatest.version>0.9.5</scalatest.version>
     <pax-exam.version>0.6.0</pax-exam.version>
   </properties>

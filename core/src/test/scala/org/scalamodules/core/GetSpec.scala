@@ -51,28 +51,30 @@ object GetOneSpec extends Spec {
       result should equal (None)
     }
 
-    it("""should return Some("x") when the String "x" is registered as a service""") {
+    it("""should return Some(ScalaModules") when the String "x" is registered as service""") {
       val mockRef = EasyMock createNiceMock classOf[ServiceReference]
       EasyMock reset mockCtx
       EasyMock expect (mockCtx getServiceReference classOf[String].getName) andReturn mockRef
-      EasyMock expect (mockCtx getService mockRef) andReturn "x"
+      EasyMock expect (mockCtx getService mockRef) andReturn "ScalaModules"
       EasyMock replay mockCtx
       
       val result = getOne andApply { s: String => s }
-      result should equal (Some("x"))
+      result should equal (Some("ScalaModules"))
     }
 
-    it("""should return Some("scalamodules") when the String "scala" is registered as a service with property ("p" => "modules")""") {
+    it("""should return Some("ScalaModules") when the String "Scala" is registered as service with property ("p" => "Modules")""") {
       val mockRef = EasyMock createNiceMock classOf[ServiceReference]
-      EasyMock expect (mockRef getProperty("p")) andReturn "modules"
+      EasyMock expect (mockRef getProperty("p")) andReturn "Modules"
       EasyMock replay mockRef
       EasyMock reset mockCtx
       EasyMock expect (mockCtx getServiceReference classOf[String].getName) andReturn mockRef
-      EasyMock expect (mockCtx getService mockRef) andReturn "scala"
+      EasyMock expect (mockCtx getService mockRef) andReturn "Scala"
       EasyMock replay mockCtx
       
-      val result = getOne andApply { (s: String, props: Map[String, Any]) => s + props("p") }
-      result should equal (Some("scalamodules"))
+      val result = getOne andApply { 
+        (s: String, props: Map[String, Any]) => s + (props get "p" getOrElse "") 
+      }
+      result should equal (Some("ScalaModules"))
     }
   }
 }
@@ -91,37 +93,49 @@ object GetManySpec extends Spec {
       result should equal (Nil)
     }
 
-    it("""should return List("scalamodules") when the String "scala" is registered as a service with property ("p" => "modules")""") {
+    it("""should return List("ScalaModules") when the String "Scala" is registered as service with property ("p" => "Modules")""") {
       val mockRef = EasyMock createNiceMock classOf[ServiceReference]
-      EasyMock expect (mockRef getProperty("p")) andReturn "modules"
+      EasyMock expect (mockRef getProperty("p")) andReturn "Modules"
       EasyMock replay mockRef
       EasyMock reset mockCtx
       EasyMock expect (mockCtx.getServiceReferences(classOf[String].getName, null)) andReturn ArrayHelper.create(mockRef)
-      EasyMock expect (mockCtx getService mockRef) andReturn "scala"
+      EasyMock expect (mockCtx getService mockRef) andReturn "Scala"
       EasyMock replay mockCtx
  
       val result = getMany andApply {
         (s: String, props: Map[String, Any]) => s + (props get "p" getOrElse "")
       }
-      result should equal (List("scalamodules"))
+      result should equal ("ScalaModules" :: Nil)
     }
 
-    it("""should return List containing "x" and "y" when the Strings "x" and "y" are registered as services""") {
+    it("""should return List containing "ScalaModules" and "BindForge" when the Strings "ScalaModules" and "BindForge" are registered as services""") {
       val aMockRef = EasyMock createNiceMock classOf[ServiceReference]
       val bMockRef = EasyMock createNiceMock classOf[ServiceReference]
       EasyMock reset mockCtx
       EasyMock expect (mockCtx.getServiceReferences(classOf[String].getName, null)) andReturn ArrayHelper.create(aMockRef, bMockRef)
-      EasyMock expect (mockCtx getService aMockRef) andReturn "x"
-      EasyMock expect (mockCtx getService bMockRef) andReturn "y"
+      EasyMock expect (mockCtx getService aMockRef) andReturn "ScalaModules"
+      EasyMock expect (mockCtx getService bMockRef) andReturn "BindForge"
       EasyMock replay mockCtx
       
       val result = getMany andApply { s: String => s }
       result should have size 2
-      result should contain ("x")
-      result should contain ("y")
+      result should contain ("ScalaModules")
+      result should contain ("BindForge")
     }
     
-    // TODO Filter
+
+    it("""should return List containing "ScalaModules" when the Strings "ScalaModules" and "BindForge" are registered as services, x with property ("p" => "modules") and a filter is applied looking for "p" """) {
+      val aMockRef = EasyMock createNiceMock classOf[ServiceReference]
+      val bMockRef = EasyMock createNiceMock classOf[ServiceReference]
+      EasyMock reset mockCtx
+      EasyMock expect (mockCtx.getServiceReferences(classOf[String].getName, "(p=*)")) andReturn ArrayHelper.create(aMockRef)
+      EasyMock expect (mockCtx getService aMockRef) andReturn "ScalaModules"
+      EasyMock expect (mockCtx getService bMockRef) andReturn "BindForge"
+      EasyMock replay mockCtx
+      
+      val result = getMany withFilter "(p=*)" andApply { s: String => s }
+      result should equal ("ScalaModules" :: Nil)
+    }
   }
 }
 

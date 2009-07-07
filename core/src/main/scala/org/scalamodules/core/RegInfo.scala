@@ -19,19 +19,14 @@ import scala.collection.Map
 import scala.collection.immutable.{Map => IMap}
 
 /**
- * Companion object for RegInfo providing implicit conversions.
+ * Companion object for RegIndepInfo providing implicit conversions.
  */
-object RegInfo {
+object RegIndepInfo {
 
   /**
    * Implicitly converts the given object to ImdRegInfo.
    */
   implicit def toRegIndepInfo[S <: AnyRef](srv: S) = new RegIndepInfo(srv) 
-
-  /**
-   * Implicitly converts the given function to ImdRegInfo.
-   */
-  implicit def toRegDepInfo[S <: AnyRef, D](srv: D => S) = new RegDepInfo(srv) 
 }
 
 /**
@@ -42,8 +37,12 @@ class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
                                         val props: Option[Map[String, Any]]) {
 
   require(srv != null, "Service to be registered must not be null!")
+  require(srvIntf != null, "Option for service interface used for registration must not be null!")
+  require(props != null, "Option for service properties must not be null!")
 
   def this(srv: S) = this(srv, None, None)
+
+  def this(srv: S, srvIntf: Option[Class[I]]) = this(srv, srvIntf, None)
 
   /**
    * Register a service under the given service interface.
@@ -66,6 +65,17 @@ class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
     case null => None
     case _    => Some(any) 
   }
+}
+
+/**
+ * Companion object for RegInfo providing implicit conversions.
+ */
+object RegDepInfo {
+
+  /**
+   * Implicitly converts the given function to ImdRegInfo.
+   */
+  implicit def toRegDepInfo[S <: AnyRef, D](srv: D => S) = new RegDepInfo(srv) 
 }
 
 /**

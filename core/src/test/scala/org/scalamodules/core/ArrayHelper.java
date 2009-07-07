@@ -22,15 +22,15 @@ import org.osgi.framework.ServiceReference;
 
 public class ArrayHelper {
 
-    //    public static ServiceReference[] create(final ServiceReference ref) {
-    //        return new ServiceReference[] { ref };
-    //    }
+    public static String[] create(final String... names) {
+        List<String> nameList = new LinkedList<String>();
+        for (String name : names) nameList.add(name);
+        return nameList.toArray(new String[0]);
+    }
 
     public static ServiceReference[] create(final ServiceReference... refs) {
         List<ServiceReference> refList = new LinkedList<ServiceReference>();
-        for (ServiceReference ref : refs) {
-            refList.add(ref);
-        }
+        for (ServiceReference ref : refs) refList.add(ref);
         return refList.toArray(new ServiceReference[0]);
     }
 }

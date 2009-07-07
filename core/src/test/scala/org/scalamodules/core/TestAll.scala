@@ -20,10 +20,26 @@ import internal.UtilSpec
 import org.junit.Test
 import org.scalatest.{Report, Reporter, Stopper, Suite}
 
+object Suites {
+
+  def suites = 
+    UtilSpec :: 
+    GetSpec :: 
+    GetOneSpec ::
+    GetManySpec ::
+    RichBundleContextSpec ::
+    Nil
+
+  def main(args: Array[String]) {
+    Suites.suites foreach { _.execute() }
+  }
+}
+
 class TestAll {
-  
+
   @Test
   def testAll {
+
     val reporter = new Reporter {
       override def testFailed(report: Report) {
         println(report.name)
@@ -34,14 +50,11 @@ class TestAll {
         }
       }
     }
+
     val suite = new Suite {
-      override def nestedSuites = 
-        UtilSpec :: 
-        GetSpec :: 
-        GetOneSpec ::
-        GetManySpec ::
-        Nil
+      override def nestedSuites = Suites.suites
     }
+
     suite.execute(None, reporter, new Stopper {}, Set[String](), Set[String](), 
                   Map[String, Any](), None)
   }
