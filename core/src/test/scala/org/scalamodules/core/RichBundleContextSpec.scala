@@ -25,11 +25,11 @@ import org.osgi.framework.{BundleContext, ServiceRegistration}
 import org.osgi.util.tracker.ServiceTracker
 import org.scalamodules.core.RichBundleContext.toRichBundleContext
 import org.scalatest.Spec
-import org.scalatest.matchers.ShouldMatchers._
+import org.scalatest.matchers.ShouldMatchers
 import scala.collection.Map
 import scala.collection.immutable.{Map => IMap}
 
-object RichBundleContextSpec extends Spec {
+object RichBundleContextSpec extends Spec with ShouldMatchers {
 
   val mockCtx = EasyMock createNiceMock classOf[BundleContext]
 
@@ -37,30 +37,26 @@ object RichBundleContextSpec extends Spec {
 
     it("should implicitly convert a BundleContext to RichBundleContext") {
       val rbc: RichBundleContext = mockCtx
-      rbc should not equal null
+      rbc should not be null
     }
   }
 
   describe("The class RichBundleContext") {
 
     it("should throw an IAE when constructed with a null BundleContext") {
-      intercept[IllegalArgumentException] { new RichBundleContext(null) }
+      intercept[IllegalArgumentException] { 
+        new RichBundleContext(null)
+      }
     }
   }
 
-  describe("RichBundleContext.register") {
+  describe("RichBundleContext.register(RegIndepInfo)") {
 
     val rbc = new RichBundleContext(mockCtx)
 
     it("should throw an IAE when called with a null RegIndepInfo") {
       intercept[IllegalArgumentException] { 
         rbc register null.asInstanceOf[RegIndepInfo[Nothing, Nothing]]
-      }
-    }
-
-    it("should throw an IAE when called with a null RegDepInfo") {
-      intercept[IllegalArgumentException] { 
-        rbc register null.asInstanceOf[RegDepInfo[Nothing, Nothing, Nothing]]
       }
     }
 
@@ -129,13 +125,77 @@ object RichBundleContextSpec extends Spec {
       result should not be null
       result should equal (mockReg)
     }
+  }
+
+  describe("RichBundleContext.register(RegDepInfo)") {
+
+    val rbc = new RichBundleContext(mockCtx)
+
+    it("should throw an IAE when called with a null RegDepInfo") {
+      intercept[IllegalArgumentException] { 
+        rbc register null.asInstanceOf[RegDepInfo[Nothing, Nothing, Nothing]]
+      }
+    }
 
     it("should return a not-null ServiceTracker when called with a RegDepInfo") {
-      val result = mockCtx register new RegDepInfo[String, String, String](s => s)
+      EasyMock reset mockCtx
+      val result = mockCtx register new RegDepInfo((s: String) => s)
+      result should not be null
+    }
+  }
+
+  describe("RichBundleContext.getOne(Class)") {
+
+    val rbc = new RichBundleContext(mockCtx)
+
+    it("should throw an IAE when called with a null service interface") {
+      intercept[IllegalArgumentException] { 
+        rbc getOne null
+      }
+    }
+
+    it("should return a not-null GetOne when called with a service interface") {
+      val result = rbc getOne classOf[String]
+      result should not be null
+    }
+  }
+
+  describe("RichBundleContext.getMany(Class)") {
+
+    val rbc = new RichBundleContext(mockCtx)
+
+    it("should throw an IAE when called with a null service interface") {
+      intercept[IllegalArgumentException] { 
+        rbc getMany null
+      }
+    }
+
+    it("should return a not-null GetMany when called with a service interface") {
+      val result = rbc getMany classOf[String]
+      result should not be null
+    }
+  }
+
+  describe("RichBundleContext.track(Class)") {
+
+    val rbc = new RichBundleContext(mockCtx)
+
+    it("should throw an IAE when called with a null service interface") {
+      intercept[IllegalArgumentException] {
+        rbc track null
+      }
+    }
+
+    it("should return a not-null Track when called with a service interface") {
+      val result = rbc track classOf[String]
       result should not be null
     }
   }
 }
+
+// =============================================================================
+// Helpers
+// =============================================================================
 
 object DictionaryMatcher {
 

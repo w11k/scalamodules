@@ -19,9 +19,9 @@ import org.easymock.EasyMock
 import org.osgi.framework.{BundleContext, ServiceReference}
 import scala.collection.Map
 import org.scalatest.Spec
-import org.scalatest.matchers.ShouldMatchers._
+import org.scalatest.matchers.ShouldMatchers
 
-object GetSpec extends Spec {
+object GetSpec extends Spec with ShouldMatchers {
 
   val mockCtx = EasyMock createNiceMock classOf[BundleContext]
 
@@ -37,7 +37,7 @@ object GetSpec extends Spec {
   }
 }
 
-object GetOneSpec extends Spec {
+object GetOneSpec extends Spec with ShouldMatchers {
 
   import GetSpec.mockCtx
 
@@ -79,7 +79,7 @@ object GetOneSpec extends Spec {
   }
 }
 
-object GetManySpec extends Spec {
+object GetManySpec extends Spec with ShouldMatchers {
 
   import GetSpec.mockCtx
 

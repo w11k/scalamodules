@@ -15,19 +15,19 @@
  */
 package org.scalamodules.core
 
-import internal.UtilSpec
-
 import org.junit.Test
 import org.scalatest.{Report, Reporter, Stopper, Suite}
 
 object Suites {
 
   def suites = 
-    UtilSpec :: 
     GetSpec :: 
     GetOneSpec ::
     GetManySpec ::
+    RegIndepInfoSpec ::
+    RegDepInfoSpec ::
     RichBundleContextSpec ::
+    internal.UtilSpec :: 
     Nil
 
   def main(args: Array[String]) {

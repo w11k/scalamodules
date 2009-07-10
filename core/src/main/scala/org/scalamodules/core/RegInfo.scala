@@ -24,7 +24,7 @@ import scala.collection.immutable.{Map => IMap}
 object RegIndepInfo {
 
   /**
-   * Implicitly converts the given object to ImdRegInfo.
+   * Implicitly converts the given object to RegIndepInfo.
    */
   implicit def toRegIndepInfo[S <: AnyRef](srv: S) = new RegIndepInfo(srv) 
 }
@@ -58,8 +58,12 @@ class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
   /**
    * Register a service with the given properties.
    */
-  def withProps(props: (String, Any)*) = 
-    new RegIndepInfo(srv, srvIntf, toOption(IMap[String, Any](props: _*))) 
+  // TODO Better with an implicit conversion from Tuple2 to Map??
+//  def withProps(props: (String, Any)*) = 
+//    if (props.isEmpty)
+//      new RegIndepInfo(srv, srvIntf, toOption(null))
+//    else 
+//      new RegIndepInfo(srv, srvIntf, toOption(IMap[String, Any](props: _*)))
 
   private def toOption[T](any: T) = any match {
     case null => None
@@ -73,7 +77,7 @@ class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
 object RegDepInfo {
 
   /**
-   * Implicitly converts the given function to ImdRegInfo.
+   * Implicitly converts the given function to RegDepInfo.
    */
   implicit def toRegDepInfo[S <: AnyRef, D](srv: D => S) = new RegDepInfo(srv) 
 }
@@ -87,6 +91,9 @@ class RegDepInfo[I <: AnyRef, S <: I, D](val srv: D => S,
                                          val depIntf: Option[Class[D]]) {
 
   require(srv != null, "Service to be registered must not be null!")
+  require(srvIntf != null, "Option for service interface used for registration must not be null!")
+  require(props != null, "Option for service properties must not be null!")
+  require(depIntf != null, "Option for interface of the service depending on must not be null!")
 
   def this(srv: D => S) = this(srv, None, None, None)
 
@@ -105,8 +112,9 @@ class RegDepInfo[I <: AnyRef, S <: I, D](val srv: D => S,
   /**
    * Register a service with the given properties.
    */
-  def withProps(props: (String, Any)*) = 
-    new RegDepInfo(srv, srvIntf, toOption(IMap[String, Any](props: _*)), depIntf) 
+  // TODO Better with an implicit conversion from Tuple2 to Map??
+//  def withProps(props: (String, Any)*) = 
+//    new RegDepInfo(srv, srvIntf, toOption(IMap[String, Any](props: _*)), depIntf) 
 
   /**
    * Register a service depending on a service with the given service interface.
