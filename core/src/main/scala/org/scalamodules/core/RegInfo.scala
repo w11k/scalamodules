@@ -60,13 +60,11 @@ class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
   /**
    * Register a service with the given properties.
    */
-  // TODO Better with an implicit conversion from Tuple2 to Map??
-//  def withProps(props: (String, Any)*) = 
-//    if (props.isEmpty)
-//      new RegIndepInfo(srv, srvIntf, toOption(null))
-//    else 
-//      new RegIndepInfo(srv, srvIntf, toOption(IMap[String, Any](props: _*)))
-
+  def withProps(props: (String, Any)*) = 
+    if (props.isEmpty)
+      new RegIndepInfo(srv, srvIntf, null)
+    else 
+      new RegIndepInfo(srv, srvIntf, IMap[String, Any](props: _*))
 }
 
 /**
@@ -110,9 +108,8 @@ class RegDepInfo[I <: AnyRef, S <: I, D](val srv: D => S,
   /**
    * Register a service with the given properties.
    */
-  // TODO Better with an implicit conversion from Tuple2 to Map??
-//  def withProps(props: (String, Any)*) = 
-//    new RegDepInfo(srv, srvIntf, toOption(IMap[String, Any](props: _*)), depIntf) 
+  def withProps(props: (String, Any)*) = 
+    new RegDepInfo(srv, srvIntf, IMap[String, Any](props: _*), depIntf) 
 
   /**
    * Register a service depending on a service with the given service interface.

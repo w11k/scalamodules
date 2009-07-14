@@ -20,6 +20,7 @@ import internal.Util.mapToJavaDictionary
 import org.osgi.framework.{BundleContext, ServiceReference, ServiceRegistration}
 import org.osgi.util.tracker.ServiceTracker
 import org.scalamodules.core.RichServiceReference.toRichServiceReference
+import scala.collection.Map
 
 /**
  * Companion object for RichBundleContext providing implicit conversions.
@@ -47,46 +48,45 @@ class RichBundleContext(ctx: BundleContext) {
     
     require(info != null, "RegIndepInfo must not be null!")
 
-    def interfacesOrClass(srv: S): Array[String] = {
-      val intfs = srv.getClass.getInterfaces filter { _ != classOf[ScalaObject] }
-      intfs.isEmpty match {
-        case true  => Array(srv.getClass.getName)
-        case false => intfs map { clazz => clazz.getName }
-      }
-    }
-
-    val srvIntfs = info.srvIntf match {
-      case Some(srvIntf) => Array(srvIntf.getName)
-      case None          => interfacesOrClass(info.srv)
-    }
-
-    val props = info.props match {
-      case Some(props) => mapToJavaDictionary(props)
-      case None        => null
-    }
-
-    ctx.registerService(srvIntfs, info.srv, props)
+    srvIntfs(info.srv, info.srvIntf) foreach println
+    ctx.registerService(srvIntfs(info.srv, info.srvIntf), 
+                        info.srv, 
+                        props(info.props))
   }
 
   /**
    * Register a service depending on another service. 
    */
-  def register[I <: AnyRef, S <: I, D](info: RegDepInfo[I, S, D]) = {
+  def register[I <: AnyRef, S <: I, D](info: RegDepInfo[I, S, D]) {
 
     require(info != null, "RegIndepInfo must not be null!")
 
-    val srvIntfs = info.srvIntf match {
-      case Some(srvIntf) => Array(srvIntf.getName)
-      case None          => info.srv.getClass.getInterfaces map { _.getName }
+    info.depIntf match {
+      case None          =>
+      case Some(depIntf) => new ServiceTracker(ctx, depIntf.getName, null) {
+        override def addingService(ref: ServiceReference) = 
+          synchronized {
+            satisfied match {
+              case true  =>
+              case false => {
+                satisfied = true
+                val s = info.srv((ctx getService ref).asInstanceOf[D])
+                ctx.registerService(srvIntfs(s, info.srvIntf), 
+                                    s, 
+                                    props(info.props))
+              }
+            }
+          }
+        override def removedService(ref: ServiceReference, reg: AnyRef) = {
+          synchronized {
+            reg.asInstanceOf[ServiceRegistration].unregister()
+            satisfied = false
+          }
+          context ungetService ref
+        }
+        private var satisfied = false
+      }.open()
     }
-    
-    val props = info.props match {
-      case Some(props) => mapToJavaDictionary(props)
-      case None        => null
-    }
-    
-    new ServiceTracker(ctx, "", null)
-    // TODO: Finalize depending services!
   }
 
   /**
@@ -103,4 +103,21 @@ class RichBundleContext(ctx: BundleContext) {
    * Track a service. 
    */
   def track[I](srvIntf: Class[I]) = new Track[I](ctx, srvIntf)
+
+  private def interfacesOrClass[S <: AnyRef](srv: S): Array[String] = {
+    val intfs = srv.getClass.getInterfaces filter { _ != classOf[ScalaObject] }
+    intfs.isEmpty match {
+      case true  => Array(srv.getClass.getName)
+      case false => intfs map { clazz => clazz.getName }
+    }
+  }
+
+  private def srvIntfs[I <: AnyRef, S <: I](srv: S, srvIntf: Option[Class[I]]) = 
+    srvIntf match {
+      case Some(srvIntf) => Array(srvIntf.getName)
+      case None          => interfacesOrClass(srv)
+    }
+
+  private def props(p: Option[Map[String, Any]]) = 
+    p map { mapToJavaDictionary(_) } getOrElse null
 }

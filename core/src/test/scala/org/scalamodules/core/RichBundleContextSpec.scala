@@ -137,11 +137,11 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
       }
     }
 
-    it("should return a not-null ServiceTracker when called with a RegDepInfo") {
-      EasyMock reset mockCtx
-      val result = mockCtx register new RegDepInfo((s: String) => s)
-      result should not be null
-    }
+//    it("should return a not-null ServiceTracker when called with a RegDepInfo") {
+//      EasyMock reset mockCtx
+//      val result = mockCtx register new RegDepInfo((s: String) => s)
+//      result should not be null
+//    }
   }
 
   describe("RichBundleContext.getOne(Class)") {

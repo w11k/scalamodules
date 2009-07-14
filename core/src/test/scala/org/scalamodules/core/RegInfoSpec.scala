@@ -24,7 +24,7 @@ import scala.collection.immutable.{Map => IMap}
 
 object RegIndepInfoSpec extends Spec with ShouldMatchers {
 
-  val info = new RegIndepInfo("scalamodules")
+  val info = new RegIndepInfo("ScalaModules")
 
   describe("The object RegIndepInfo") {
 
@@ -80,10 +80,10 @@ object RegIndepInfoSpec extends Spec with ShouldMatchers {
   describe("RegIndepInfo.withProps(Map)") {
 
     it("should return a new RegIndepInfo with props == Some(Map) when called with a not-null Map") {
-      val props = IMap("scala" -> "modules")
+      val props = IMap("Scala" -> "Modules")
       val newInfo = info withProps props
       newInfo should not be null
-      newInfo.props should equal (Some(props))
+      (newInfo.props getOrElse IMap.empty).getOrElse("Scala", "") should equal ("Modules")
     }
 
     it("should return a new RegIndepInfo with srvIntf == None when called with a null Map") {
@@ -93,31 +93,22 @@ object RegIndepInfoSpec extends Spec with ShouldMatchers {
     }
   }
 
-  // TODO Better with an implicit conversion from Tuple2 to Map??
-//  describe("RegIndepInfo.withProps((String, Any)*)") {
-//    
-//    it("should return a new RegIndepInfo with props == Some(Map) when called with a not-null pair") {
-//      val props = "scala" -> "modules"
-//      val newInfo = info withProps props
-//      newInfo should not be null
-//      newInfo.props should not equal (None)
-////      newInfo.props.get should contain ("scala")
-////      newInfo.props.get.get should equal ("modules")
-//    }
-//
-//    it("should return a new RegIndepInfo with srvIntf == None when called with a null pair") {
-//      val newInfo = info withProps null.asInstanceOf[(String, Any)]
-//      newInfo should not be null
-//      newInfo.props should equal (None)
-//    }
-//  }
+  describe("RegIndepInfo.withProps((String, Any)*)") {
+    
+    it("should return a new RegIndepInfo with props == Some(Map) when called with a not-null pair") {
+      val props = "Scala" -> "Modules"
+      val newInfo = info withProps props
+      newInfo should not be null
+      (newInfo.props getOrElse IMap.empty).getOrElse("Scala", "") should equal ("Modules")
+    }
+  }
 }
 
 object RegDepInfoSpec extends Spec with ShouldMatchers {
 
   import java.util.Date
 
-  val info = new RegDepInfo((d: Date) => "scalamodules-" + d)
+  val info = new RegDepInfo((d: Date) => "ScalaModules-" + d)
 
   describe("The object RegDepInfo") {
 
@@ -143,19 +134,19 @@ object RegDepInfoSpec extends Spec with ShouldMatchers {
 
     it("should throw an IAE when constructed with a null service interface option") {
       intercept[IllegalArgumentException] { 
-        new RegDepInfo((d: Date) => "scalamodules", null, None, Some(classOf[Date]))
+        new RegDepInfo((d: Date) => "ScalaModules", null, None, Some(classOf[Date]))
       }
     }
 
     it("should throw an IAE when constructed with a null service properties option") {
       intercept[IllegalArgumentException] { 
-        new RegDepInfo((d: Date) => "scalamodules", Some(classOf[String]), null, Some(classOf[Date]))
+        new RegDepInfo((d: Date) => "ScalaModules", Some(classOf[String]), null, Some(classOf[Date]))
       }
     }
 
     it("should throw an IAE when constructed with a null dependency option") {
       intercept[IllegalArgumentException] { 
-        new RegDepInfo[String, String, Date]((d: Date) => "scalamodules", Some(classOf[String]), None, null)
+        new RegDepInfo[String, String, Date]((d: Date) => "ScalaModules", Some(classOf[String]), None, null)
       }
     }
   }
@@ -179,16 +170,26 @@ object RegDepInfoSpec extends Spec with ShouldMatchers {
   describe("RegDepInfo.withProps(Map)") {
 
     it("should return a new RegDepInfo with props == Some(Map) when called with a not-null Map") {
-      val props = IMap("scala" -> "modules")
+      val props = IMap("Scala" -> "Modules")
       val newInfo = info withProps props
       newInfo should not be null
-      newInfo.props should equal (Some(props))
+      (newInfo.props getOrElse IMap.empty).getOrElse("Scala", "") should equal ("Modules")
     }
 
     it("should return a new RegDepInfo with srvIntf == None when called with a null Map") {
       val newInfo = info withProps null.asInstanceOf[Map[String, Any]]
       newInfo should not be null
       newInfo.props should equal (None)
+    }
+  }
+
+  describe("RegDepInfo.withProps((String, Any)*)") {
+    
+    it("should return a new RegDepInfo with props == Some(Map) when called with a not-null pair") {
+      val props = "Scala" -> "Modules"
+      val newInfo = info withProps props
+      newInfo should not be null
+      (newInfo.props getOrElse IMap.empty).getOrElse("Scala", "") should equal ("Modules")
     }
   }
 

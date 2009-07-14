@@ -1,0 +1,9 @@
+API changes in ScalaModules 2.0
+===============================
+
+registerAs is replaced by register with different semantics
+
+getMany returns List, not an Option[List]
+
+withProperties is replaced by withProps
+

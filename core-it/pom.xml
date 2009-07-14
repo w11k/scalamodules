@@ -6,12 +6,11 @@
   <parent>
     <groupId>org.scalamodules</groupId>
     <artifactId>scalamodules</artifactId>
-    <version>1.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <version>2.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>scalamodules-core-test</artifactId>
-  <name>ScalaModules Core - Test</name>
+  <artifactId>scalamodules-core-it</artifactId>
+  <name>ScalaModules Core - Integration Tests</name>
   <packaging>jar</packaging>
 
   <dependencies>
@@ -28,6 +27,10 @@
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.configadmin</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-tools.testing</groupId>
+      <artifactId>scalatest</artifactId>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
@@ -60,7 +63,7 @@
           <skip>true</skip>
         </configuration>
       </plugin>
-      <plugin>
+      <!--plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skip>true</skip>
@@ -84,7 +87,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
+      </plugin-->
     </plugins>
   </build>
 

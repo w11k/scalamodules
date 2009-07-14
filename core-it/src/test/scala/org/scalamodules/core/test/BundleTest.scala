@@ -16,8 +16,6 @@
 package org.scalamodules.core.test
 
 import java.util.Dictionary
-import scala.collection.Map
-import scala.collection.immutable
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.ops4j.pax.exam.CoreOptions._
@@ -25,10 +23,11 @@ import org.ops4j.pax.exam.Inject
 import org.ops4j.pax.exam.junit._
 import org.osgi.framework.BundleContext
 import org.osgi.service.cm.ManagedService
-import org.scalamodules.core._
-import org.scalamodules.core.RegInfo._
+import org.scalamodules.core.RegIndepInfo.toRegIndepInfo
+import org.scalamodules.core.RegDepInfo.toRegDepInfo
 import org.scalamodules.core.RichBundleContext.toRichBundleContext
-import org.scalamodules.util.jcl.Conversions.mapToJavaDictionary
+import scala.collection.Map
+import scala.collection.immutable.{Map => IMap}
 
 @RunWith(classOf[MavenConfiguredJUnit4TestRunner])
 class BundleTest {
@@ -37,34 +36,36 @@ class BundleTest {
   def test() {
 
     // Start tracking
-    var greetingStatus = "NONE" 
+    var addingIndex = 0
+    var removedIndex = 0
+    var greetingStatus = "NONE"
     val track = context track classOf[Greeting] on {
-      case Adding(service, properties)   => greetingStatus = "ADDING" 
-      case Removed(service, properties)  => greetingStatus = "REMOVED"
+      case Adding(_, _)  => addingIndex += 1; greetingStatus = "ADDING-" + addingIndex
+      case Removed(_, _) => removedIndex += 1; greetingStatus = "REMOVED-" + removedIndex
     }
 
     // Get one service should result in None
-    val noGreeting = context getOne classOf[Greeting] andApply { _ => }
-    assert(noGreeting == None)
+    val noGreeting = context getOne classOf[Greeting] andApply { _.greet }
+    assert(noGreeting == None, "But was: " + noGreeting)
 
-    // Register a service
+    // Registering a service should result in greetingStatus == ADDING-1
     val hello = new Greeting {
-      override def greet = "Hello!"
+      override val greet = "Hello!"
     }
     val helloRegistration = context register hello
-    assert(greetingStatus == "ADDING")
+    assert(greetingStatus == "ADDING-1", "But was: " + greetingStatus)
 
     // Get one service should result in Some("Hello!")
     val helloResult = context getOne classOf[Greeting] andApply { _.greet }
-    assert(helloResult == Some("Hello!"))
+    assert(helloResult == Some("Hello!"), "But was: " + helloResult)
 
-    // Register another service with properties
+    // Register another service with properties should result in greetingStatus == ADDING-2
     val welcome = new Greeting {
-      override def greet = "Welcome!"
+      override val greet = "Welcome!"
     }
     val welcomeRegistration = 
-      context register (welcome as classOf[Greeting] withProps ("service.ranking" -> 1, "name" -> "Welcome-Greeting"))
-    assert(greetingStatus == "ADDING")
+      context register (welcome as classOf[Greeting] withProps ("service.ranking" -> 1, "name" -> "ScalaModules"))
+    assert(greetingStatus == "ADDING-2", "But was: " + greetingStatus)
 
     // Get one service should result in Some("Welcome...")
     val welcomeResult = context getOne classOf[Greeting] andApply { 
@@ -76,13 +77,14 @@ class BundleTest {
         name + " says: " + greeting.greet
       }
     }
-    assert(welcomeResult == Some("Welcome-Greeting says: Welcome!"), "Was: " + welcomeResult)
+    assert(welcomeResult == Some("ScalaModules says: Welcome!"), "But was: " + welcomeResult)
 
+    // Register another service with multiple service interfaces
     context register
       new Greeting with Introduction with Interested {
-        override def greet = "Howdy!"
-        override def myNameIs = "Multi-interface Service."
-        override def andYours = "And what's your name?"
+        override val greet = "Howdy!"
+        override val myNameIs = "Multi-interface Service."
+        override val andYours = "And what's your name?"
       }
 
     // Get one for Introduction should result in a successful look-up
@@ -93,67 +95,58 @@ class BundleTest {
     val interestedResult = context getOne classOf[Interested] andApply { _ => true }
     assert(Some(true) == interestedResult, "But was: " + interestedResult)
 
-    // Get many services should result in Some(List("Hello!", "Welcome!"))
+    // Get many services should result in Some(List("Hello!", "Welcome!", "Howdy!))
     val greetingsResult = context getMany classOf[Greeting] andApply { _.greet }
     assert(greetingsResult != None)
-    val sorter = (s1: String, s2: String) => s1 < s2
-    assert(List("Hello!", "Welcome!", "Howdy!").sort(sorter) == greetingsResult.get.sort(sorter), 
+    assert(List("Hello!", "Welcome!", "Howdy!").sort(Sorter) == greetingsResult.sort(Sorter), 
            "But was: " + greetingsResult)
 
     // Get many services with filter (!(name=*)) should result in Some(List("Hello!", "Howdy!"))
     val filteredGreetingsResult = 
       context getMany classOf[Greeting] withFilter "(!(name=*))" andApply { _.greet }
-    assert(List("Hello!", "Howdy!").sort(sorter) == filteredGreetingsResult.get.sort(sorter), 
+    assert(List("Hello!", "Howdy!").sort(Sorter) == filteredGreetingsResult.sort(Sorter), 
            "But was: " + filteredGreetingsResult)
 
     // Because of the partial function support this must not throw an error!
-    welcomeRegistration.setProperties(immutable.Map("" -> ""))
+    welcomeRegistration setProperties new java.util.Hashtable[String, String]()
 
-    // Unregistering a service should result in greetingStatus == "REMOVED"
+    // Unregistering a service should result in greetingStatus == "REMOVED-1"
     welcomeRegistration.unregister()
-    assert(greetingStatus == "REMOVED")
+    assert(greetingStatus == "REMOVED-1", "But was: " + greetingStatus)
 
-    // Stopping the tracking should result in greetingStatus == "REMOVED" 
-    greetingStatus = "WRONG"
+    // Stopping the tracking should result in greetingStatus == "REMOVED-3" (three Greeting services untracked) 
     track.stop()
-    assert(greetingStatus == "REMOVED")
+    assert(greetingStatus == "REMOVED-3", "But was: " + greetingStatus)
 
-    context register ({ big: BigInt => 
-      new Greeting with Introduction with Interested {
-        override def greet = "Howdy!"
-        override def myNameIs = "Multi-interface Service."
-        override def andYours = "And what's your name?"
-      }
-    } withProps immutable.Map("feature" -> "dependOn") dependOn classOf[BigInt])
-//    context register classOf[Greeting] andAs classOf[Introduction] andAs classOf[Interested] withProps 
-//      immutable.Map("feature" -> "dependOn") dependOn classOf[BigInt] theService { _ => 
-//        new Greeting with Introduction with Interested {
-//          override def greet = "Howdy!"
-//          override def myNameIs = "Multi-interface Service."
-//          override def andYours = "And what's your name?"
-//        }
-//    }
+    context register ({
+      big: BigInt => 
+        new Greeting with Introduction with Interested {
+          override def greet = "Howdy!"
+          override def myNameIs = "Multi-interface Service."
+          override def andYours = "And what's your name?"
+        }
+      } withProps IMap("feature" -> "dependOn") dependOn classOf[BigInt])
     var result = context getMany classOf[Greeting] withFilter "(feature=dependOn)" andApply { _ => }
-    assert(result == None) 
+    assert(result.isEmpty, "But size was: " + result.size) 
 
     val dependeeRegistration1 = context register BigInt(1)
     result = context getMany classOf[Greeting] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result != None) 
-    assert(result.get.size == 1)
+    assert(result.size == 1, "But size was: " + result.size)
 
     val dependeeRegistration2 = context register BigInt(2)
     result = context getMany classOf[Introduction] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result != None) 
-    assert(result.get.size == 1)
+    assert(result.size == 1, "But size was: " + result.size)
 
     dependeeRegistration2.unregister()
     result = context getMany classOf[Interested] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result != None) 
-    assert(result.get.size == 1)
+    assert(result.size == 1, "But size was: " + result.size)
 
     dependeeRegistration1.unregister()
     result = context getMany classOf[Greeting] withFilter "(feature=dependOn)" andApply { _ => }
-    assert(result == None) 
+    assert(result.isEmpty, "But size was: " + result.size) 
 
 //    // Register a managed service
 //    val greeting = new Greeting with BaseManagedService {
@@ -203,6 +196,8 @@ class BundleTest {
 //      context getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
 //    assert(Some(List("REPLACED MESSAGE")) == cmResult, "Was " + cmResult)
   }
+
+  private val Sorter = (s1: String, s2: String) => s1 < s2
 
   @Inject
   private var context: BundleContext = _

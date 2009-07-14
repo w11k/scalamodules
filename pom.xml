@@ -24,16 +24,17 @@
   <modules>
     <module>core</module>
     <module>core-it</module>
-    <module>services</module>
+    <!--module>services</module>
     <module>services-it</module>
     <module>demo</module>
-    <module>assembly</module>
+    <module>assembly</module-->
   </modules>
 
   <properties>
     <scala.version>2.7.5</scala.version>
     <scalatest.version>0.9.5</scalatest.version>
-    <pax-exam.version>0.6.0</pax-exam.version>
+    <osgi.version>4.1.0</osgi.version>
+    <pax-exam.version>1.0.0</pax-exam.version>
   </properties>
 
   <dependencies>
@@ -46,7 +47,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- For integration testing (Pax Exam) only. -->
       <dependency>
         <groupId>org.scala-lang-osgi</groupId>
         <artifactId>scala-library</artifactId>
@@ -54,15 +54,15 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>org.apache.felix</groupId>
+        <groupId>org.osgi</groupId>
         <artifactId>org.osgi.core</artifactId>
-        <version>1.2.0</version>
+        <version>${osgi.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>org.apache.felix</groupId>
+        <groupId>org.osgi</groupId>
         <artifactId>org.osgi.compendium</artifactId>
-        <version>1.2.0</version>
+        <version>${osgi.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
