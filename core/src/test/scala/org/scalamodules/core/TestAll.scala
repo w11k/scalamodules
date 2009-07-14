@@ -27,6 +27,8 @@ object Suites {
     RegIndepInfoSpec ::
     RegDepInfoSpec ::
     RichBundleContextSpec ::
+    RichServiceReferenceSpec ::
+    TrackSpec ::
     internal.UtilSpec :: 
     Nil
 

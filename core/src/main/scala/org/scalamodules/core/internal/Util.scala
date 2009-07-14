@@ -22,6 +22,14 @@ import scala.collection.Map
 object Util {
 
   /**
+   * Implicitly converts the given parameter to Option: Some if not null, else None
+   */
+  implicit def toOption[T](t: T) = t match {
+    case null => None
+    case _    => Some(t) 
+  }
+
+  /**
    * Implicitly converts from Java Dictionary to Scala Map.
    */
   implicit def dictionaryToMap[K, V](dict: Dictionary[K, V]): Map[K, V] = {

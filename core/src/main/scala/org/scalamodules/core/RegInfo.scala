@@ -15,6 +15,8 @@
  */
 package org.scalamodules.core
 
+import internal.Util.toOption
+
 import scala.collection.Map
 import scala.collection.immutable.{Map => IMap}
 
@@ -47,13 +49,13 @@ class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
   /**
    * Register a service under the given service interface.
    */
-  def as(srvIntf: Class[I]) = new RegIndepInfo(srv, toOption(srvIntf), props) 
+  def as(srvIntf: Class[I]) = new RegIndepInfo(srv, srvIntf, props) 
 
   /**
    * Register a service with the given properties.
    */
   def withProps(props: Map[String, Any]) = 
-    new RegIndepInfo(srv, srvIntf, toOption(props)) 
+    new RegIndepInfo(srv, srvIntf, props) 
 
   /**
    * Register a service with the given properties.
@@ -65,10 +67,6 @@ class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
 //    else 
 //      new RegIndepInfo(srv, srvIntf, toOption(IMap[String, Any](props: _*)))
 
-  private def toOption[T](any: T) = any match {
-    case null => None
-    case _    => Some(any) 
-  }
 }
 
 /**
@@ -90,7 +88,7 @@ class RegDepInfo[I <: AnyRef, S <: I, D](val srv: D => S,
                                          val props: Option[Map[String, Any]],
                                          val depIntf: Option[Class[D]]) {
 
-  require(srv != null, "Service to be registered must not be null!")
+  require(srv != null, "Factory function for service to be registered must not be null!")
   require(srvIntf != null, "Option for service interface used for registration must not be null!")
   require(props != null, "Option for service properties must not be null!")
   require(depIntf != null, "Option for interface of the service depending on must not be null!")
@@ -101,13 +99,13 @@ class RegDepInfo[I <: AnyRef, S <: I, D](val srv: D => S,
    * Register a service under the given service interface.
    */
   def as(srvIntf: Class[I]) = 
-    new RegDepInfo(srv, toOption(srvIntf), props, depIntf) 
+    new RegDepInfo(srv, srvIntf, props, depIntf) 
 
   /**
    * Register a service with the given properties.
    */
   def withProps(props: Map[String, Any]) = 
-    new RegDepInfo(srv, srvIntf, toOption(props), depIntf) 
+    new RegDepInfo(srv, srvIntf, props, depIntf) 
 
   /**
    * Register a service with the given properties.
@@ -120,10 +118,5 @@ class RegDepInfo[I <: AnyRef, S <: I, D](val srv: D => S,
    * Register a service depending on a service with the given service interface.
    */
   def dependOn(depIntf: Class[D]) =
-    new RegDepInfo(srv, srvIntf, props, toOption(depIntf))
-
-  private def toOption[T](any: T) = any match {
-    case null => None
-    case _    => Some(any) 
-  }
+    new RegDepInfo(srv, srvIntf, props, depIntf)
 }

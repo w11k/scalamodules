@@ -15,6 +15,8 @@
  */
 package org.scalamodules.core
 
+import internal.Util.toOption
+
 import scala.collection.Map
 import org.osgi.framework.{BundleContext, ServiceReference}
 import org.scalamodules.core.RichBundleContext.toRichBundleContext
@@ -40,10 +42,12 @@ class GetOne[I](ctx: BundleContext, srvIntf: Class[I])
 /**
  * Consume multiple services.
  */
-class GetMany[I](ctx: BundleContext, srvIntf: Class[I], filter: String)
+class GetMany[I](ctx: BundleContext, srvIntf: Class[I], filter: Option[String])
   extends Get(ctx, srvIntf) {
 
-  def this(ctx: BundleContext, srvIntf: Class[I]) = this(ctx, srvIntf, null)
+  require(filter != null, "Option for filter must not be null!")
+
+  def this(ctx: BundleContext, srvIntf: Class[I]) = this(ctx, srvIntf, None)
 
   /**
    * Sets the given filter for service look-ups.
@@ -55,7 +59,7 @@ class GetMany[I](ctx: BundleContext, srvIntf: Class[I], filter: String)
   override private[core] def work[T](f: ServiceReference => Option[T]): Result[T] = {
     assert(f != null, "Function to be applied must not be null!")
     var result: List[Option[T]] = Nil
-    ctx.getServiceReferences(srvIntf.getName, filter) match {
+    ctx.getServiceReferences(srvIntf.getName, filter getOrElse null) match {
       case null =>
       case refs => refs foreach { ref => result = f(ref) :: result } 
     }
@@ -71,12 +75,18 @@ private[core] abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
   /**
    * Applies the given function to the service.
    */
-  def andApply[T](f: I => T) = work(applyWithRef(_, f))
+  def andApply[T](f: I => T) = {
+    require(f != null, "Function to be applied must not be null!")
+    work(applyWithRef(_, f))
+  }
 
   /**
    * Applies the given function to the service and its properties.
    */
-  def andApply[T](f: (I, Map[String, Any]) => T) = work(applyWithRef(_, f))
+  def andApply[T](f: (I, Map[String, Any]) => T) = {
+    require(f != null, "Function to be applied must not be null!")
+    work(applyWithRef(_, f))
+  }
 
   private[core] type Result[T]
 

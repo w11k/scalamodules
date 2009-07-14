@@ -15,6 +15,8 @@
  */
 package org.scalamodules.core
 
+import internal.Util.toOption
+
 import scala.collection.Map
 import org.osgi.framework.{BundleContext, Filter, ServiceReference}
 import org.osgi.util.tracker.ServiceTracker
@@ -23,12 +25,13 @@ import org.scalamodules.core.RichServiceReference.toRichServiceReference
 /**
  * Provides service tracking. 
  */
-class Track[I](ctx: BundleContext, srvIntf: Class[I], filter: String) {
+class Track[I](ctx: BundleContext, srvIntf: Class[I], filter: Option[String]) {
 
   require(ctx != null, "BundleContext must not be null!")
   require(srvIntf != null, "Service interface must not be null!")
+  require(filter != null, "Option for filter must not be null!")
   
-  def this(ctx: BundleContext, srvIntf: Class[I]) = this(ctx, srvIntf, null)
+  def this(ctx: BundleContext, srvIntf: Class[I]) = this(ctx, srvIntf, None)
 
   /**
    * Sets the given filter for service look-ups.
@@ -39,40 +42,49 @@ class Track[I](ctx: BundleContext, srvIntf: Class[I], filter: String) {
    * Handles a TrackEvent.
    */
   def on(f: PartialFunction[TrackEvent[I], Unit]): Track[I] = {
+    
     require(f != null, "TrackEvent handler function must not be null!")
+    
     tracker = new ServiceTracker(ctx, createFilter, null) {
+      
       override def addingService(ref: ServiceReference) = {
         val service = ctx.getService(ref)  // Cannot be null (-> spec.)
         val trackEvent = Adding(service.asInstanceOf[I], ref.properties)
         if (f.isDefinedAt(trackEvent)) f(trackEvent)
         service
       }
+      
       override def modifiedService(ref: ServiceReference, service: AnyRef) = {
         val trackEvent = Modified(service.asInstanceOf[I], ref.properties)
         if (f.isDefinedAt(trackEvent)) f(trackEvent)
         ctx.ungetService(ref)
       }
+      
       override def removedService(ref: ServiceReference, service: AnyRef) = {
         val trackEvent = Removed(service.asInstanceOf[I], ref.properties) 
         if (f.isDefinedAt(trackEvent)) f(trackEvent)
         ctx.ungetService(ref)
       }
     }
+    
     tracker.open()
+    
     this
   }
 
   /**
    * Stops tracking.
    */
-  def stop() { if (tracker != null) tracker.close() }
+  def stop() { 
+    if (tracker != null) tracker.close()
+  }
   
   private var tracker: ServiceTracker = _
 
   private def createFilter: Filter = {
     val filterString = filter match {
-      case null => String.format("(objectClass=%s)", srvIntf.getName)
-      case s    => String.format("(&(objectClass=%s)%s)", srvIntf.getName, s)
+      case None    => String.format("(objectClass=%s)", srvIntf.getName)
+      case Some(s) => String.format("(&(objectClass=%s)%s)", srvIntf.getName, s)
     }
     ctx.createFilter(filterString)
   } 
