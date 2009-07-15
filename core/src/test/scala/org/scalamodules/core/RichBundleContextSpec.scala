@@ -133,15 +133,14 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
 
     it("should throw an IAE when called with a null RegDepInfo") {
       intercept[IllegalArgumentException] { 
-        rbc register null.asInstanceOf[RegDepInfo[Nothing, Nothing, Nothing]]
+        rbc.register(null.asInstanceOf[RegDepInfo[Nothing, Nothing, AnyRef]])
       }
     }
 
-//    it("should return a not-null ServiceTracker when called with a RegDepInfo") {
-//      EasyMock reset mockCtx
-//      val result = mockCtx register new RegDepInfo((s: String) => s)
-//      result should not be null
-//    }
+    it("JUST FOR PLAYING AROUND!!!") {
+      EasyMock reset mockCtx
+      mockCtx register new RegDepInfo((s: String) => new java.util.Date)
+    }
   }
 
   describe("RichBundleContext.getOne(Class)") {

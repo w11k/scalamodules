@@ -128,25 +128,19 @@ object RegDepInfoSpec extends Spec with ShouldMatchers {
 
     it("should throw an IAE when constructed again with a null service") {
       intercept[IllegalArgumentException] { 
-        new RegDepInfo(null, None, None, None)
+        new RegDepInfo(null, None, None)
       }
     }
 
     it("should throw an IAE when constructed with a null service interface option") {
       intercept[IllegalArgumentException] { 
-        new RegDepInfo((d: Date) => "ScalaModules", null, None, Some(classOf[Date]))
+        new RegDepInfo((d: Date) => "ScalaModules", null, None)
       }
     }
 
     it("should throw an IAE when constructed with a null service properties option") {
       intercept[IllegalArgumentException] { 
-        new RegDepInfo((d: Date) => "ScalaModules", Some(classOf[String]), null, Some(classOf[Date]))
-      }
-    }
-
-    it("should throw an IAE when constructed with a null dependency option") {
-      intercept[IllegalArgumentException] { 
-        new RegDepInfo[String, String, Date]((d: Date) => "ScalaModules", Some(classOf[String]), None, null)
+        new RegDepInfo((d: Date) => "ScalaModules", Some(classOf[String]), null)
       }
     }
   }
@@ -190,22 +184,6 @@ object RegDepInfoSpec extends Spec with ShouldMatchers {
       val newInfo = info withProps props
       newInfo should not be null
       (newInfo.props getOrElse IMap.empty).getOrElse("Scala", "") should equal ("Modules")
-    }
-  }
-
-  describe("RegDepInfo.dependOn(Class)") {
-    
-    it("should return a new RegDepInfo with depIntf == Some(Class) when called with a not-null Class") {
-      val clazz = classOf[Date]
-      val newInfo = info dependOn clazz
-      newInfo should not be null
-      newInfo.depIntf should equal (Some(clazz))
-    }
-
-    it("should return a new RegDepInfo with srvIntf == None when called with a null Class") {
-      val newInfo = info dependOn null
-      newInfo should not be null
-      newInfo.depIntf should equal (None)
     }
   }
 }

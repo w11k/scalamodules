@@ -75,45 +75,38 @@ object RegDepInfo {
   /**
    * Implicitly converts the given function to RegDepInfo.
    */
-  implicit def toRegDepInfo[S <: AnyRef, D](srv: D => S) = new RegDepInfo(srv) 
+  implicit def toRegDepInfo[S <: AnyRef, D](srvFactory: D => S) = 
+    new RegDepInfo(srvFactory) 
 }
 
 /**
  * Registration information for a service depending on another service.
  */
-class RegDepInfo[I <: AnyRef, S <: I, D](val srv: D => S,
-                                         val srvIntf: Option[Class[I]],
-                                         val props: Option[Map[String, Any]],
-                                         val depIntf: Option[Class[D]]) {
+class RegDepInfo[I <: AnyRef, S <: I, D <: AnyRef](val srvFactory: D => S,
+                                                   val srvIntf: Option[Class[I]],
+                                                   val props: Option[Map[String, Any]]) {
 
-  require(srv != null, "Factory function for service to be registered must not be null!")
+  require(srvFactory != null, "Factory function for service to be registered must not be null!")
   require(srvIntf != null, "Option for service interface used for registration must not be null!")
   require(props != null, "Option for service properties must not be null!")
-  require(depIntf != null, "Option for interface of the service depending on must not be null!")
 
-  def this(srv: D => S) = this(srv, None, None, None)
+  def this(srvFactory: D => S) = this(srvFactory, None, None)
 
   /**
    * Register a service under the given service interface.
    */
   def as(srvIntf: Class[I]) = 
-    new RegDepInfo(srv, srvIntf, props, depIntf) 
+    new RegDepInfo(srvFactory, srvIntf, props) 
 
   /**
    * Register a service with the given properties.
    */
   def withProps(props: Map[String, Any]) = 
-    new RegDepInfo(srv, srvIntf, props, depIntf) 
+    new RegDepInfo(srvFactory, srvIntf, props) 
 
   /**
    * Register a service with the given properties.
    */
   def withProps(props: (String, Any)*) = 
-    new RegDepInfo(srv, srvIntf, IMap[String, Any](props: _*), depIntf) 
-
-  /**
-   * Register a service depending on a service with the given service interface.
-   */
-  def dependOn(depIntf: Class[D]) =
-    new RegDepInfo(srv, srvIntf, props, depIntf)
+    new RegDepInfo(srvFactory, srvIntf, IMap[String, Any](props: _*)) 
 }

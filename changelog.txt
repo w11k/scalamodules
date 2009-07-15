@@ -7,3 +7,4 @@ getMany returns List, not an Option[List]
 
 withProperties is replaced by withProps
 
+service dependencies are declared implicitly via Manifest now

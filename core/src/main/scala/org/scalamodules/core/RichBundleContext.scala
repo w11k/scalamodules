@@ -21,6 +21,9 @@ import org.osgi.framework.{BundleContext, ServiceReference, ServiceRegistration}
 import org.osgi.util.tracker.ServiceTracker
 import org.scalamodules.core.RichServiceReference.toRichServiceReference
 import scala.collection.Map
+import scala.reflect.Manifest
+
+// TODO Replace Map[String, Any] through custom type Props: type Props = Map[String, Any]
 
 /**
  * Companion object for RichBundleContext providing implicit conversions.
@@ -57,36 +60,31 @@ class RichBundleContext(ctx: BundleContext) {
   /**
    * Register a service depending on another service. 
    */
-  def register[I <: AnyRef, S <: I, D](info: RegDepInfo[I, S, D]) {
+  def register[I <: AnyRef, S <: I, D <: AnyRef](info: RegDepInfo[I, S, D])
+                                                (implicit mf: Manifest[D]) {
 
     require(info != null, "RegIndepInfo must not be null!")
 
-    info.depIntf match {
-      case None          =>
-      case Some(depIntf) => new ServiceTracker(ctx, depIntf.getName, null) {
-        override def addingService(ref: ServiceReference) = 
-          synchronized {
-            satisfied match {
-              case true  =>
-              case false => {
-                satisfied = true
-                val s = info.srv((ctx getService ref).asInstanceOf[D])
-                ctx.registerService(srvIntfs(s, info.srvIntf), 
-                                    s, 
-                                    props(info.props))
-              }
-            }
+    val tracker = new ServiceTracker(ctx, mf.erasure.getName, null) {
+      override def addingService(ref: ServiceReference) = 
+        synchronized {
+          if (!satisfied) {
+            satisfied = true
+            val dep = (ctx getService ref).asInstanceOf[D]
+            val srv = info.srvFactory(dep)
+            ctx.registerService(srvIntfs(srv, info.srvIntf), srv, props(info.props))
           }
-        override def removedService(ref: ServiceReference, reg: AnyRef) = {
-          synchronized {
-            reg.asInstanceOf[ServiceRegistration].unregister()
-            satisfied = false
-          }
-          context ungetService ref
         }
-        private var satisfied = false
-      }.open()
+      override def removedService(ref: ServiceReference, reg: AnyRef) = {
+        synchronized {
+          reg.asInstanceOf[ServiceRegistration].unregister()
+          satisfied = false
+        }
+        context ungetService ref
+      }
+      private var satisfied = false
     }
+    tracker.open()
   }
 
   /**
