@@ -136,11 +136,6 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
         rbc.register(null.asInstanceOf[RegDepInfo[Nothing, Nothing, AnyRef]])
       }
     }
-
-    it("JUST FOR PLAYING AROUND!!!") {
-      EasyMock reset mockCtx
-      mockCtx register new RegDepInfo((s: String) => new java.util.Date)
-    }
   }
 
   describe("RichBundleContext.getOne(Class)") {

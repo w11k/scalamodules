@@ -26,3 +26,7 @@ trait Introduction {
 trait Interested {
   def andYours: String
 }
+
+trait Reverser {
+  def reverse: String
+}

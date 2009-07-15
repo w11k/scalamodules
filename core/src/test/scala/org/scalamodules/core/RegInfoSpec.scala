@@ -112,8 +112,8 @@ object RegDepInfoSpec extends Spec with ShouldMatchers {
 
   describe("The object RegDepInfo") {
 
-    it("should implicitly convert an AnyRef to RegDepInfo") {
-      val info: RegDepInfo[String, String, Int] = (i: Int) => ""
+    it("should implicitly convert a service factory functino to RegDepInfo") {
+      val info: RegDepInfo[String, String, AnyRef] = ((anyRef: AnyRef) => "")
       info should not be null
     }
   }

@@ -75,7 +75,7 @@ object RegDepInfo {
   /**
    * Implicitly converts the given function to RegDepInfo.
    */
-  implicit def toRegDepInfo[S <: AnyRef, D](srvFactory: D => S) = 
+  implicit def toRegDepInfo[S <: AnyRef, D <: AnyRef](srvFactory: D => S) = 
     new RegDepInfo(srvFactory) 
 }
 

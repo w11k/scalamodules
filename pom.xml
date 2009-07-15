@@ -39,7 +39,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.scala-lang</groupId>
+      <groupId>org.scala-lang-osgi</groupId>
       <artifactId>scala-library</artifactId>
       <version>${scala.version}</version>
     </dependency>
@@ -47,12 +47,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.scala-lang-osgi</groupId>
-        <artifactId>scala-library</artifactId>
-        <version>${scala.version}</version>
-        <scope>provided</scope>
-      </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.core</artifactId>

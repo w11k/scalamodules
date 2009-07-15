@@ -51,7 +51,6 @@ class RichBundleContext(ctx: BundleContext) {
     
     require(info != null, "RegIndepInfo must not be null!")
 
-    srvIntfs(info.srv, info.srvIntf) foreach println
     ctx.registerService(srvIntfs(info.srv, info.srvIntf), 
                         info.srv, 
                         props(info.props))
@@ -68,11 +67,13 @@ class RichBundleContext(ctx: BundleContext) {
     val tracker = new ServiceTracker(ctx, mf.erasure.getName, null) {
       override def addingService(ref: ServiceReference) = 
         synchronized {
-          if (!satisfied) {
-            satisfied = true
-            val dep = (ctx getService ref).asInstanceOf[D]
-            val srv = info.srvFactory(dep)
-            ctx.registerService(srvIntfs(srv, info.srvIntf), srv, props(info.props))
+          satisfied match {
+            case true  => null
+            case false =>
+              satisfied = true
+              val dep = (ctx getService ref).asInstanceOf[D]
+              val srv = info.srvFactory(dep)
+              ctx.registerService(srvIntfs(srv, info.srvIntf), srv, props(info.props))
           }
         }
       override def removedService(ref: ServiceReference, reg: AnyRef) = {
@@ -85,6 +86,7 @@ class RichBundleContext(ctx: BundleContext) {
       private var satisfied = false
     }
     tracker.open()
+    // TODO Eventually return the ServiceTracker?
   }
 
   /**

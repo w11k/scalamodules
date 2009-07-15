@@ -15,7 +15,7 @@
  */
 package org.scalamodules.core.test
 
-import java.util.Dictionary
+import java.util.{Date, Dictionary}
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.ops4j.pax.exam.CoreOptions._
@@ -80,7 +80,7 @@ class BundleTest {
     assert(welcomeResult == Some("ScalaModules says: Welcome!"), "But was: " + welcomeResult)
 
     // Register another service with multiple service interfaces
-    context register
+    val multiRegistration = context register
       new Greeting with Introduction with Interested {
         override val greet = "Howdy!"
         override val myNameIs = "Multi-interface Service."
@@ -117,35 +117,31 @@ class BundleTest {
     // Stopping the tracking should result in greetingStatus == "REMOVED-3" (three Greeting services untracked) 
     track.stop()
     assert(greetingStatus == "REMOVED-3", "But was: " + greetingStatus)
+    
+    helloRegistration.unregister()
+    multiRegistration.unregister()
 
-    context register ({
-      big: BigInt => 
-        new Greeting with Introduction with Interested {
-          override def greet = "Howdy!"
-          override def myNameIs = "Multi-interface Service."
-          override def andYours = "And what's your name?"
-        }
-      } withProps IMap("feature" -> "dependOn") dependOn classOf[BigInt])
-    var result = context getMany classOf[Greeting] withFilter "(feature=dependOn)" andApply { _ => }
+    context register ( {grt: Greeting => new { val g = grt} with Reverser { def reverse = new StringBuilder(grt.greet).reverse.toString } } withProps IMap("feature" -> "dependOn"))
+    var result = context getMany classOf[Reverser] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result.isEmpty, "But size was: " + result.size) 
 
-    val dependeeRegistration1 = context register BigInt(1)
-    result = context getMany classOf[Greeting] withFilter "(feature=dependOn)" andApply { _ => }
+    val dependeeRegistration1 = context register hello
+    result = context getMany classOf[Reverser] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result != None) 
     assert(result.size == 1, "But size was: " + result.size)
 
-    val dependeeRegistration2 = context register BigInt(2)
-    result = context getMany classOf[Introduction] withFilter "(feature=dependOn)" andApply { _ => }
+    val dependeeRegistration2 = context register welcome
+    result = context getMany classOf[Reverser] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result != None) 
     assert(result.size == 1, "But size was: " + result.size)
 
     dependeeRegistration2.unregister()
-    result = context getMany classOf[Interested] withFilter "(feature=dependOn)" andApply { _ => }
+    result = context getMany classOf[Reverser] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result != None) 
     assert(result.size == 1, "But size was: " + result.size)
 
     dependeeRegistration1.unregister()
-    result = context getMany classOf[Greeting] withFilter "(feature=dependOn)" andApply { _ => }
+    result = context getMany classOf[Reverser] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result.isEmpty, "But size was: " + result.size) 
 
 //    // Register a managed service
