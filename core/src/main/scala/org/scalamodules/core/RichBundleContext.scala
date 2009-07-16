@@ -52,6 +52,7 @@ private[core] class RichBundleContext(ctx: BundleContext) {
     require(info != null, "RegIndepInfo must not be null!")
 
     val tracker = new ServiceTracker(ctx, mf.erasure.getName, null) {
+
       override def addingService(ref: ServiceReference) = 
         synchronized {
           satisfied match {
@@ -63,6 +64,7 @@ private[core] class RichBundleContext(ctx: BundleContext) {
               ctx.registerService(srvIntfs(srv, info.srvIntf), srv, props(info.props))
           }
         }
+
       override def removedService(ref: ServiceReference, reg: AnyRef) = {
         synchronized {
           reg.asInstanceOf[ServiceRegistration].unregister()
@@ -70,10 +72,13 @@ private[core] class RichBundleContext(ctx: BundleContext) {
         }
         context ungetService ref
       }
+
       private var satisfied = false
     }
+
     tracker.open()
-    // TODO Eventually return the ServiceTracker?
+
+    tracker
   }
 
   /**

@@ -38,7 +38,7 @@ class BundleTest {
     var addingIndex = 0
     var removedIndex = 0
     var greetingStatus = "NONE"
-    val track = context track classOf[Greeting] on {
+    val tracker = context track classOf[Greeting] on {
       case Adding(_, _)  => addingIndex += 1; greetingStatus = "ADDING-" + addingIndex
       case Removed(_, _) => removedIndex += 1; greetingStatus = "REMOVED-" + removedIndex
     }
@@ -114,7 +114,7 @@ class BundleTest {
     assert(greetingStatus == "REMOVED-1", "But was: " + greetingStatus)
 
     // Stopping the tracking should result in greetingStatus == "REMOVED-3" (three Greeting services untracked) 
-    track.stop()
+    tracker.close()
     assert(greetingStatus == "REMOVED-3", "But was: " + greetingStatus)
     
     helloRegistration.unregister()

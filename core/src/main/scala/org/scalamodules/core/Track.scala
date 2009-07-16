@@ -41,42 +41,35 @@ private class Track[I](ctx: BundleContext, srvIntf: Class[I], filter: Option[Str
   /**
    * Handles a TrackEvent.
    */
-  def on(f: PartialFunction[TrackEvent[I], Unit]): Track[I] = {
-    
+  def on(f: PartialFunction[TrackEvent[I], Unit]) = {
+
     require(f != null, "TrackEvent handler function must not be null!")
-    
+
     tracker = new ServiceTracker(ctx, createFilter, null) {
-      
+
       override def addingService(ref: ServiceReference) = {
         val service = ctx.getService(ref)  // Cannot be null (-> spec.)
         val trackEvent = Adding(service.asInstanceOf[I], ref.properties)
         if (f.isDefinedAt(trackEvent)) f(trackEvent)
         service
       }
-      
+
       override def modifiedService(ref: ServiceReference, service: AnyRef) = {
         val trackEvent = Modified(service.asInstanceOf[I], ref.properties)
         if (f.isDefinedAt(trackEvent)) f(trackEvent)
         ctx.ungetService(ref)
       }
-      
+
       override def removedService(ref: ServiceReference, service: AnyRef) = {
         val trackEvent = Removed(service.asInstanceOf[I], ref.properties) 
         if (f.isDefinedAt(trackEvent)) f(trackEvent)
         ctx.ungetService(ref)
       }
     }
-    
-    tracker.open()
-    
-    this
-  }
 
-  /**
-   * Stops tracking.
-   */
-  def stop() { 
-    if (tracker != null) tracker.close()
+    tracker.open()
+
+    tracker
   }
   
   private var tracker: ServiceTracker = _
