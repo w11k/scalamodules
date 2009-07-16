@@ -15,26 +15,15 @@
  */
 package org.scalamodules.core
 
+import Preamble._
 import internal.Util.mapToJavaDictionary
 
 import org.osgi.framework.{BundleContext, ServiceReference, ServiceRegistration}
 import org.osgi.util.tracker.ServiceTracker
-import org.scalamodules.core.RichServiceReference.toRichServiceReference
 import scala.collection.Map
 import scala.reflect.Manifest
 
-// TODO Replace Map[String, Any] through custom type Props: type Props = Map[String, Any]
-
-/**
- * Companion object for RichBundleContext providing implicit conversions.
- */
-object RichBundleContext {
-
-  /**
-   * Implicitly converts the given BundleContext to RichBundleContext.
-   */
-  implicit def toRichBundleContext(ctx: BundleContext) = new RichBundleContext(ctx) 
-}
+// TODO Replace Props through custom type Props: type Props = Props
 
 /**
  * Rich wrapper for BundleContext: 
@@ -118,6 +107,6 @@ class RichBundleContext(ctx: BundleContext) {
       case None          => interfacesOrClass(srv)
     }
 
-  private def props(p: Option[Map[String, Any]]) = 
+  private def props(p: Option[Props]) = 
     p map { mapToJavaDictionary(_) } getOrElse null
 }

@@ -15,15 +15,15 @@
  */
 package org.scalamodules.core
 
+import Preamble._
 import internal.Util
-import internal.Util.mapToJavaDictionary
+import Util.mapToJavaDictionary
 
 import java.util.Dictionary
 import org.easymock.{EasyMock, IArgumentMatcher}
 import EasyMock.{aryEq, eq, isNull, same}
 import org.osgi.framework.{BundleContext, ServiceRegistration}
 import org.osgi.util.tracker.ServiceTracker
-import org.scalamodules.core.RichBundleContext.toRichBundleContext
 import org.scalatest.Spec
 import org.scalatest.matchers.ShouldMatchers
 import scala.collection.Map
@@ -33,7 +33,7 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
 
   val mockCtx = EasyMock createNiceMock classOf[BundleContext]
 
-  describe("The object RichBundleContext") {
+  describe("The function RichBundleContext.toRichBundleContext") {
 
     it("should implicitly convert a BundleContext to RichBundleContext") {
       val rbc: RichBundleContext = mockCtx

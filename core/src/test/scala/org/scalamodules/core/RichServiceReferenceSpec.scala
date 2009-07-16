@@ -15,14 +15,14 @@
  */
 package org.scalamodules.core
 
+import Preamble._
 import internal.Util
-import internal.Util.mapToJavaDictionary
+import Util.mapToJavaDictionary
 
 import java.util.Dictionary
 import org.easymock.{EasyMock, IArgumentMatcher}
 import EasyMock.{aryEq, eq, isNull, same}
 import org.osgi.framework.{BundleContext, ServiceReference}
-import org.scalamodules.core.RichServiceReference.toRichServiceReference
 import org.scalatest.Spec
 import org.scalatest.matchers.ShouldMatchers
 import scala.collection.Map
@@ -32,7 +32,7 @@ object RichServiceReferenceSpec extends Spec with ShouldMatchers {
 
   val mockRef = EasyMock createNiceMock classOf[ServiceReference]
 
-  describe("The object RichServiceReference") {
+  describe("The function RichServiceReference.toRichServiceReference") {
 
     it("should implicitly convert a ServiceReference to RichServiceReference") {
       EasyMock reset mockRef

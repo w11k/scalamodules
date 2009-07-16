@@ -58,6 +58,6 @@ class TestAll {
     }
 
     suite.execute(None, reporter, new Stopper {}, Set[String](), Set[String](), 
-                  Map[String, Any](), None)
+                  Map(), None)
   }
 }

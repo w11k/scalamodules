@@ -15,8 +15,8 @@
  */
 package org.scalamodules.core
 
-import org.scalamodules.core.RegDepInfo.toRegDepInfo
-import org.scalamodules.core.RegIndepInfo.toRegIndepInfo
+import Preamble._
+
 import org.scalatest.Spec
 import org.scalatest.matchers.ShouldMatchers
 import scala.collection.Map
@@ -26,7 +26,7 @@ object RegIndepInfoSpec extends Spec with ShouldMatchers {
 
   val info = new RegIndepInfo("ScalaModules")
 
-  describe("The object RegIndepInfo") {
+  describe("The funtion Preamble.toRegIndepInfo") {
 
     it("should implicitly convert an AnyRef to RegIndepInfo") {
       val info: RegIndepInfo[String, String] = ""
@@ -87,7 +87,7 @@ object RegIndepInfoSpec extends Spec with ShouldMatchers {
     }
 
     it("should return a new RegIndepInfo with srvIntf == None when called with a null Map") {
-      val newInfo = info withProps null.asInstanceOf[Map[String, Any]]
+      val newInfo = info withProps null.asInstanceOf[Props]
       newInfo should not be null
       newInfo.props should equal (None)
     }
@@ -110,7 +110,7 @@ object RegDepInfoSpec extends Spec with ShouldMatchers {
 
   val info = new RegDepInfo((d: Date) => "ScalaModules-" + d)
 
-  describe("The object RegDepInfo") {
+  describe("The function RegDepInfo.toRegDepInfo") {
 
     it("should implicitly convert a service factory functino to RegDepInfo") {
       val info: RegDepInfo[String, String, AnyRef] = ((anyRef: AnyRef) => "")
@@ -171,7 +171,7 @@ object RegDepInfoSpec extends Spec with ShouldMatchers {
     }
 
     it("should return a new RegDepInfo with srvIntf == None when called with a null Map") {
-      val newInfo = info withProps null.asInstanceOf[Map[String, Any]]
+      val newInfo = info withProps null.asInstanceOf[Props]
       newInfo should not be null
       newInfo.props should equal (None)
     }

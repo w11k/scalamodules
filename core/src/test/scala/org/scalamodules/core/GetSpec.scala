@@ -15,6 +15,8 @@
  */
 package org.scalamodules.core
 
+import Preamble.Props
+
 import org.easymock.EasyMock
 import org.osgi.framework.{BundleContext, ServiceReference}
 import scala.collection.Map
@@ -52,7 +54,7 @@ object GetSpec extends Spec with ShouldMatchers {
 
     it("should throw an IAE when called with another null function") {
       intercept[IllegalArgumentException] { 
-        get andApply null.asInstanceOf[(String, Map[String, Any]) => String]
+        get andApply null.asInstanceOf[(String, Props) => String]
       }
     }
   }
@@ -94,7 +96,7 @@ object GetOneSpec extends Spec with ShouldMatchers {
       EasyMock replay mockCtx
       
       val result = getOne andApply { 
-        (s: String, props: Map[String, Any]) => s + (props get "p" getOrElse "") 
+        (s: String, props: Props) => s + (props get "p" getOrElse "") 
       }
       result should equal (Some("ScalaModules"))
     }
@@ -150,7 +152,7 @@ object GetManySpec extends Spec with ShouldMatchers {
       EasyMock replay mockCtx
  
       val result = getMany andApply {
-        (s: String, props: Map[String, Any]) => s + (props get "p" getOrElse "")
+        (s: String, props: Props) => s + (props get "p" getOrElse "")
       }
       result should equal ("ScalaModules" :: Nil)
     }

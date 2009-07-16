@@ -15,12 +15,11 @@
  */
 package org.scalamodules.core
 
+import Preamble._
 import internal.Util.toOption
 
 import scala.collection.Map
 import org.osgi.framework.{BundleContext, ServiceReference}
-import org.scalamodules.core.RichBundleContext.toRichBundleContext
-import org.scalamodules.core.RichServiceReference.toRichServiceReference
 
 /**
  * Consume a single service.
@@ -83,7 +82,7 @@ private[core] abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
   /**
    * Applies the given function to the service and its properties.
    */
-  def andApply[T](f: (I, Map[String, Any]) => T) = {
+  def andApply[T](f: (I, Props) => T) = {
     require(f != null, "Function to be applied must not be null!")
     work(applyWithRef(_, f))
   }
@@ -104,7 +103,7 @@ private[core] abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
   }
 
   private def applyWithRef[T](ref: ServiceReference,
-                              f: (I, Map[String, Any]) => T): Option[T] = {
+                              f: (I, Props) => T): Option[T] = {
     assert(ref != null, "ServiceReference must not be null!")
     assert(f != null, "Function to be applied must not be null!")
     try {

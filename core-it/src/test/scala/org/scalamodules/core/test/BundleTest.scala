@@ -15,6 +15,8 @@
  */
 package org.scalamodules.core.test
 
+import Preamble._
+
 import java.util.{Date, Dictionary}
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,9 +25,6 @@ import org.ops4j.pax.exam.Inject
 import org.ops4j.pax.exam.junit._
 import org.osgi.framework.BundleContext
 import org.osgi.service.cm.ManagedService
-import org.scalamodules.core.RegIndepInfo.toRegIndepInfo
-import org.scalamodules.core.RegDepInfo.toRegDepInfo
-import org.scalamodules.core.RichBundleContext.toRichBundleContext
 import scala.collection.Map
 import scala.collection.immutable.{Map => IMap}
 

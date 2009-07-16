@@ -15,21 +15,7 @@
  */
 package org.scalamodules.core
 
-import scala.collection.Map
-import scala.collection.immutable.{Map => IMap}
 import org.osgi.framework.ServiceReference
-
-/**
- * Companion object for RichServiceReference providing implicit conversions.
- */
-object RichServiceReference {
-  
-  /**
-   * Implicitly converts the given ServiceReference to RichServiceReference.
-   */
-  implicit def toRichServiceReference(ref: ServiceReference) = 
-    new RichServiceReference(ref)
-}
 
 /**
  * Rich wrapper for ServiceReference: 
@@ -39,7 +25,7 @@ class RichServiceReference(ref: ServiceReference) {
 
   require(ref != null, "ServiceReference must not be null!")
 
-  val properties = IMap(fromRef(ref): _*)
+  val properties = Map(fromRef(ref): _*)
 
   private def fromRef(ref: ServiceReference): Array[(String, Any)] = {
     ref.getPropertyKeys match {
