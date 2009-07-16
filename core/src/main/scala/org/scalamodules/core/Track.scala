@@ -25,7 +25,7 @@ import org.osgi.util.tracker.ServiceTracker
 /**
  * Provides service tracking. 
  */
-class Track[I](ctx: BundleContext, srvIntf: Class[I], filter: Option[String]) {
+private class Track[I](ctx: BundleContext, srvIntf: Class[I], filter: Option[String]) {
 
   require(ctx != null, "BundleContext must not be null!")
   require(srvIntf != null, "Service interface must not be null!")

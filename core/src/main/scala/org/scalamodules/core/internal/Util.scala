@@ -19,7 +19,7 @@ import java.util.{Dictionary, Enumeration}
 import scala.Iterator
 import scala.collection.Map
 
-object Util {
+private[core] object Util {
 
   /**
    * Implicitly converts the given parameter to Option: Some if not null, else None

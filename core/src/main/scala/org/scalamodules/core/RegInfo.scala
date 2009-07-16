@@ -24,7 +24,7 @@ import scala.collection.immutable.{Map => IMap}
 /**
  * Registration information for an independent service.
  */
-class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
+private[core] class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
                                         val srvIntf: Option[Class[I]],
                                         val props: Option[Props]) {
 
@@ -60,7 +60,7 @@ class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
 /**
  * Registration information for a service depending on another service.
  */
-class RegDepInfo[I <: AnyRef, S <: I, D <: AnyRef](val srvFactory: D => S,
+private[core] class RegDepInfo[I <: AnyRef, S <: I, D <: AnyRef](val srvFactory: D => S,
                                                    val srvIntf: Option[Class[I]],
                                                    val props: Option[Props]) {
 

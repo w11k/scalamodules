@@ -21,7 +21,7 @@ import org.osgi.framework.ServiceReference
  * Rich wrapper for ServiceReference: 
  * Makes handling of service properties more convenient.
  */
-class RichServiceReference(ref: ServiceReference) {
+private[core] class RichServiceReference(ref: ServiceReference) {
 
   require(ref != null, "ServiceReference must not be null!")
 

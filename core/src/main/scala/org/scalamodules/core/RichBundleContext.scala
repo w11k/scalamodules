@@ -23,13 +23,11 @@ import org.osgi.util.tracker.ServiceTracker
 import scala.collection.Map
 import scala.reflect.Manifest
 
-// TODO Replace Props through custom type Props: type Props = Props
-
 /**
  * Rich wrapper for BundleContext: 
  * Makes service handling more convenient and enables the ScalaModules DSL.
  */
-class RichBundleContext(ctx: BundleContext) {
+private[core] class RichBundleContext(ctx: BundleContext) {
   
   require(ctx != null, "BundleContext must not be null!")
 

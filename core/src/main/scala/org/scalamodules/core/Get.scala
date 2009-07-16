@@ -24,7 +24,7 @@ import org.osgi.framework.{BundleContext, ServiceReference}
 /**
  * Consume a single service.
  */
-class GetOne[I](ctx: BundleContext, srvIntf: Class[I])
+private class GetOne[I](ctx: BundleContext, srvIntf: Class[I])
     extends Get(ctx, srvIntf) {
 
   override private[core] type Result[T] = Option[T]
@@ -41,7 +41,7 @@ class GetOne[I](ctx: BundleContext, srvIntf: Class[I])
 /**
  * Consume multiple services.
  */
-class GetMany[I](ctx: BundleContext, srvIntf: Class[I], filter: Option[String])
+private class GetMany[I](ctx: BundleContext, srvIntf: Class[I], filter: Option[String])
   extends Get(ctx, srvIntf) {
 
   require(filter != null, "Option for filter must not be null!")
@@ -66,7 +66,7 @@ class GetMany[I](ctx: BundleContext, srvIntf: Class[I], filter: Option[String])
   }
 }
 
-private[core] abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
+private abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
 
   require(ctx != null, "BundleContext must not be null!")
   require(srvIntf != null, "Service interface must not be null!")
