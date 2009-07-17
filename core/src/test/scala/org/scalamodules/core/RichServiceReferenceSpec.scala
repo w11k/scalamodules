@@ -32,7 +32,7 @@ object RichServiceReferenceSpec extends Spec with ShouldMatchers {
 
   val mockRef = EasyMock createNiceMock classOf[ServiceReference]
 
-  describe("The function RichServiceReference.toRichServiceReference") {
+  describe("The function Preamble.toRichServiceReference") {
 
     it("should implicitly convert a ServiceReference to RichServiceReference") {
       EasyMock reset mockRef

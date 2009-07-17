@@ -110,7 +110,7 @@ object RegDepInfoSpec extends Spec with ShouldMatchers {
 
   val info = new RegDepInfo((d: Date) => "ScalaModules-" + d)
 
-  describe("The function RegDepInfo.toRegDepInfo") {
+  describe("The function Preamble.toRegDepInfo") {
 
     it("should implicitly convert a service factory functino to RegDepInfo") {
       val info: RegDepInfo[String, String, AnyRef] = ((anyRef: AnyRef) => "")

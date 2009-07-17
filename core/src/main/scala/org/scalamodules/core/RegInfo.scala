@@ -25,8 +25,8 @@ import scala.collection.immutable.{Map => IMap}
  * Registration information for an independent service.
  */
 private[core] class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
-                                        val srvIntf: Option[Class[I]],
-                                        val props: Option[Props]) {
+                                                      val srvIntf: Option[Class[I]],
+                                                      val props: Option[Props]) {
 
   require(srv != null, "Service to be registered must not be null!")
   require(srvIntf != null, "Option for service interface used for registration must not be null!")
@@ -39,22 +39,33 @@ private[core] class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
   /**
    * Register a service under the given service interface.
    */
-  def as(srvIntf: Class[I]) = new RegIndepInfo(srv, srvIntf, props) 
+  def ??(srvIntf: Class[I]) = as(srvIntf)
+
+  /**
+   * Register a service under the given service interface.
+   */
+  def as(srvIntf: Class[I]) = new RegIndepInfo(srv, srvIntf, props)
 
   /**
    * Register a service with the given properties.
    */
-  def withProps(props: Props) = 
-    new RegIndepInfo(srv, srvIntf, props) 
+  def ##(props: Props) = withProps(props)
+
+  /**
+   * Register a service with the given properties.
+   */
+  def withProps(props: Props) = new RegIndepInfo(srv, srvIntf, props)
+
+  /**
+   * Register a service with the given properties.
+   */
+  def ##(props: (String, Any)*) = withProps(IMap(props: _*))
 
   /**
    * Register a service with the given properties.
    */
   def withProps(props: (String, Any)*) = 
-    if (props.isEmpty)
-      new RegIndepInfo(srv, srvIntf, null)
-    else 
-      new RegIndepInfo(srv, srvIntf, IMap(props: _*))
+    new RegIndepInfo(srv, srvIntf, IMap(props: _*))
 }
 
 /**
@@ -73,18 +84,31 @@ private[core] class RegDepInfo[I <: AnyRef, S <: I, D <: AnyRef](val srvFactory:
   /**
    * Register a service under the given service interface.
    */
-  def as(srvIntf: Class[I]) = 
-    new RegDepInfo(srvFactory, srvIntf, props) 
+  def ??(srvIntf: Class[I]) = as(srvIntf)
+
+  /**
+   * Register a service under the given service interface.
+   */
+  def as(srvIntf: Class[I]) = new RegDepInfo(srvFactory, srvIntf, props)
 
   /**
    * Register a service with the given properties.
    */
-  def withProps(props: Props) = 
-    new RegDepInfo(srvFactory, srvIntf, props) 
+  def ##(props: Props) = withProps(props)
+
+  /**
+   * Register a service with the given properties.
+   */
+  def withProps(props: Props) = new RegDepInfo(srvFactory, srvIntf, props)
+
+  /**
+   * Register a service with the given properties.
+   */
+  def ##(props: (String, Any)*) = withProps(IMap(props: _*))
 
   /**
    * Register a service with the given properties.
    */
   def withProps(props: (String, Any)*) = 
-    new RegDepInfo(srvFactory, srvIntf, IMap(props: _*)) 
+    new RegDepInfo(srvFactory, srvIntf, IMap(props: _*))
 }

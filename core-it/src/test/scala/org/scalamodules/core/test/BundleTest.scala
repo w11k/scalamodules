@@ -23,7 +23,7 @@ import org.junit.runner.RunWith
 import org.ops4j.pax.exam.CoreOptions._
 import org.ops4j.pax.exam.Inject
 import org.ops4j.pax.exam.junit._
-import org.osgi.framework.BundleContext
+import org.osgi.framework._
 import org.osgi.service.cm.ManagedService
 import scala.collection.Map
 import scala.collection.immutable.{Map => IMap}
@@ -63,7 +63,7 @@ class BundleTest {
       override val greet = "Welcome!"
     }
     val welcomeRegistration = 
-      context register (welcome as classOf[Greeting] withProps ("service.ranking" -> 1, "name" -> "ScalaModules"))
+      context >> welcome ?? classOf[Greeting] ## ("service.ranking" -> 1, "name" -> "ScalaModules")
     assert(greetingStatus == "ADDING-2", "But was: " + greetingStatus)
 
     // Get one service should result in Some("Welcome...")
@@ -120,7 +120,11 @@ class BundleTest {
     helloRegistration.unregister()
     multiRegistration.unregister()
 
-    context register ( {grt: Greeting => new { val g = grt} with Reverser { def reverse = new StringBuilder(grt.greet).reverse.toString } } withProps IMap("feature" -> "dependOn"))
+    class GreetingReverser(grt: Greeting) extends Reverser {
+      val reverse = new StringBuilder(grt.greet).reverse.toString
+    }
+
+    context >> { grt: Greeting => new GreetingReverser(grt) } ## IMap("feature" -> "dependOn") 
     var result = context getMany classOf[Reverser] withFilter "(feature=dependOn)" andApply { _ => }
     assert(result.isEmpty, "But size was: " + result.size) 
 

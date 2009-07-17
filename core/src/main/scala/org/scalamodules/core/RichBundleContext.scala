@@ -28,14 +28,19 @@ import scala.reflect.Manifest
  * Makes service handling more convenient and enables the ScalaModules DSL.
  */
 private[core] class RichBundleContext(ctx: BundleContext) {
-  
+
   require(ctx != null, "BundleContext must not be null!")
 
   /**
    * Register an independent service.
    */
+  def >>[I <: AnyRef, S <: I](info: RegIndepInfo[I, S]) = register(info)
+
+  /**
+   * Register an independent service.
+   */
   def register[I <: AnyRef, S <: I](info: RegIndepInfo[I, S]) = {
-    
+
     require(info != null, "RegIndepInfo must not be null!")
 
     ctx.registerService(srvIntfs(info.srv, info.srvIntf), 
@@ -46,8 +51,15 @@ private[core] class RichBundleContext(ctx: BundleContext) {
   /**
    * Register a service depending on another service. 
    */
+  def >>[I <: AnyRef, S <: I, D <: AnyRef](info: RegDepInfo[I, S, D])
+                                         (implicit mf: Manifest[D]) =
+    register(info)(mf)
+
+  /**
+   * Register a service depending on another service. 
+   */
   def register[I <: AnyRef, S <: I, D <: AnyRef](info: RegDepInfo[I, S, D])
-                                                (implicit mf: Manifest[D]) {
+                                                (implicit mf: Manifest[D]) = {
 
     require(info != null, "RegIndepInfo must not be null!")
 
