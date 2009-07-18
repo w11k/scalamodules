@@ -48,13 +48,13 @@ object GetSpec extends Spec with ShouldMatchers {
 
     it("should throw an IAE when called with a null function") {
       intercept[IllegalArgumentException] { 
-        get andApply null.asInstanceOf[(String) => String]
+        get && null.asInstanceOf[(String) => String]
       }
     }
 
     it("should throw an IAE when called with another null function") {
       intercept[IllegalArgumentException] { 
-        get andApply null.asInstanceOf[(String, Props) => String]
+        get && null.asInstanceOf[(String, Props) => String]
       }
     }
   }
@@ -70,7 +70,7 @@ object GetOneSpec extends Spec with ShouldMatchers {
 
     it("should return None when no service is registered") {
       EasyMock reset mockCtx
-      val result = getOne andApply { s: String => s }
+      val result = getOne && { s: String => s }
       result should equal (None)
     }
 
@@ -81,7 +81,7 @@ object GetOneSpec extends Spec with ShouldMatchers {
       EasyMock expect (mockCtx getService mockRef) andReturn "ScalaModules"
       EasyMock replay mockCtx
       
-      val result = getOne andApply { s: String => s }
+      val result = getOne && { s: String => s }
       result should equal (Some("ScalaModules"))
     }
 
@@ -95,7 +95,7 @@ object GetOneSpec extends Spec with ShouldMatchers {
       EasyMock expect (mockCtx getService mockRef) andReturn "Scala"
       EasyMock replay mockCtx
       
-      val result = getOne andApply { 
+      val result = getOne && { 
         (s: String, props: Props) => s + (props get "p" getOrElse "") 
       }
       result should equal (Some("ScalaModules"))
@@ -121,12 +121,12 @@ object GetManySpec extends Spec with ShouldMatchers {
     val getMany = new GetMany(mockCtx, classOf[String], None)
 
     it("should return a new GetMany when called with a not-null filter") {
-      val newGetMany =  getMany withFilter "(p=*)"
+      val newGetMany =  getMany %% "(p=*)"
       newGetMany should not be null
     }
 
     it("should return a new GetMany when called with a null filter") {
-      val newGetMany =  getMany withFilter null
+      val newGetMany =  getMany %% null
       newGetMany should not be null
     }
   }
@@ -137,7 +137,7 @@ object GetManySpec extends Spec with ShouldMatchers {
 
     it("should return Nil when no service is registered") {
       EasyMock reset mockCtx
-      val result = getMany andApply { s: String => s }
+      val result = getMany && { s: String => s }
       result should equal (Nil)
     }
 
@@ -151,7 +151,7 @@ object GetManySpec extends Spec with ShouldMatchers {
       EasyMock expect (mockCtx getService mockRef) andReturn "Scala"
       EasyMock replay mockCtx
  
-      val result = getMany andApply {
+      val result = getMany && {
         (s: String, props: Props) => s + (props get "p" getOrElse "")
       }
       result should equal ("ScalaModules" :: Nil)
@@ -166,7 +166,7 @@ object GetManySpec extends Spec with ShouldMatchers {
       EasyMock expect (mockCtx getService bMockRef) andReturn "BindForge"
       EasyMock replay mockCtx
       
-      val result = getMany andApply { s: String => s }
+      val result = getMany && { s: String => s }
       result should have size 2
       result should contain ("ScalaModules")
       result should contain ("BindForge")
@@ -182,7 +182,7 @@ object GetManySpec extends Spec with ShouldMatchers {
       EasyMock expect (mockCtx getService bMockRef) andReturn "BindForge"
       EasyMock replay mockCtx
       
-      val result = getMany withFilter "(p=*)" andApply { s: String => s }
+      val result = getMany %% "(p=*)" && { s: String => s }
       result should equal ("ScalaModules" :: Nil)
     }
   }

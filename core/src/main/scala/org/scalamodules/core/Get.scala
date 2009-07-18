@@ -51,6 +51,11 @@ private class GetMany[I](ctx: BundleContext, srvIntf: Class[I], filter: Option[S
   /**
    * Sets the given filter for service look-ups.
    */
+  def %%(filter: String) = withFilter(filter)
+
+  /**
+   * Sets the given filter for service look-ups.
+   */
   def withFilter(filter: String) = new GetMany(ctx, srvIntf, filter)
 
   override private[core] type Result[T] = List[T]
@@ -74,10 +79,20 @@ private abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
   /**
    * Applies the given function to the service.
    */
+  def &&[T](f: I => T) = andApply(f)
+
+  /**
+   * Applies the given function to the service.
+   */
   def andApply[T](f: I => T) = {
     require(f != null, "Function to be applied must not be null!")
     work(applyWithRef(_, f))
   }
+
+  /**
+   * Applies the given function to the service and its properties.
+   */
+  def &&[T](f: (I, Props) => T) = andApply(f)
 
   /**
    * Applies the given function to the service and its properties.
