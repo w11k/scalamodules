@@ -65,13 +65,13 @@ object RegIndepInfoSpec extends Spec with ShouldMatchers {
 
     it("should return a new RegIndepInfo with srvIntf == Some(Class) when called with a not-null Class") {
       val clazz = classOf[String]
-      val newInfo = info ?? clazz
+      val newInfo = info / clazz
       newInfo should not be null
       newInfo.srvIntf should equal (Some(clazz))
     }
 
     it("should return a new RegIndepInfo with srvIntf == None when called with a null Class") {
-      val newInfo = info ?? null
+      val newInfo = info / null
       newInfo should not be null
       newInfo.srvIntf should equal (None)
     }
@@ -81,13 +81,13 @@ object RegIndepInfoSpec extends Spec with ShouldMatchers {
 
     it("should return a new RegIndepInfo with props == Some(Map) when called with a not-null Map") {
       val props = IMap("Scala" -> "Modules")
-      val newInfo = info ## props
+      val newInfo = info % props
       newInfo should not be null
       (newInfo.props getOrElse IMap.empty).getOrElse("Scala", "") should equal ("Modules")
     }
 
     it("should return a new RegIndepInfo with srvIntf == None when called with a null Map") {
-      val newInfo = info ## null.asInstanceOf[Props]
+      val newInfo = info % null.asInstanceOf[Props]
       newInfo should not be null
       newInfo.props should equal (None)
     }
@@ -97,7 +97,7 @@ object RegIndepInfoSpec extends Spec with ShouldMatchers {
     
     it("should return a new RegIndepInfo with props == Some(Map) when called with a not-null pair") {
       val props = "Scala" -> "Modules"
-      val newInfo = info ## props
+      val newInfo = info % props
       newInfo should not be null
       (newInfo.props getOrElse IMap.empty).getOrElse("Scala", "") should equal ("Modules")
     }
@@ -149,13 +149,13 @@ object RegDepInfoSpec extends Spec with ShouldMatchers {
     
     it("should return a new RegDepInfo with srvIntf == Some(Class) when called with a not-null Class") {
       val clazz = classOf[String]
-      val newInfo = info ?? clazz
+      val newInfo = info / clazz
       newInfo should not be null
       newInfo.srvIntf should equal (Some(clazz))
     }
 
     it("should return a new RegDepInfo with srvIntf == None when called with a null Class") {
-      val newInfo = info ?? null
+      val newInfo = info / null
       newInfo should not be null
       newInfo.srvIntf should equal (None)
     }
@@ -165,13 +165,13 @@ object RegDepInfoSpec extends Spec with ShouldMatchers {
 
     it("should return a new RegDepInfo with props == Some(Map) when called with a not-null Map") {
       val props = IMap("Scala" -> "Modules")
-      val newInfo = info ## props
+      val newInfo = info % props
       newInfo should not be null
       (newInfo.props getOrElse IMap.empty).getOrElse("Scala", "") should equal ("Modules")
     }
 
     it("should return a new RegDepInfo with srvIntf == None when called with a null Map") {
-      val newInfo = info ## null.asInstanceOf[Props]
+      val newInfo = info % null.asInstanceOf[Props]
       newInfo should not be null
       newInfo.props should equal (None)
     }
@@ -181,7 +181,7 @@ object RegDepInfoSpec extends Spec with ShouldMatchers {
     
     it("should return a new RegDepInfo with props == Some(Map) when called with a not-null pair") {
       val props = "Scala" -> "Modules"
-      val newInfo = info ## props
+      val newInfo = info % props
       newInfo should not be null
       (newInfo.props getOrElse IMap.empty).getOrElse("Scala", "") should equal ("Modules")
     }

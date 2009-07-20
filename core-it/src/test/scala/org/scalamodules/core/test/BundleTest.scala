@@ -38,24 +38,24 @@ class BundleTest {
     var addingIndex = 0
     var removedIndex = 0
     var greetingStatus = "NONE"
-    val tracker = ctx >> classOf[Greeting] !! {
+    val tracker = ctx >> classOf[Greeting] & {
       case Adding(_, _)  => addingIndex += 1; greetingStatus = "ADDING-" + addingIndex
       case Removed(_, _) => removedIndex += 1; greetingStatus = "REMOVED-" + removedIndex
     }
 
     // Get one service should result in None
-    val noGreeting = ctx ?>> classOf[Greeting] && { _.greet }
+    val noGreeting = ctx ?> classOf[Greeting] & { _.greet }
     assert(noGreeting == None, "But was: " + noGreeting)
 
     // Registering a service should result in greetingStatus == ADDING-1
     val hello = new Greeting {
       override val greet = "Hello!"
     }
-    val helloRegistration = ctx << hello
+    val helloRegistration = ctx < hello
     assert(greetingStatus == "ADDING-1", "But was: " + greetingStatus)
 
     // Get one service should result in Some("Hello!")
-    val helloResult = ctx ?>> classOf[Greeting] && { _.greet }
+    val helloResult = ctx ?> classOf[Greeting] & { _.greet }
     assert(helloResult == Some("Hello!"), "But was: " + helloResult)
 
     // Register another service with properties should result in greetingStatus == ADDING-2
@@ -63,11 +63,11 @@ class BundleTest {
       override val greet = "Welcome!"
     }
     val welcomeRegistration = 
-      ctx << welcome ?? classOf[Greeting] ## ("service.ranking" -> 1, "name" -> "ScalaModules")
+      ctx < welcome / classOf[Greeting] % ("service.ranking" -> 1, "name" -> "ScalaModules")
     assert(greetingStatus == "ADDING-2", "But was: " + greetingStatus)
 
     // Get one service should result in Some("Welcome...")
-    val welcomeResult = ctx ?>> classOf[Greeting] && { 
+    val welcomeResult = ctx ?> classOf[Greeting] & { 
       (greeting, properties) => {
         val name = properties.get("name") match {
           case None    => "UNKNOWN"
@@ -79,7 +79,7 @@ class BundleTest {
     assert(welcomeResult == Some("ScalaModules says: Welcome!"), "But was: " + welcomeResult)
 
     // Register another service with multiple service interfaces
-    val multiRegistration = ctx <<
+    val multiRegistration = ctx <
       new Greeting with Introduction with Interested {
         override val greet = "Howdy!"
         override val myNameIs = "Multi-interface Service."
@@ -87,22 +87,22 @@ class BundleTest {
       }
 
     // Get one for Introduction should result in a successful look-up
-    val introductionResult = ctx ?>> classOf[Introduction] && { _ => true }
+    val introductionResult = ctx ?> classOf[Introduction] & { _ => true }
     assert(Some(true) == introductionResult, "But was: " + introductionResult)
 
     // Get one for Interested should result in a successful look-up
-    val interestedResult = ctx ?>> classOf[Interested] && { _ => true }
+    val interestedResult = ctx ?> classOf[Interested] & { _ => true }
     assert(Some(true) == interestedResult, "But was: " + interestedResult)
 
     // Get many services should result in Some(List("Hello!", "Welcome!", "Howdy!))
-    val greetingsResult = ctx *>> classOf[Greeting] && { _.greet }
+    val greetingsResult = ctx *> classOf[Greeting] & { _.greet }
     assert(greetingsResult != None)
     assert(List("Hello!", "Welcome!", "Howdy!").sort(Sorter) == greetingsResult.sort(Sorter), 
            "But was: " + greetingsResult)
 
     // Get many services with filter (!(name=*)) should result in Some(List("Hello!", "Howdy!"))
     val filteredGreetingsResult = 
-      ctx *>> classOf[Greeting] %% "(!(name=*))" && { _.greet }
+      ctx *> classOf[Greeting] % "(!(name=*))" & { _.greet }
     assert(List("Hello!", "Howdy!").sort(Sorter) == filteredGreetingsResult.sort(Sorter), 
            "But was: " + filteredGreetingsResult)
 
@@ -124,27 +124,27 @@ class BundleTest {
       val reverse = new StringBuilder(grt.greet).reverse.toString
     }
 
-    ctx << { grt: Greeting => new GreetingReverser(grt) } ## IMap("feature" -> "dependOn") 
-    var result = ctx *>> classOf[Reverser] %% "(feature=dependOn)" && { _ => }
+    ctx < { grt: Greeting => new GreetingReverser(grt) } % IMap("feature" -> "dependOn") 
+    var result = ctx *> classOf[Reverser] % "(feature=dependOn)" & { _ => }
     assert(result.isEmpty, "But size was: " + result.size) 
 
-    val dependeeRegistration1 = ctx << hello
-    result = ctx *>> classOf[Reverser] %% "(feature=dependOn)" && { _ => }
+    val dependeeRegistration1 = ctx < hello
+    result = ctx *> classOf[Reverser] % "(feature=dependOn)" & { _ => }
     assert(result != None) 
     assert(result.size == 1, "But size was: " + result.size)
 
-    val dependeeRegistration2 = ctx << welcome
-    result = ctx *>> classOf[Reverser] %% "(feature=dependOn)" && { _ => }
+    val dependeeRegistration2 = ctx < welcome
+    result = ctx *> classOf[Reverser] % "(feature=dependOn)" & { _ => }
     assert(result != None) 
     assert(result.size == 1, "But size was: " + result.size)
 
     dependeeRegistration2.unregister()
-    result = ctx *>> classOf[Reverser] %% "(feature=dependOn)" && { _ => }
+    result = ctx *> classOf[Reverser] % "(feature=dependOn)" & { _ => }
     assert(result != None) 
     assert(result.size == 1, "But size was: " + result.size)
 
     dependeeRegistration1.unregister()
-    result = ctx *>> classOf[Reverser] %% "(feature=dependOn)" && { _ => }
+    result = ctx *> classOf[Reverser] % "(feature=dependOn)" & { _ => }
     assert(result.isEmpty, "But size was: " + result.size) 
 
 //    // Register a managed service
@@ -168,7 +168,7 @@ class BundleTest {
 //      private var salutation = "SALUTATION"
 //      private var message = "MESSAGE"
 //    }
-//    ctx <<As classOf[Greeting] andAs classOf[ManagedService] withProperties 
+//    ctx <As classOf[Greeting] andAs classOf[ManagedService] withProperties 
 //      immutable.Map("name" -> "CM", "service.pid" -> "CM") theService greeting
 //
 //    // Replace configuration for greeting service
@@ -176,7 +176,7 @@ class BundleTest {
 //    Thread sleep 1000
 //    // Get many services with filter (name=CM)) should result in Some(List("REPLACED MESSAGE"))
 //    var cmResult = 
-//      ctx *>> classOf[Greeting] %% "(name=CM)" && { _.greet }
+//      ctx *> classOf[Greeting] ? "(name=CM)" & { _.greet }
 //    assert(Some(List("REPLACED MESSAGE")) == cmResult, "Was " + cmResult)
 //
 //    // Update configuration for greeting service
@@ -184,7 +184,7 @@ class BundleTest {
 //    Thread sleep 1000
 //    // Get many services with filter (name=CM)) should result in Some(List("test"))
 //    cmResult = 
-//      ctx *>> classOf[Greeting] %% "(name=CM)" && { _.greet }
+//      ctx *> classOf[Greeting] ? "(name=CM)" & { _.greet }
 //    assert(Some(List("REPLACED REPLACED")) == cmResult, "Was " + cmResult)
 //
 //    // Replace configuration for greeting service once more
@@ -192,7 +192,7 @@ class BundleTest {
 //    Thread sleep 1000
 //    // Get many services with filter (name=CM)) should result in Some(List("REPLACED MESSAGE"))
 //    cmResult = 
-//      ctx *>> classOf[Greeting] %% "(name=CM)" && { _.greet }
+//      ctx *> classOf[Greeting] ? "(name=CM)" & { _.greet }
 //    assert(Some(List("REPLACED MESSAGE")) == cmResult, "Was " + cmResult)
   }
 

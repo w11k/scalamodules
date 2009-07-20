@@ -24,9 +24,9 @@
   <modules>
     <module>core</module>
     <module>core-it</module>
+    <module>demo</module>
     <!--module>services</module>
     <module>services-it</module>
-    <module>demo</module>
     <module>assembly</module-->
   </modules>
 
@@ -141,7 +141,7 @@
           <artifactId>maven-license-plugin</artifactId>
           <version>1.4.0</version>
           <configuration>
-            <header>../header.txt</header>
+            <header>${basedir}/../header.txt</header>
             <quiet>false</quiet>
             <failIfMissing>true</failIfMissing>
             <includes>

@@ -19,11 +19,11 @@ import org.osgi.framework.{BundleActivator, BundleContext}
 
 class Activator extends BundleActivator {
 
-  override def start(context: BundleContext) {
+  override def start(ctx: BundleContext) {
     println("Hello!")
   }
   
-  override def stop(context: BundleContext) {
+  override def stop(ctx: BundleContext) {
     println("Goodbye!")
   }
 }

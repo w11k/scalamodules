@@ -16,6 +16,8 @@
 package org.scalamodules.demo
 
 trait Greeting {
+
   def welcome: String
+
   def goodbye: String
 }

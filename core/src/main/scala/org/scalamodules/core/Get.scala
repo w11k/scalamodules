@@ -51,7 +51,7 @@ private class GetMany[I](ctx: BundleContext, srvIntf: Class[I], filter: Option[S
   /**
    * Sets the given filter for service look-ups.
    */
-  def %%(filter: String) = withFilter(filter)
+  def %(filter: String) = withFilter(filter)
 
   /**
    * Sets the given filter for service look-ups.
@@ -79,7 +79,7 @@ private abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
   /**
    * Applies the given function to the service.
    */
-  def &&[T](f: I => T) = andApply(f)
+  def &[T](f: I => T) = andApply(f)
 
   /**
    * Applies the given function to the service.
@@ -92,7 +92,7 @@ private abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
   /**
    * Applies the given function to the service and its properties.
    */
-  def &&[T](f: (I, Props) => T) = andApply(f)
+  def &[T](f: (I, Props) => T) = andApply(f)
 
   /**
    * Applies the given function to the service and its properties.

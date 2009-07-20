@@ -6,13 +6,13 @@
   <parent>
     <groupId>org.scalamodules</groupId>
     <artifactId>scalamodules</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>2.0-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>scalamodules-demo</artifactId>
-  <name>ScalaModules Demo</name>
-  <description>Demo for ScalaModules.</description>
+  <artifactId>scalamodules-demo-api</artifactId>
+  <name>ScalaModules Demo - API</name>
+  <description>Demo for ScalaModules: API bundle.</description>
   <packaging>jar</packaging>
 
   <build>
@@ -20,6 +20,9 @@
       <plugin>
         <groupId>com.google.code.maven-license-plugin</groupId>
         <artifactId>maven-license-plugin</artifactId>
+        <configuration>
+          <header>${basedir}/../../header.txt</header>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.felix</groupId>

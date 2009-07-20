@@ -36,7 +36,7 @@ private class Track[I](ctx: BundleContext, srvIntf: Class[I], filter: Option[Str
   /**
    * Sets the given filter for service look-ups.
    */
-  def %%(filter: String) = withFilter(filter)
+  def ?(filter: String) = withFilter(filter)
 
   /**
    * Sets the given filter for service look-ups.
@@ -46,7 +46,7 @@ private class Track[I](ctx: BundleContext, srvIntf: Class[I], filter: Option[Str
   /**
    * Handles a TrackEvent.
    */
-  def !!(f: PartialFunction[TrackEvent[I], Unit]) = on(f)
+  def &(f: PartialFunction[TrackEvent[I], Unit]) = on(f)
 
   /**
    * Handles a TrackEvent.

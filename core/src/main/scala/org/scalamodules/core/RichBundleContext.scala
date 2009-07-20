@@ -34,7 +34,7 @@ private[core] class RichBundleContext(ctx: BundleContext) {
   /**
    * Register an independent service.
    */
-  def <<[I <: AnyRef, S <: I](info: RegIndepInfo[I, S]) = register(info)
+  def <[I <: AnyRef, S <: I](info: RegIndepInfo[I, S]) = register(info)
 
   /**
    * Register an independent service.
@@ -51,7 +51,7 @@ private[core] class RichBundleContext(ctx: BundleContext) {
   /**
    * Register a service depending on another service. 
    */
-  def <<[I <: AnyRef, S <: I, D <: AnyRef](info: RegDepInfo[I, S, D])
+  def <[I <: AnyRef, S <: I, D <: AnyRef](info: RegDepInfo[I, S, D])
                                          (implicit mf: Manifest[D]) =
     register(info)(mf)
 
@@ -96,7 +96,7 @@ private[core] class RichBundleContext(ctx: BundleContext) {
   /**
    * Consume a single service.
    */
-  def ?>>[I](srvIntf: Class[I]) = getOne(srvIntf)
+  def ?>[I](srvIntf: Class[I]) = getOne(srvIntf)
 
   /**
    * Consume a single service.
@@ -106,7 +106,7 @@ private[core] class RichBundleContext(ctx: BundleContext) {
   /**
    * Consume multiple services.
    */
-  def *>>[I](srvIntf: Class[I]) = getMany(srvIntf)
+  def *>[I](srvIntf: Class[I]) = getMany(srvIntf)
 
   /**
    * Consume multiple services.

@@ -56,7 +56,7 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
 
     it("should throw an IAE when called with a null RegIndepInfo") {
       intercept[IllegalArgumentException] { 
-        rbc << null.asInstanceOf[RegIndepInfo[Nothing, Nothing]]
+        rbc < null.asInstanceOf[RegIndepInfo[Nothing, Nothing]]
       }
     }
 
@@ -69,7 +69,7 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
         (mockCtx registerService 
           (aryEq(Array(srv.getClass.getName)), same(srv), isNull)) andReturn mockReg
       EasyMock replay mockCtx
-      val result = mockCtx << new RegIndepInfo(srv)
+      val result = mockCtx < new RegIndepInfo(srv)
       EasyMock verify mockCtx
       result should not be null
       result should equal (mockReg)
@@ -86,7 +86,7 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
         (mockCtx registerService 
            (aryEq(Array(classOf[Srv1].getName, classOf[Srv2].getName)), same(srv), isNull)) andReturn mockReg
       EasyMock replay mockCtx
-      val result = mockCtx << new RegIndepInfo(srv)
+      val result = mockCtx < new RegIndepInfo(srv)
       EasyMock verify mockCtx
       result should not be null
       result should equal (mockReg)
@@ -103,7 +103,7 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
         (mockCtx registerService 
            (aryEq(Array(classOf[Srv1].getName)), same(srv), isNull)) andReturn mockReg
       EasyMock replay mockCtx
-      val result = mockCtx << new RegIndepInfo(srv, Some(classOf[Srv1]))
+      val result = mockCtx < new RegIndepInfo(srv, Some(classOf[Srv1]))
       EasyMock verify mockCtx
       result should not be null
       result should equal (mockReg)
@@ -120,7 +120,7 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
         (mockCtx registerService 
            (aryEq(Array(classOf[Srv1].getName)), same(srv), DictionaryMatcher.eqDict(Util mapToJavaDictionary props))) andReturn mockReg
       EasyMock replay mockCtx
-      val result = mockCtx << new RegIndepInfo(srv, None, Some(props))
+      val result = mockCtx < new RegIndepInfo(srv, None, Some(props))
       EasyMock verify mockCtx
       result should not be null
       result should equal (mockReg)
@@ -133,13 +133,13 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
 
     it("should throw an IAE when called with a null RegDepInfo") {
       intercept[IllegalArgumentException] { 
-        rbc << (null.asInstanceOf[RegDepInfo[Nothing, Nothing, AnyRef]])
+        rbc < (null.asInstanceOf[RegDepInfo[Nothing, Nothing, AnyRef]])
       }
     }
 
     it("should return a not-null ServiceTracker when called with a RegDepInfo") {
       val info = new RegDepInfo((s: String) => "")
-      val result = rbc << info
+      val result = rbc < info
       result should not be null
     }
   }
@@ -150,12 +150,12 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
 
     it("should throw an IAE when called with a null service interface") {
       intercept[IllegalArgumentException] { 
-        rbc ?>> null
+        rbc ?> null
       }
     }
 
     it("should return a not-null GetOne when called with a service interface") {
-      val result = rbc ?>> classOf[String]
+      val result = rbc ?> classOf[String]
       result should not be null
     }
   }
@@ -166,12 +166,12 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
 
     it("should throw an IAE when called with a null service interface") {
       intercept[IllegalArgumentException] { 
-        rbc *>> null
+        rbc *> null
       }
     }
 
     it("should return a not-null GetMany when called with a service interface") {
-      val result = rbc *>> classOf[String]
+      val result = rbc *> classOf[String]
       result should not be null
     }
   }

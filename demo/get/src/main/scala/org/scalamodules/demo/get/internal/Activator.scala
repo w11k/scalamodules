@@ -15,15 +15,16 @@
  */
 package org.scalamodules.demo.get.internal
 
+import core.Preamble._
+
+import java.lang.Boolean.parseBoolean
 import org.osgi.framework.{BundleActivator, BundleContext}
-import org.scalamodules.core.RichBundleContext.toRichBundleContext
-import org.scalamodules.demo.Greeting
 
 class Activator extends BundleActivator {
-  
+
   override def start(context: BundleContext) {
 
-    // Get one service
+    // Get one Greeting service
     context getOne classOf[Greeting] andApply { 
       _.welcome
     } match {
@@ -31,31 +32,31 @@ class Activator extends BundleActivator {
       case Some(welcome) => println(welcome)
     }
 
-    // Get many services and their properties
-    context getMany classOf[Greeting] andApply { 
-      (greeting, properties) => {
-        val name = properties.get("name") match {
-          case None    => "UNKNOWN"
-          case Some(s) => s
-        }
-        name + " says: " + greeting.welcome
-      }
-    } match {
-      case None           => noGreetingService()
-      case Some(welcomes) => welcomes.foreach { println }
-    }
-
-    // Get many services with filter
-    context getMany classOf[Greeting] withFilter "(name=*)" andApply { 
+    // Get many Greeting services with a fiter applied
+    context getMany classOf[Greeting] withFilter "(polite=*)" andApply { 
       _.welcome
     } match {
-      case None           => noGreetingService()
-      case Some(welcomes) => welcomes.foreach { println }
+      case Nil      => noGreetingService()
+      case welcomes => welcomes.foreach { println }
+    }
+
+    // Get many Greeting services and their properties
+    context getMany classOf[Greeting] andApply { 
+      (greeting, properties) => {
+        val polite = if (parseBoolean(properties.getOrElse("polite", "").toString)) "polite"
+                     else "not polite"
+        greeting.welcome + " is " + polite
+      }
+    } match {
+      case Nil      => noGreetingService()
+      case welcomes => welcomes.foreach { println }
     }
   }
-  
+
   override def stop(context: BundleContext) { // Nothing!
   }
 
-  private def noGreetingService() { println("No Greeting service available!") }
+  private def noGreetingService() {
+    println("No Greeting service available!")
+  }
 }

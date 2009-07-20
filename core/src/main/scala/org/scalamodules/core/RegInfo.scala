@@ -39,7 +39,7 @@ private[core] class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
   /**
    * Register a service under the given service interface.
    */
-  def ??(srvIntf: Class[I]) = as(srvIntf)
+  def /(srvIntf: Class[I]) = as(srvIntf)
 
   /**
    * Register a service under the given service interface.
@@ -49,7 +49,7 @@ private[core] class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
   /**
    * Register a service with the given properties.
    */
-  def ##(props: Props) = withProps(props)
+  def %(props: Props) = withProps(props)
 
   /**
    * Register a service with the given properties.
@@ -59,7 +59,7 @@ private[core] class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
   /**
    * Register a service with the given properties.
    */
-  def ##(props: (String, Any)*) = withProps(IMap(props: _*))
+  def %(props: (String, Any)*) = withProps(IMap(props: _*))
 
   /**
    * Register a service with the given properties.
@@ -84,7 +84,7 @@ private[core] class RegDepInfo[I <: AnyRef, S <: I, D <: AnyRef](val srvFactory:
   /**
    * Register a service under the given service interface.
    */
-  def ??(srvIntf: Class[I]) = as(srvIntf)
+  def /(srvIntf: Class[I]) = as(srvIntf)
 
   /**
    * Register a service under the given service interface.
@@ -94,7 +94,7 @@ private[core] class RegDepInfo[I <: AnyRef, S <: I, D <: AnyRef](val srvFactory:
   /**
    * Register a service with the given properties.
    */
-  def ##(props: Props) = withProps(props)
+  def %(props: Props) = withProps(props)
 
   /**
    * Register a service with the given properties.
@@ -104,7 +104,7 @@ private[core] class RegDepInfo[I <: AnyRef, S <: I, D <: AnyRef](val srvFactory:
   /**
    * Register a service with the given properties.
    */
-  def ##(props: (String, Any)*) = withProps(IMap(props: _*))
+  def %(props: (String, Any)*) = withProps(IMap(props: _*))
 
   /**
    * Register a service with the given properties.

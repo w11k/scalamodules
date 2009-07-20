@@ -15,59 +15,47 @@
  */
 package org.scalamodules.demo.register.internal
 
+import core.Preamble._
+
 import scala.collection.Map
 import scala.collection.immutable.{Map => IMap}
 import org.osgi.framework.{BundleActivator, BundleContext}
-import org.osgi.service.cm.ManagedService
-import org.scalamodules.services.cm.BaseManagedService
-import org.scalamodules.core.RichBundleContext.toRichBundleContext
-import org.scalamodules.demo._
 
 class Activator extends BundleActivator {
 
-  override def start(context: BundleContext) {
+  override def start(ctx: BundleContext) {
 
-    // Register Greeting
-    context registerAs classOf[Greeting] theService new Greeting {
-      override def welcome = "Hello!"
-      override def goodbye = "See you!";
+    // Register a Greeting service
+    val hello = new Greeting {
+      override val welcome = "Hello!"
+      override val goodbye = "See you!"
     }
+    ctx register hello
 
-    // Register Greeting with properties
-    context registerAs classOf[Greeting] withProperties 
-      IMap("name" -> "welcome") theService new Greeting {
-        override def welcome = "Welcome!"
-        override def goodbye = "Goodbye!"
-      }
-
-    // Register Greeting + ManagedService
-    val managedGreeting = new Greeting with BaseManagedService {
-      override def welcome = w
-      override def goodbye = g
-      override def handleUpdate(properties: Option[Map[String, Any]]) {
-        properties match {
-          case None        => w = Howdy; g = Bye
-          case Some(props) => {
-            props get "welcome" match {
-              case None    => w = Howdy
-              case Some(s) => w = s.toString
-            }
-            props get "goodbye" match {
-              case None    => g = Bye
-              case Some(s) => g = s.toString
-            }
-          }
-        }
-      }
-      private var w: String = "UNCONFIGURED"
-      private var g: String = "UNCONFIGURED"
-      private val Howdy = "Howdy!"
-      private val Bye = "Bye!"
+    // Register a Greeting service with properties
+    // Using operator notation here!
+    val welcome = new Greeting {
+      override val welcome = "Welcome!"
+      override val goodbye = "Goodbye!"
     }
-    context registerAs classOf[Greeting] andAs classOf[ManagedService] withProperties 
-      ("service.pid" -> "managedGreeting") theService managedGreeting 
+    ctx < welcome % ("polite" -> "true")
+
+    // The following would also work:
+    // ctx register welcome ## ("polite" -> "true")
+
+    // But the following would not, because of precedence
+    // ctx register welcome withProps ("polite" -> "true")
+
+    // You have to use parenthesis if you do not want to use operators
+    // ctx register (welcome withProps ("polite" -> "true"))
   }
 
-  override def stop(context: BundleContext) { // Nothing!
+  override def stop(ctx: BundleContext) { // Nothing!
   }
+
+  private def greeting(_welcome: String, _goodbye: String) =
+    new {
+      val welcome = _welcome
+      val goodbye = _goodbye
+    } with Greeting
 }
