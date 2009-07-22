@@ -22,41 +22,46 @@ import org.osgi.framework.{BundleActivator, BundleContext}
 
 class Activator extends BundleActivator {
 
-  override def start(context: BundleContext) {
+  override def start(ctx: BundleContext) {
 
     // Get one Greeting service
-    context getOne classOf[Greeting] andApply { 
-      _.welcome
-    } match {
-      case None          => noGreetingService() 
+    ctx getOne classOf[Greeting] andApply { _.welcome } match {
+      case None          => println(noGreeting) 
+      case Some(welcome) => println(welcome)
+    }
+
+    // Get one Greeting service once more in operator notation
+    ctx ?> classOf[Greeting] & { _.welcome } match {
+      case None          => println(noGreeting) 
       case Some(welcome) => println(welcome)
     }
 
     // Get many Greeting services with a fiter applied
-    context getMany classOf[Greeting] withFilter "(polite=*)" andApply { 
-      _.welcome
-    } match {
-      case Nil      => noGreetingService()
+    ctx getMany classOf[Greeting] withFilter "(polite=*)" andApply { _.welcome } match {
+      case Nil      => println(noGreeting) 
+      case welcomes => welcomes.foreach { println }
+    }
+
+    // Get many Greeting services with a fiter applied once more in operator notation
+    ctx *> classOf[Greeting] % "(polite=*)" & { _.welcome } match {
+      case Nil      => println(noGreeting) 
       case welcomes => welcomes.foreach { println }
     }
 
     // Get many Greeting services and their properties
-    context getMany classOf[Greeting] andApply { 
-      (greeting, properties) => {
-        val polite = if (parseBoolean(properties.getOrElse("polite", "").toString)) "polite"
+    ctx getMany classOf[Greeting] andApply { 
+      (grt, props) => {
+        val polite = if (parseBoolean(props.getOrElse("polite", "").toString)) "polite"
                      else "not polite"
-        greeting.welcome + " is " + polite
+        grt.welcome + " is " + polite
       }
     } match {
-      case Nil      => noGreetingService()
+      case Nil      => println(noGreeting) 
       case welcomes => welcomes.foreach { println }
     }
   }
 
-  override def stop(context: BundleContext) { // Nothing!
-  }
+  override def stop(ctx: BundleContext) {}
 
-  private def noGreetingService() {
-    println("No Greeting service available!")
-  }
+  private def noGreeting = "No Greeting service available!"
 }

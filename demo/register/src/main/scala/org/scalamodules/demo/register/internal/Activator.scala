@@ -41,7 +41,7 @@ class Activator extends BundleActivator {
     ctx < welcome % ("polite" -> "true")
 
     // The following would also work:
-    // ctx register welcome ## ("polite" -> "true")
+    // ctx register welcome % ("polite" -> "true")
 
     // But the following would not, because of precedence
     // ctx register welcome withProps ("polite" -> "true")
@@ -50,8 +50,7 @@ class Activator extends BundleActivator {
     // ctx register (welcome withProps ("polite" -> "true"))
   }
 
-  override def stop(ctx: BundleContext) { // Nothing!
-  }
+  override def stop(ctx: BundleContext) {}
 
   private def greeting(_welcome: String, _goodbye: String) =
     new {
