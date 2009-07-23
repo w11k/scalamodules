@@ -93,7 +93,7 @@ object RegIndepInfoSpec extends Spec with ShouldMatchers {
     }
   }
 
-  describe("RegIndepInfo.withProps((String, Any)*)") {
+  describe("RegIndepInfo.withProps(Prop*)") {
     
     it("should return a new RegIndepInfo with props == Some(Map) when called with a not-null pair") {
       val props = "Scala" -> "Modules"
@@ -177,7 +177,7 @@ object RegDepInfoSpec extends Spec with ShouldMatchers {
     }
   }
 
-  describe("RegDepInfo.withProps((String, Any)*)") {
+  describe("RegDepInfo.withProps(Prop*)") {
     
     it("should return a new RegDepInfo with props == Some(Map) when called with a not-null pair") {
       val props = "Scala" -> "Modules"

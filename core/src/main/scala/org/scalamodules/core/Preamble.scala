@@ -22,12 +22,17 @@ import scala.collection.immutable.{Map => IMap}
 object Preamble {
 
   /**
-   * Service properties.
+   * Type for a single service property.
+   */
+  type Prop = (String, Any)
+
+  /**
+   * Type for service properties.
    */
   type Props = Map[String, Any]
 
   /**
-   * Implementation of service properties.
+   * Implementation type for service properties.
    */
   type PropsImpl = IMap[String, Any]
 

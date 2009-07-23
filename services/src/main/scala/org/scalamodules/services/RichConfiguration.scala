@@ -13,24 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalamodules.services.cm
+package org.scalamodules.services
+
+import core.Preamble.{Props, PropsImpl}
+import core.Util.dictionaryToMap
 
 import java.util.Dictionary
-import scala.collection.Map
 import org.osgi.service.cm.Configuration
-import org.scalamodules.util.jcl.Conversions.dictionaryToMap
-
-/**
- * Companion object for RichConfiguration.
- */
-object RichConfiguration {
-
-  /**
-   * Implicitly converts the given Configuration to RichConfiguration.
-   */
-  implicit def toRichConfiguration(config: Configuration) = 
-    new RichConfiguration(config) 
-}
 
 /**
  * Rich wrapper for Configuration: 
@@ -41,12 +30,12 @@ class RichConfiguration(config: Configuration) {
   require(config != null, "Configuration must not be null!")
 
   /**
-   * Get properties as optional Scala Map.
+   * Get properties as Map[String, Any] (Props).
    */
-  def properties: Option[Map[String, Any]] = {
+  def properties: Props = {
     config.getProperties match {
-      case null  => None
-      case props => Some(props.asInstanceOf[Dictionary[String, Any]])
+      case null  => PropsImpl()
+      case props => props.asInstanceOf[Dictionary[String, Any]]
     }
   }
 }

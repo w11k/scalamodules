@@ -16,9 +16,8 @@
 package org.scalamodules.core
 
 import Preamble._
-import internal.Util.toOption
+import Util.toOption
 
-import scala.collection.Map
 import org.osgi.framework.{BundleContext, ServiceReference}
 
 /**

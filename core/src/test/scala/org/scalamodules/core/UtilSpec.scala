@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalamodules.core.internal
+package org.scalamodules.core
 
 import java.util.Hashtable
-import org.scalatest.Spec
 import org.easymock.EasyMock
+import org.scalatest.Spec
 
 object UtilSpec extends Spec {
 

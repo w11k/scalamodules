@@ -17,8 +17,6 @@ package org.scalamodules.demo.register.internal
 
 import core.Preamble._
 
-import scala.collection.Map
-import scala.collection.immutable.{Map => IMap}
 import org.osgi.framework.{BundleActivator, BundleContext}
 
 class Activator extends BundleActivator {
@@ -26,18 +24,11 @@ class Activator extends BundleActivator {
   override def start(ctx: BundleContext) {
 
     // Register a Greeting service
-    val hello = new Greeting {
-      override val welcome = "Hello!"
-      override val goodbye = "See you!"
-    }
+    val hello = greeting("Hello!", "See you!")
     ctx register hello
 
-    // Register a Greeting service with properties
-    // Using operator notation here!
-    val welcome = new Greeting {
-      override val welcome = "Welcome!"
-      override val goodbye = "Goodbye!"
-    }
+    // Register a Greeting service with properties using operator notation
+    val welcome = greeting("Welcome!", "Goodbye!")
     ctx < welcome % ("polite" -> "true")
 
     // The following would also work:
@@ -46,7 +37,7 @@ class Activator extends BundleActivator {
     // But the following would not, because of precedence
     // ctx register welcome withProps ("polite" -> "true")
 
-    // You have to use parenthesis if you do not want to use operators
+    // You have to use parenthesis if you do not want to use operator notation
     // ctx register (welcome withProps ("polite" -> "true"))
   }
 

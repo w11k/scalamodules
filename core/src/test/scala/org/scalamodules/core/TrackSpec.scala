@@ -16,7 +16,6 @@
 package org.scalamodules.core
 
 import Preamble._
-import internal.Util
 import Util.mapToJavaDictionary
 
 import java.util.Dictionary
@@ -57,13 +56,13 @@ object TrackSpec extends Spec with ShouldMatchers {
 
     it("should return a new Track when called with a not-null filter") {
       val track = new Track(mockCtx, classOf[String])
-      val newTrack = track ? "(Scala=Modules)"
+      val newTrack = track withFilter "(Scala=Modules)"
       newTrack should not be null
     }
 
     it("should return a new Track when called with a null filter") {
       val track = new Track(mockCtx, classOf[String])
-      val newTrack = track ? null
+      val newTrack = track % null
       newTrack should not be null
     }
   }

@@ -24,10 +24,10 @@
   <modules>
     <module>core</module>
     <module>core-it</module>
+    <module>services</module>
+    <!--module>services-it</module-->
     <module>demo</module>
-    <!--module>services</module>
-    <module>services-it</module>
-    <module>assembly</module-->
+    <!--module>assembly</module-->
   </modules>
 
   <properties>

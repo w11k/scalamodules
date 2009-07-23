@@ -16,7 +16,6 @@
 package org.scalamodules.core
 
 import Preamble._
-import internal.Util
 import Util.mapToJavaDictionary
 
 import java.util.Dictionary

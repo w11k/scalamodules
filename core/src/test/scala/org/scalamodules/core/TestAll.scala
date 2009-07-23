@@ -29,7 +29,7 @@ object Suites {
     RichBundleContextSpec ::
     RichServiceReferenceSpec ::
     TrackSpec ::
-    internal.UtilSpec :: 
+    UtilSpec :: 
     Nil
 
   def main(args: Array[String]) {

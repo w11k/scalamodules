@@ -6,12 +6,11 @@
   <parent>
     <groupId>org.scalamodules</groupId>
     <artifactId>scalamodules</artifactId>
-    <version>1.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <version>2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>scalamodules-services-test</artifactId>
-  <name>ScalaModules Services - Test</name>
+  <name>ScalaModules Services - Integration Test</name>
   <packaging>jar</packaging>
 
   <dependencies>
@@ -28,14 +27,10 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.scalamodules</groupId>
-      <artifactId>scalamodules-util</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.scala-lang-osgi</groupId>
       <artifactId>scala-library</artifactId>
+      <version>${scala.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.felix</groupId>

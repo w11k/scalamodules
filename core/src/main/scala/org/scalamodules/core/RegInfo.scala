@@ -15,11 +15,8 @@
  */
 package org.scalamodules.core
 
-import Preamble.Props
-import internal.Util.toOption
-
-import scala.collection.Map
-import scala.collection.immutable.{Map => IMap}
+import Preamble.{Prop, Props}
+import Util.toOption
 
 /**
  * Registration information for an independent service.
@@ -59,21 +56,20 @@ private[core] class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
   /**
    * Register a service with the given properties.
    */
-  def %(props: (String, Any)*) = withProps(IMap(props: _*))
+  def %(props: Prop*) = withProps(Map(props: _*))
 
   /**
    * Register a service with the given properties.
    */
-  def withProps(props: (String, Any)*) = 
-    new RegIndepInfo(srv, srvIntf, IMap(props: _*))
+  def withProps(props: Prop*) = new RegIndepInfo(srv, srvIntf, Map(props: _*))
 }
 
 /**
  * Registration information for a service depending on another service.
  */
 private[core] class RegDepInfo[I <: AnyRef, S <: I, D <: AnyRef](val srvFactory: D => S,
-                                                   val srvIntf: Option[Class[I]],
-                                                   val props: Option[Props]) {
+                                                                 val srvIntf: Option[Class[I]],
+                                                                 val props: Option[Props]) {
 
   require(srvFactory != null, "Factory function for service to be registered must not be null!")
   require(srvIntf != null, "Option for service interface used for registration must not be null!")
@@ -104,11 +100,10 @@ private[core] class RegDepInfo[I <: AnyRef, S <: I, D <: AnyRef](val srvFactory:
   /**
    * Register a service with the given properties.
    */
-  def %(props: (String, Any)*) = withProps(IMap(props: _*))
+  def %(props: Prop*) = withProps(Map(props: _*))
 
   /**
    * Register a service with the given properties.
    */
-  def withProps(props: (String, Any)*) = 
-    new RegDepInfo(srvFactory, srvIntf, IMap(props: _*))
+  def withProps(props: Prop*) = new RegDepInfo(srvFactory, srvIntf, Map(props: _*))
 }

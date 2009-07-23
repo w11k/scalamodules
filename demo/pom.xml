@@ -19,8 +19,7 @@
     <module>api</module>
     <module>register</module>
     <module>get</module>
-    <!--module>track</module>
-    <module>java</module-->
+    <module>track</module>
   </modules>
 
   <build>

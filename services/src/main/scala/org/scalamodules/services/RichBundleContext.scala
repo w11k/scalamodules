@@ -15,32 +15,18 @@
  */
 package org.scalamodules.services
 
-import scala.collection.Map
 import org.osgi.framework.BundleContext
-import org.scalamodules.services.cm.Configure
-
-/**
- * Companion object for RichBundleContext.
- */
-object ServicesRichBundleContext {
-
-  /**
-   * Implicitly converts the given BundleContext to ServicesRichBundleContext.
-   */
-  implicit def toServicesRichBundleContext(context: BundleContext) = 
-    new ServicesRichBundleContext(context) 
-}
 
 /**
  * Rich wrapper for BundleContext: 
  * Makes handling the companion services more convenient and enables the ScalaModules DSL.
  */
-class ServicesRichBundleContext(context: BundleContext) {
+private[services] class RichBundleContext(ctx: BundleContext) {
 
-  require(context != null, "Bundle context must not be null!")
+  require(ctx != null, "BundleContext must not be null!")
 
   /**
    * Provides configuration via Configuration Admin service. 
    */
-  def configure(pid: String) = new Configure(context, pid)
+  def configure(pid: String) = new Configure(ctx, pid)
 }

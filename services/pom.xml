@@ -6,8 +6,7 @@
   <parent>
     <groupId>org.scalamodules</groupId>
     <artifactId>scalamodules</artifactId>
-    <version>1.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <version>2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>scalamodules-services</artifactId>
@@ -22,13 +21,25 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.scalamodules</groupId>
-      <artifactId>scalamodules-util</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.felix</groupId>
+      <groupId>org.osgi</groupId>
       <artifactId>org.osgi.compendium</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-tools.testing</groupId>
+      <artifactId>scalatest</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
     </dependency>
   </dependencies>
 
@@ -43,7 +54,10 @@
         <artifactId>maven-bundle-plugin</artifactId>
         <configuration>
           <instructions>
-            <Export-Package>org.scalamodules.services;version="1.0",org.scalamodules.services.cm;version="1.0"</Export-Package>
+            <Export-Package>
+              org.scalamodules.services;version="2.0",
+              org.scalamodules.services.cm;version="2.0"
+            </Export-Package>
           </instructions>
         </configuration>
       </plugin>

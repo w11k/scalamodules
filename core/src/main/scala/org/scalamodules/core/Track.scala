@@ -16,9 +16,8 @@
 package org.scalamodules.core
 
 import Preamble._
-import internal.Util.toOption
+import Util.toOption
 
-import scala.collection.Map
 import org.osgi.framework.{BundleContext, Filter, ServiceReference}
 import org.osgi.util.tracker.ServiceTracker
 
@@ -36,7 +35,7 @@ private class Track[I](ctx: BundleContext, srvIntf: Class[I], filter: Option[Str
   /**
    * Sets the given filter for service look-ups.
    */
-  def ?(filter: String) = withFilter(filter)
+  def %(filter: String) = withFilter(filter)
 
   /**
    * Sets the given filter for service look-ups.

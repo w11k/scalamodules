@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalamodules.core.internal
+package org.scalamodules.core
 
 import java.util.{Dictionary, Enumeration}
-import scala.Iterator
 import scala.collection.Map
 
-private[core] object Util {
+private[scalamodules] object Util {
 
   /**
    * Implicitly converts the given parameter to Option: Some if not null, else None
@@ -98,5 +97,4 @@ private[core] object Util {
         override def remove(o: Object) = throw new UnsupportedOperationException("Read-only!")
       }
     }
-
 }

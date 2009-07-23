@@ -13,26 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalamodules.core
+package org.scalamodules.services
 
-import Preamble.Prop
+import org.osgi.framework.BundleContext
+import org.osgi.service.cm.Configuration
 
-import org.osgi.framework.ServiceReference
+object Preamble {
 
-/**
- * Rich wrapper for ServiceReference: 
- * Makes handling of service properties more convenient.
- */
-private[core] class RichServiceReference(ref: ServiceReference) {
+  /**
+   * Implicitly converts the given BundleContext to RichBundleContext.
+   */
+  implicit def toRichBundleContext(ctx: BundleContext) = 
+    new RichBundleContext(ctx) 
 
-  require(ref != null, "ServiceReference must not be null!")
-
-  val properties = Map(fromRef(ref): _*)
-
-  private def fromRef(ref: ServiceReference): Array[Prop] = {
-    ref.getPropertyKeys match {
-      case null => Array[Prop]()
-      case keys => keys map { key => (key, ref getProperty key) }
-    }
-  }
+  /**
+   * Implicitly converts the given Configuration to RichConfiguration.
+   */
+  implicit def toRichConfiguration(config: Configuration) = 
+    new RichConfiguration(config) 
 }

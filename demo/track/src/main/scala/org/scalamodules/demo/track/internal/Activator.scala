@@ -15,24 +15,27 @@
  */
 package org.scalamodules.demo.track.internal
 
+import core.{Adding, Removed}
+import core.Preamble._
+
 import org.osgi.framework.{BundleActivator, BundleContext}
-import org.scalamodules.core._
-import org.scalamodules.core.RichBundleContext.toRichBundleContext
-import org.scalamodules.demo.Greeting
 
 class Activator extends BundleActivator {
 
-  override def start(context: BundleContext) {
-    // Track Greetings
-    greetingTrack = context track classOf[Greeting] on {
-      case Adding(greeting, _)   => println("Adding Greeting: " + greeting.welcome)
-      case Removed(greeting, _)  => println("Removed Greeting: " + greeting.goodbye)
+  override def start(ctx: BundleContext) {
+
+    // Track Greeting services, but only polite ones by applying a filter
+    ctx track classOf[Greeting] withFilter "(polite=true)" on {
+      case Adding(grt, _)  => println("Adding polite Greeting: " + grt.welcome)
+      case Removed(grt, _) => println("Removed polite Greeting: " + grt.goodbye)
+    }
+
+    // Track Greeting services once more using operator notation
+    ctx >> classOf[Greeting] & {
+      case Adding(grt, _)  => println("Adding Greeting: " + grt.welcome)
+      case Removed(grt, _) => println("Removed Greeting: " + grt.goodbye)
     }
   }
 
-  override def stop(context: BundleContext) {
-    greetingTrack.stop()
-  }
-
-  private var greetingTrack: Track[Greeting] = _
+  override def stop(ctx: BundleContext) {}
 }
