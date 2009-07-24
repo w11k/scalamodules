@@ -15,9 +15,10 @@
  */
 package org.scalamodules.core
 
-import Preamble._
+import Preamble.toRichServiceReference
 import Util.toOption
 
+import scala.collection.Map
 import org.osgi.framework.{BundleContext, ServiceReference}
 
 /**
@@ -91,12 +92,12 @@ private abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
   /**
    * Applies the given function to the service and its properties.
    */
-  def &[T](f: (I, Props) => T) = andApply(f)
+  def &[T](f: (I, Map[String, Any]) => T) = andApply(f)
 
   /**
    * Applies the given function to the service and its properties.
    */
-  def andApply[T](f: (I, Props) => T) = {
+  def andApply[T](f: (I, Map[String, Any]) => T) = {
     require(f != null, "Function to be applied must not be null!")
     work(applyWithRef(_, f))
   }
@@ -117,7 +118,7 @@ private abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
   }
 
   private def applyWithRef[T](ref: ServiceReference,
-                              f: (I, Props) => T): Option[T] = {
+                              f: (I, Map[String, Any]) => T): Option[T] = {
     assert(ref != null, "ServiceReference must not be null!")
     assert(f != null, "Function to be applied must not be null!")
     try {

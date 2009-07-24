@@ -15,9 +15,8 @@
  */
 package org.scalamodules.core
 
-import Preamble.Prop
-
 import org.osgi.framework.ServiceReference
+import scala.collection.immutable.{Map => IMap}
 
 /**
  * Rich wrapper for ServiceReference: 
@@ -27,11 +26,11 @@ private[core] class RichServiceReference(ref: ServiceReference) {
 
   require(ref != null, "ServiceReference must not be null!")
 
-  val properties = Map(fromRef(ref): _*)
+  val properties = IMap(fromRef(ref): _*)
 
-  private def fromRef(ref: ServiceReference): Array[Prop] = {
+  private def fromRef(ref: ServiceReference): Array[(String, Any)] = {
     ref.getPropertyKeys match {
-      case null => Array[Prop]()
+      case null => Array[(String, Any)]()
       case keys => keys map { key => (key, ref getProperty key) }
     }
   }

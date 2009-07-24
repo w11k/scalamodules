@@ -16,11 +16,13 @@
 package org.scalamodules.services
 
 import Preamble.toRichConfiguration
-import core.Preamble.{Prop, Props, PropsImpl, toRichBundleContext}
+import core.Preamble.toRichBundleContext
 import core.Util.mapToJavaDictionary
 
 import org.osgi.framework.BundleContext
 import org.osgi.service.cm.{Configuration, ConfigurationAdmin}
+import scala.collection.Map
+import scala.collection.immutable.{Map => IMap}
 
 /**
  * Provides configuration via Configuration Admin service. 
@@ -34,14 +36,14 @@ private[services] class Configure(ctx: BundleContext,
   /**
    * Updates the configuration with the given properties. 
    */
-  def updateWith(props: Props) {
+  def updateWith(props: Map[String, Any]) {
 
     require(props != null, "Properties must not be null!")
 
     ctx getOne classOf[ConfigurationAdmin] andApply {
       (configAdmin: ConfigurationAdmin) => {
         val config = configAdmin.getConfiguration(pid, null)
-        config update (config.properties ++ props)
+        config update (IMap[String, Any]() ++ config.properties ++ props)
       }
     }
   }
@@ -49,15 +51,15 @@ private[services] class Configure(ctx: BundleContext,
   /**
    * Updates the configuration with the given properties. 
    */
-  def updateWith(props: Prop*) {
+  def updateWith(props: (String, Any)*) {
     require(props != null, "Properties must not be null!")
-    updateWith(Map(props: _*))
+    updateWith(IMap(props: _*))
   }
 
   /**
    * Replaces the configuration with the given properties. 
    */
-  def replaceWith(props: Props) {
+  def replaceWith(props: Map[String, Any]) {
 
     require(props != null, "Properties must not be null!")
 
@@ -72,8 +74,8 @@ private[services] class Configure(ctx: BundleContext,
   /**
    * Replaces the configuration with the given properties. 
    */
-  def replaceWith(props: Prop*) {
+  def replaceWith(props: (String, Any)*) {
     require(props != null, "Properties must not be null!")
-    replaceWith(Map(props: _*))
+    replaceWith(IMap(props: _*))
   }
 }

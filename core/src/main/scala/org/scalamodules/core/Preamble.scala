@@ -16,25 +16,8 @@
 package org.scalamodules.core
 
 import org.osgi.framework.{BundleContext, ServiceReference}
-import scala.collection.Map
-import scala.collection.immutable.{Map => IMap}
 
 object Preamble {
-
-  /**
-   * Type for a single service property.
-   */
-  type Prop = (String, Any)
-
-  /**
-   * Type for service properties.
-   */
-  type Props = Map[String, Any]
-
-  /**
-   * Implementation type for service properties.
-   */
-  type PropsImpl = IMap[String, Any]
 
   /**
    * Implicitly converts the given BundleContext to RichBundleContext.

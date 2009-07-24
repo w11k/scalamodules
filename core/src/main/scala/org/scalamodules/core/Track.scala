@@ -15,11 +15,12 @@
  */
 package org.scalamodules.core
 
-import Preamble._
+import Preamble.toRichServiceReference
 import Util.toOption
 
 import org.osgi.framework.{BundleContext, Filter, ServiceReference}
 import org.osgi.util.tracker.ServiceTracker
+import scala.collection.Map
 
 /**
  * Provides service tracking. 
@@ -95,22 +96,22 @@ private class Track[I](ctx: BundleContext, srvIntf: Class[I], filter: Option[Str
 /**
  * Super class for service tracking events.
  */
-sealed abstract class TrackEvent[I](srv: I, props: Props)
+sealed abstract class TrackEvent[I](srv: I, props: Map[String, Any])
 
 /**
  * A service is being added to the tracked services.
  */
-case class Adding[I](srv: I, props: Props) 
+case class Adding[I](srv: I, props: Map[String, Any]) 
   extends TrackEvent[I](srv, props)
 
 /**
  * A tracked service was modified.
  */
-case class Modified[I](srv: I, props: Props)
+case class Modified[I](srv: I, props: Map[String, Any])
   extends TrackEvent[I](srv, props)
 
 /**
  * A service was removed from  the tracked services.
  */
-case class Removed[I](srv: I, props: Props)
+case class Removed[I](srv: I, props: Map[String, Any])
   extends TrackEvent[I](srv, props)

@@ -15,11 +15,12 @@
  */
 package org.scalamodules.services
 
-import core.Preamble.{Props, PropsImpl}
 import core.Util.dictionaryToMap
 
 import java.util.Dictionary
 import org.osgi.service.cm.Configuration
+import scala.collection.Map
+import scala.collection.immutable.{Map => IMap}
 
 /**
  * Rich wrapper for Configuration: 
@@ -30,11 +31,11 @@ class RichConfiguration(config: Configuration) {
   require(config != null, "Configuration must not be null!")
 
   /**
-   * Get properties as Map[String, Any] (Props).
+   * Get properties as Map[String, Any].
    */
-  def properties: Props = {
+  def properties: Map[String, Any] = {
     config.getProperties match {
-      case null  => PropsImpl()
+      case null  => IMap[String, Any]()
       case props => props.asInstanceOf[Dictionary[String, Any]]
     }
   }

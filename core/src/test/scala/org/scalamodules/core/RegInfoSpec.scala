@@ -15,7 +15,7 @@
  */
 package org.scalamodules.core
 
-import Preamble._
+import Preamble.{toRegIndepInfo, toRegDepInfo}
 
 import org.scalatest.Spec
 import org.scalatest.matchers.ShouldMatchers
@@ -87,7 +87,7 @@ object RegIndepInfoSpec extends Spec with ShouldMatchers {
     }
 
     it("should return a new RegIndepInfo with srvIntf == None when called with a null Map") {
-      val newInfo = info % null.asInstanceOf[Props]
+      val newInfo = info % null.asInstanceOf[Map[String, Any]]
       newInfo should not be null
       newInfo.props should equal (None)
     }
@@ -171,7 +171,7 @@ object RegDepInfoSpec extends Spec with ShouldMatchers {
     }
 
     it("should return a new RegDepInfo with srvIntf == None when called with a null Map") {
-      val newInfo = info % null.asInstanceOf[Props]
+      val newInfo = info % null.asInstanceOf[Map[String, Any]]
       newInfo should not be null
       newInfo.props should equal (None)
     }

@@ -15,15 +15,17 @@
  */
 package org.scalamodules.core
 
-import Preamble.{Prop, Props}
 import Util.toOption
+
+import scala.collection.Map
+import scala.collection.immutable.{Map => IMap}
 
 /**
  * Registration information for an independent service.
  */
 private[core] class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
                                                       val srvIntf: Option[Class[I]],
-                                                      val props: Option[Props]) {
+                                                      val props: Option[Map[String, Any]]) {
 
   require(srv != null, "Service to be registered must not be null!")
   require(srvIntf != null, "Option for service interface used for registration must not be null!")
@@ -46,22 +48,22 @@ private[core] class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
   /**
    * Register a service with the given properties.
    */
-  def %(props: Props) = withProps(props)
+  def %(props: Map[String, Any]) = withProps(props)
 
   /**
    * Register a service with the given properties.
    */
-  def withProps(props: Props) = new RegIndepInfo(srv, srvIntf, props)
+  def withProps(props: Map[String, Any]) = new RegIndepInfo(srv, srvIntf, props)
 
   /**
    * Register a service with the given properties.
    */
-  def %(props: Prop*) = withProps(Map(props: _*))
+  def %(props: (String, Any)*) = withProps(IMap(props: _*))
 
   /**
    * Register a service with the given properties.
    */
-  def withProps(props: Prop*) = new RegIndepInfo(srv, srvIntf, Map(props: _*))
+  def withProps(props: (String, Any)*) = new RegIndepInfo(srv, srvIntf, IMap(props: _*))
 }
 
 /**
@@ -69,7 +71,7 @@ private[core] class RegIndepInfo[I <: AnyRef, S <: I](val srv: S,
  */
 private[core] class RegDepInfo[I <: AnyRef, S <: I, D <: AnyRef](val srvFactory: D => S,
                                                                  val srvIntf: Option[Class[I]],
-                                                                 val props: Option[Props]) {
+                                                                 val props: Option[Map[String, Any]]) {
 
   require(srvFactory != null, "Factory function for service to be registered must not be null!")
   require(srvIntf != null, "Option for service interface used for registration must not be null!")
@@ -90,20 +92,20 @@ private[core] class RegDepInfo[I <: AnyRef, S <: I, D <: AnyRef](val srvFactory:
   /**
    * Register a service with the given properties.
    */
-  def %(props: Props) = withProps(props)
+  def %(props: Map[String, Any]) = withProps(props)
 
   /**
    * Register a service with the given properties.
    */
-  def withProps(props: Props) = new RegDepInfo(srvFactory, srvIntf, props)
+  def withProps(props: Map[String, Any]) = new RegDepInfo(srvFactory, srvIntf, props)
 
   /**
    * Register a service with the given properties.
    */
-  def %(props: Prop*) = withProps(Map(props: _*))
+  def %(props: (String, Any)*) = withProps(IMap(props: _*))
 
   /**
    * Register a service with the given properties.
    */
-  def withProps(props: Prop*) = new RegDepInfo(srvFactory, srvIntf, Map(props: _*))
+  def withProps(props: (String, Any)*) = new RegDepInfo(srvFactory, srvIntf, IMap(props: _*))
 }

@@ -15,11 +15,11 @@
  */
 package org.scalamodules.core
 
-import Preamble._
-import Util._
+import Util.mapToJavaDictionary
 
 import org.osgi.framework.{BundleContext, ServiceReference, ServiceRegistration}
 import org.osgi.util.tracker.ServiceTracker
+import scala.collection.Map
 import scala.reflect.Manifest
 
 /**
@@ -136,6 +136,6 @@ private[core] class RichBundleContext(ctx: BundleContext) {
       case None          => interfacesOrClass(srv)
     }
 
-  private def props(p: Option[Props]) = 
-    p map { x => mapToJavaDictionary(x) } getOrElse null
+  private def props(p: Option[Map[String, Any]]) = 
+    p map { mapToJavaDictionary(_) } getOrElse null
 }

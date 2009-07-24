@@ -15,11 +15,11 @@
  */
 package org.scalamodules.services
 
-import core.Preamble.Props
 import core.Util.dictionaryToMap
 
 import java.util.Dictionary
 import org.osgi.service.cm.ManagedService
+import scala.collection.Map
 
 /**
  * Makes handling managed services more convenient.
@@ -29,10 +29,10 @@ trait BaseManagedService extends ManagedService {
   /**
    * Handles update. If the given Option is None the configuration is deleted.
    */
-  def handleUpdate(props: Option[Props])
+  def handleUpdate(props: Option[Map[String, Any]])
 
   /**
-   * Delegates to handleUpdate which takes an Option of Map[String, Any] (Props).
+   * Delegates to handleUpdate which takes an Option of Map[String, Any].
    */
   override def updated(props: Dictionary[_, _]) {
     props match {
