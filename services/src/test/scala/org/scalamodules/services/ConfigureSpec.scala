@@ -15,20 +15,27 @@
  */
 package org.scalamodules.services
 
+import org.easymock.EasyMock
 import org.osgi.framework.BundleContext
-import org.osgi.service.cm.Configuration
+import org.scalatest.Spec
+import org.scalatest.matchers.ShouldMatchers
 
-object Preamble {
+object ConfigureSpec extends Spec with ShouldMatchers {
 
-  /**
-   * Implicitly converts the given BundleContext to ServicesBundleContext.
-   */
-  implicit def toServicesBundleContext(ctx: BundleContext) =
-    new ServicesBundleContext(ctx)
+  val mockCtx = EasyMock createNiceMock classOf[BundleContext]
 
-  /**
-   * Implicitly converts the given Configuration to RichConfiguration.
-   */
-  implicit def toRichConfiguration(config: Configuration) = 
-    new RichConfiguration(config) 
+  describe("The class Configure") {
+
+    it("should throw an IAE when constructed with a null BundleContext") {
+      intercept[IllegalArgumentException] {
+        new Configure(null, "pid")
+      }
+    }
+
+    it("should throw an IAE when constructed with a null PID") {
+      intercept[IllegalArgumentException] {
+        new Configure(mockCtx, null)
+      }
+    }
+  }
 }

@@ -25,7 +25,7 @@
     <module>core</module>
     <module>core-it</module>
     <module>services</module>
-    <!--module>services-it</module-->
+    <module>services-it</module>
     <module>demo</module>
     <!--module>assembly</module-->
   </modules>

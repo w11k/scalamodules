@@ -15,9 +15,10 @@
  */
 package org.scalamodules.services.test;
 
+import Preamble._
+import core.Preamble._
+
 import java.util.Dictionary
-import scala.collection.Map
-import scala.collection.immutable.{Map => IMap}
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.ops4j.pax.exam.CoreOptions._
@@ -25,15 +26,15 @@ import org.ops4j.pax.exam.Inject
 import org.ops4j.pax.exam.junit._
 import org.osgi.framework.BundleContext
 import org.osgi.service.cm.ManagedService
-import org.scalamodules.core.RichBundleContext.toRichBundleContext
-import org.scalamodules.services.ServicesRichBundleContext.toServicesRichBundleContext
-import org.scalamodules.services.cm._
+import scala.collection.Map
+import scala.collection.immutable.{Map => IMap}
 
 @RunWith(classOf[MavenConfiguredJUnit4TestRunner])
 class BundleTest {
 
   @Test
   def test() {
+
     // Register a managed service
     val greeting = new Greeting with BaseManagedService {
       override def handleUpdate(properties: Option[Map[String, Any]]) {
@@ -55,34 +56,33 @@ class BundleTest {
       private var salutation = "SALUTATION"
       private var message = "MESSAGE"
     }
-    context registerAs classOf[Greeting] andAs classOf[ManagedService] withProperties 
-      ("name" -> "CM", "service.pid" -> "CM") theService greeting
+    ctx register (greeting withProps ("name" -> "CM", "service.pid" -> "CM"))
 
     // Replace configuration for greeting service
-    context configure "CM" replaceWith (IMap("salutation" -> "REPLACED"))
+    ctx configure "CM" replaceWith (IMap("salutation" -> "REPLACED"))
     Thread sleep 1000
     // Get many services with filter (name=CM)) should result in Some(List("REPLACED MESSAGE"))
     var cmResult = 
-      context getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
+      ctx getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
     assert(Some(List("REPLACED MESSAGE")) == cmResult, "Was " + cmResult)
 
     // Update configuration for greeting service
-    context configure "CM" updateWith (("message" -> "REPLACED"))
+    ctx configure "CM" updateWith (("message" -> "REPLACED"))
     Thread sleep 1000
     // Get many services with filter (name=CM)) should result in Some(List("test"))
     cmResult = 
-      context getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
+      ctx getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
     assert(Some(List("REPLACED REPLACED")) == cmResult, "Was " + cmResult)
 
     // Replace configuration for greeting service once more
-    context configure "CM" replaceWith (("salutation" -> "REPLACED"))
+    ctx configure "CM" replaceWith (("salutation" -> "REPLACED"))
     Thread sleep 1000
     // Get many services with filter (name=CM)) should result in Some(List("REPLACED MESSAGE"))
     cmResult = 
-      context getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
+      ctx getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
     assert(Some(List("REPLACED MESSAGE")) == cmResult, "Was " + cmResult)
   }
 
   @Inject
-  private var context: BundleContext = _
+  private var ctx: BundleContext = _
 }

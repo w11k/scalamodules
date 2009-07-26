@@ -15,18 +15,24 @@
  */
 package org.scalamodules.services
 
+import Preamble.toServicesBundleContext
+
+import org.easymock.EasyMock
 import org.osgi.framework.BundleContext
+import org.scalatest.Spec
+import org.scalatest.matchers.ShouldMatchers
+import scala.collection.Map
 
-/**
- * Rich wrapper for BundleContext: 
- * Makes handling the companion services more convenient and enables the ScalaModules DSL.
- */
-private[services] class RichBundleContext(ctx: BundleContext) {
+object BaseManagedServiceSpec extends Spec with ShouldMatchers {
 
-  require(ctx != null, "BundleContext must not be null!")
+  describe("BaseManagedService.updated()") {
 
-  /**
-   * Provides configuration via Configuration Admin service. 
-   */
-  def configure(pid: String) = new Configure(ctx, pid)
+    it("should return None when called with null properties") {
+      assert(false, "Not yet implemented!")
+    }
+
+    it("should return Some when called with not-null properties") {
+      assert(false, "Not yet implemented!")
+    }
+  }
 }

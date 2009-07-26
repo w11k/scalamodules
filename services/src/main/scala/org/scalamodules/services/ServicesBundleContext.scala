@@ -16,19 +16,17 @@
 package org.scalamodules.services
 
 import org.osgi.framework.BundleContext
-import org.osgi.service.cm.Configuration
 
-object Preamble {
+/**
+ * Rich wrapper for BundleContext: 
+ * Makes handling the companion services more convenient and enables the ScalaModules DSL.
+ */
+private[services] class ServicesBundleContext(ctx: BundleContext) {
+
+  require(ctx != null, "BundleContext must not be null!")
 
   /**
-   * Implicitly converts the given BundleContext to ServicesBundleContext.
+   * Provides configuration via Configuration Admin service. 
    */
-  implicit def toServicesBundleContext(ctx: BundleContext) =
-    new ServicesBundleContext(ctx)
-
-  /**
-   * Implicitly converts the given Configuration to RichConfiguration.
-   */
-  implicit def toRichConfiguration(config: Configuration) = 
-    new RichConfiguration(config) 
+  def configure(pid: String) = new Configure(ctx, pid)
 }

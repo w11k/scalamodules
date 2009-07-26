@@ -147,12 +147,6 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
 
     val rbc = new RichBundleContext(mockCtx)
 
-    it("should throw an IAE when called with a null service interface") {
-      intercept[IllegalArgumentException] { 
-        rbc ?> null
-      }
-    }
-
     it("should return a not-null GetOne when called with a service interface") {
       val result = rbc ?> classOf[String]
       result should not be null
@@ -163,12 +157,6 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
 
     val rbc = new RichBundleContext(mockCtx)
 
-    it("should throw an IAE when called with a null service interface") {
-      intercept[IllegalArgumentException] { 
-        rbc *> null
-      }
-    }
-
     it("should return a not-null GetMany when called with a service interface") {
       val result = rbc *> classOf[String]
       result should not be null
@@ -178,12 +166,6 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
   describe("RichBundleContext.track(Class)") {
 
     val rbc = new RichBundleContext(mockCtx)
-
-    it("should throw an IAE when called with a null service interface") {
-      intercept[IllegalArgumentException] {
-        rbc >> null
-      }
-    }
 
     it("should return a not-null Track when called with a service interface") {
       val result = rbc >> classOf[String]

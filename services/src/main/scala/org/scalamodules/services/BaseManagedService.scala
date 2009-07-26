@@ -29,10 +29,11 @@ trait BaseManagedService extends ManagedService {
   /**
    * Handles update. If the given Option is None the configuration is deleted.
    */
-  def handleUpdate(props: Option[Map[String, Any]])
+  def handleUpdate(props: Option[Map[String, Any]]): Unit
 
   /**
-   * Delegates to handleUpdate which takes an Option of Map[String, Any].
+   * Transforms eventually null Dictionary to Option[Map[String, Any]]
+   * and delegates to handleUpdate.
    */
   override def updated(props: Dictionary[_, _]) {
     props match {
