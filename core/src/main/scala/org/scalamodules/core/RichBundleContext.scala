@@ -122,19 +122,25 @@ private[core] class RichBundleContext(ctx: BundleContext) {
    */
   def track[I](srvIntf: Class[I]) = new Track[I](ctx, srvIntf)
 
+
+  private def srvIntfs[I <: AnyRef, S <: I](srv: S, srvIntf: Option[Class[I]]) =
+    srvIntf match {
+      case Some(srvIntf) => Array(srvIntf.getName)
+      case None          => interfacesOrClass(srv)
+    }
+
   private def interfacesOrClass[S <: AnyRef](srv: S): Array[String] = {
-    val intfs = srv.getClass.getInterfaces filter { _ != classOf[ScalaObject] }
+    val intfs = uniqueIntfs(srv.getClass)
     intfs.isEmpty match {
       case true  => Array(srv.getClass.getName)
       case false => intfs map { clazz => clazz.getName }
     }
   }
 
-  private def srvIntfs[I <: AnyRef, S <: I](srv: S, srvIntf: Option[Class[I]]) = 
-    srvIntf match {
-      case Some(srvIntf) => Array(srvIntf.getName)
-      case None          => interfacesOrClass(srv)
-    }
+  def uniqueIntfs[S](clazz: Class[S]): Array[Class[_]] = {
+    val intfs = clazz.getInterfaces filter { _ != classOf[ScalaObject] }
+    intfs ++ (intfs flatMap { uniqueIntfs(_) } filter { i => !(intfs contains i) })
+  }
 
   private def props(p: Option[Map[String, Any]]) = 
     p map { mapToJavaDictionary(_) } getOrElse null

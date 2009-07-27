@@ -62,25 +62,22 @@ class BundleTest {
     ctx configure "CM" replaceWith (IMap("salutation" -> "REPLACED"))
     Thread sleep 1000
     // Get many services with filter (name=CM)) should result in Some(List("REPLACED MESSAGE"))
-    var cmResult = 
-      ctx getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
-    assert(Some(List("REPLACED MESSAGE")) == cmResult, "Was " + cmResult)
+    var result = ctx getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
+    assert(List("REPLACED MESSAGE") == result, "Was " + result)
 
     // Update configuration for greeting service
     ctx configure "CM" updateWith (("message" -> "REPLACED"))
     Thread sleep 1000
     // Get many services with filter (name=CM)) should result in Some(List("test"))
-    cmResult = 
-      ctx getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
-    assert(Some(List("REPLACED REPLACED")) == cmResult, "Was " + cmResult)
+    result = ctx getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
+    assert(List("REPLACED REPLACED") == result, "Was " + result)
 
     // Replace configuration for greeting service once more
     ctx configure "CM" replaceWith (("salutation" -> "REPLACED"))
     Thread sleep 1000
     // Get many services with filter (name=CM)) should result in Some(List("REPLACED MESSAGE"))
-    cmResult = 
-      ctx getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
-    assert(Some(List("REPLACED MESSAGE")) == cmResult, "Was " + cmResult)
+    result = ctx getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
+    assert(List("REPLACED MESSAGE") == result, "Was " + result)
   }
 
   @Inject
