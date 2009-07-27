@@ -15,7 +15,7 @@
  */
 package org.scalamodules.services
 
-import Preamble.toServicesBundleContext
+import Preamble.toRichBundleContextForServices
 
 import org.easymock.EasyMock
 import org.osgi.framework.BundleContext

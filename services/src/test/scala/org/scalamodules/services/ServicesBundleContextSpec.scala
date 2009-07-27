@@ -20,24 +20,23 @@ import org.osgi.framework.BundleContext
 import org.scalatest.Spec
 import org.scalatest.matchers.ShouldMatchers
 
-object ServicesBundleContextSpec extends Spec with ShouldMatchers {
+object RichBundleContextForServicesSpec extends Spec with ShouldMatchers {
 
   val mockCtx = EasyMock createNiceMock classOf[BundleContext]
 
-  describe("The class ServicesBundleContext") {
+  describe("The class RichBundleContextForServices") {
 
     it("should throw an IAE when constructed with a null BundleContext") {
       intercept[IllegalArgumentException] { 
-        new ServicesBundleContext(null)
+        new RichBundleContextForServices(null)
       }
     }
   }
 
-  describe("ServicesBundleContext.configure(String)") {
+  describe("RichBundleContextForServices.configure(String)") {
 
     it("should return a not-null Configure when called with not-null PID") {
-
-      val rbc = new ServicesBundleContext(mockCtx)
+      val rbc = new RichBundleContextForServices(mockCtx)
       val result = rbc configure "PID"
       result should not be null
     }

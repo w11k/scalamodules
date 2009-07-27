@@ -23,7 +23,6 @@ import org.osgi.framework.{BundleActivator, BundleContext}
 class Activator extends BundleActivator {
 
   override def start(ctx: BundleContext) {
-
     // Track Greeting services, but only polite ones by applying a filter
     ctx track classOf[Greeting] withFilter "(polite=true)" on {
       case Adding(grt, _)  => println("Adding polite Greeting: " + grt.welcome)

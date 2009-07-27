@@ -22,7 +22,6 @@ import org.osgi.framework.{BundleActivator, BundleContext}
 class Activator extends BundleActivator {
 
   override def start(ctx: BundleContext) {
-
     // Register a Greeting service
     val hello = greeting("Hello!", "See you!")
     ctx register hello

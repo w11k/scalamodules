@@ -15,7 +15,7 @@
  */
 package org.scalamodules.services
 
-import Preamble.{toServicesBundleContext, toRichConfiguration}
+import Preamble.{toRichBundleContextForServices, toRichConfiguration}
 
 import org.easymock.EasyMock
 import org.osgi.framework.BundleContext
@@ -25,10 +25,10 @@ import org.scalatest.matchers.ShouldMatchers
 
 object PreambleSpec extends Spec with ShouldMatchers {
 
-  describe("The function Preamble.toServicesBundleContext") {
+  describe("The function Preamble.toRichBundleContextForServices") {
 
-    it("should implicitly convert a BundleContext to ServicesBundleContext") {
-      val rbc: ServicesBundleContext = EasyMock createNiceMock classOf[BundleContext]
+    it("should implicitly convert a BundleContext to RichBundleContextForServices") {
+      val rbc: RichBundleContextForServices = EasyMock createNiceMock classOf[BundleContext]
       rbc should not be null
     }
   }

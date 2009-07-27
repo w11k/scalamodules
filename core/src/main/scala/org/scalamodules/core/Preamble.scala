@@ -34,7 +34,8 @@ object Preamble {
   /**
    * Implicitly converts the given object to RegIndepInfo.
    */
-  implicit def toRegIndepInfo[S <: AnyRef](srv: S) = new RegIndepInfo(srv) 
+  implicit def toRegIndepInfo[S <: AnyRef](srv: S) =
+    new RegIndepInfo(srv)
 
   /**
    * Implicitly converts the given function to RegDepInfo.

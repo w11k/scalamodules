@@ -200,11 +200,11 @@ object UtilSpec extends Spec {
   private def createIterator[T](ts: T*) = {
     var iterator = EasyMock.createMock(classOf[Iterator[T]])
     for(t <- ts) {
-      EasyMock.expect(iterator.hasNext).andReturn(true)
-      EasyMock.expect(iterator.next).andReturn(t)
+      EasyMock expect iterator.hasNext andReturn true
+      EasyMock expect iterator.next andReturn t
     }
-    EasyMock.expect(iterator.hasNext).andReturn(false)
-    EasyMock.replay(iterator)
+    EasyMock expect iterator.hasNext andReturn false
+    EasyMock replay iterator
     iterator
   }
 }

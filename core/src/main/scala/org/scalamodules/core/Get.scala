@@ -24,7 +24,8 @@ import org.osgi.framework.{BundleContext, ServiceReference}
 /**
  * Consume a single service.
  */
-private class GetOne[I](ctx: BundleContext, srvIntf: Class[I])
+private class GetOne[I](ctx: BundleContext,
+                        srvIntf: Class[I])
     extends Get(ctx, srvIntf) {
 
   override private[core] type Result[T] = Option[T]
@@ -41,27 +42,33 @@ private class GetOne[I](ctx: BundleContext, srvIntf: Class[I])
 /**
  * Consume multiple services.
  */
-private class GetMany[I](ctx: BundleContext, srvIntf: Class[I], filter: Option[String])
+private class GetMany[I](ctx: BundleContext,
+                         srvIntf: Class[I],
+                         filter: Option[String])
   extends Get(ctx, srvIntf) {
 
   require(filter != null, "Option for filter must not be null!")
 
-  def this(ctx: BundleContext, srvIntf: Class[I]) = this(ctx, srvIntf, None)
+  def this(ctx: BundleContext, srvIntf: Class[I]) =
+    this(ctx, srvIntf, None)
 
   /**
    * Sets the given filter for service look-ups.
    */
-  def %(filter: String) = withFilter(filter)
+  def %(filter: String) =
+    withFilter(filter)
 
   /**
    * Sets the given filter for service look-ups.
    */
-  def withFilter(filter: String) = new GetMany(ctx, srvIntf, filter)
+  def withFilter(filter: String) =
+    new GetMany(ctx, srvIntf, filter)
 
   override private[core] type Result[T] = List[T]
 
   override private[core] def work[T](f: ServiceReference => Option[T]): Result[T] = {
     assert(f != null, "Function to be applied must not be null!")
+    // TODO Can we do this without var?
     var result: List[Option[T]] = Nil
     ctx.getServiceReferences(srvIntf.getName, filter getOrElse null) match {
       case null =>
@@ -71,15 +78,16 @@ private class GetMany[I](ctx: BundleContext, srvIntf: Class[I], filter: Option[S
   }
 }
 
-private abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
-
+private abstract class Get[I](ctx: BundleContext,
+                              srvIntf: Class[I]) {
   require(ctx != null, "BundleContext must not be null!")
   require(srvIntf != null, "Service interface must not be null!")
 
   /**
    * Applies the given function to the service.
    */
-  def &[T](f: I => T) = andApply(f)
+  def &[T](f: I => T) =
+    andApply(f)
 
   /**
    * Applies the given function to the service.
@@ -92,7 +100,8 @@ private abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
   /**
    * Applies the given function to the service and its properties.
    */
-  def &[T](f: (I, Map[String, Any]) => T) = andApply(f)
+  def &[T](f: (I, Map[String, Any]) => T) =
+    andApply(f)
 
   /**
    * Applies the given function to the service and its properties.
@@ -106,7 +115,7 @@ private abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
 
   private[core] def work[T](f: ServiceReference => Option[T]): Result[T]
 
-  private def applyWithRef[T](ref: ServiceReference, f: I => T): Option[T] = {
+  private def applyWithRef[T](ref: ServiceReference, f: I => T) = {
     assert(ref != null, "ServiceReference must not be null!")
     assert(f != null, "Function to be applied must not be null!")
     try {
@@ -118,7 +127,7 @@ private abstract class Get[I](ctx: BundleContext, srvIntf: Class[I]) {
   }
 
   private def applyWithRef[T](ref: ServiceReference,
-                              f: (I, Map[String, Any]) => T): Option[T] = {
+                              f: (I, Map[String, Any]) => T) = {
     assert(ref != null, "ServiceReference must not be null!")
     assert(f != null, "Function to be applied must not be null!")
     try {

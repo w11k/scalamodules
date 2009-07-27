@@ -21,10 +21,10 @@ import org.osgi.service.cm.Configuration
 object Preamble {
 
   /**
-   * Implicitly converts the given BundleContext to ServicesBundleContext.
+   * Implicitly converts the given BundleContext to RichBundleContextForServices.
    */
-  implicit def toServicesBundleContext(ctx: BundleContext) =
-    new ServicesBundleContext(ctx)
+  implicit def toRichBundleContextForServices(ctx: BundleContext) =
+    new RichBundleContextForServices(ctx)
 
   /**
    * Implicitly converts the given Configuration to RichConfiguration.

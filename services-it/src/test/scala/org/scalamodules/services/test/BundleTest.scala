@@ -34,7 +34,6 @@ class BundleTest {
 
   @Test
   def test() {
-
     // Register a managed service
     val greeting = new Greeting with BaseManagedService {
       override def handleUpdate(properties: Option[Map[String, Any]]) {

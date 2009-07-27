@@ -68,6 +68,7 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
         (mockCtx registerService 
           (aryEq(Array(srv.getClass.getName)), same(srv), isNull)) andReturn mockReg
       EasyMock replay mockCtx
+
       val result = mockCtx < new RegIndepInfo(srv)
       EasyMock verify mockCtx
       result should not be null
@@ -85,6 +86,7 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
         (mockCtx registerService 
            (aryEq(Array(classOf[Srv1].getName, classOf[Srv2].getName)), same(srv), isNull)) andReturn mockReg
       EasyMock replay mockCtx
+
       val result = mockCtx < new RegIndepInfo(srv)
       EasyMock verify mockCtx
       result should not be null
@@ -102,6 +104,7 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
         (mockCtx registerService 
            (aryEq(Array(classOf[Srv1].getName)), same(srv), isNull)) andReturn mockReg
       EasyMock replay mockCtx
+
       val result = mockCtx < new RegIndepInfo(srv, Some(classOf[Srv1]))
       EasyMock verify mockCtx
       result should not be null
@@ -119,6 +122,7 @@ object RichBundleContextSpec extends Spec with ShouldMatchers {
         (mockCtx registerService 
            (aryEq(Array(classOf[Srv1].getName)), same(srv), DictionaryMatcher.eqDict(Util mapToJavaDictionary props))) andReturn mockReg
       EasyMock replay mockCtx
+
       val result = mockCtx < new RegIndepInfo(srv, None, Some(props))
       EasyMock verify mockCtx
       result should not be null

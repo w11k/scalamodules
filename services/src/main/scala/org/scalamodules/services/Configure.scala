@@ -37,9 +37,7 @@ private[services] class Configure(ctx: BundleContext,
    * Updates the configuration with the given properties. 
    */
   def updateWith(props: Map[String, Any]) {
-
     require(props != null, "Properties must not be null!")
-
     ctx getOne classOf[ConfigurationAdmin] andApply {
       (configAdmin: ConfigurationAdmin) => {
         val config = configAdmin.getConfiguration(pid, null)
@@ -60,9 +58,7 @@ private[services] class Configure(ctx: BundleContext,
    * Replaces the configuration with the given properties. 
    */
   def replaceWith(props: Map[String, Any]) {
-
     require(props != null, "Properties must not be null!")
-
     ctx getOne classOf[ConfigurationAdmin] andApply {
       (configAdmin: ConfigurationAdmin) => {
         val config = configAdmin.getConfiguration(pid, null)

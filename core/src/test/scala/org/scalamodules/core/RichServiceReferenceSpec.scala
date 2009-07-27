@@ -56,6 +56,7 @@ object RichServiceReferenceSpec extends Spec with ShouldMatchers {
       EasyMock reset mockRef
       EasyMock expect (mockRef.getPropertyKeys) andReturn null
       EasyMock replay mockRef
+
       val richRef = new RichServiceReference(mockRef)
       val props = richRef.properties
       props should not be null
@@ -67,6 +68,7 @@ object RichServiceReferenceSpec extends Spec with ShouldMatchers {
       EasyMock expect (mockRef.getPropertyKeys) andReturn ArrayHelper.create("scala")
       EasyMock expect (mockRef getProperty "scala") andReturn "modules"
       EasyMock replay mockRef
+
       val richRef = new RichServiceReference(mockRef)
       val props = richRef.properties
       props should not be null

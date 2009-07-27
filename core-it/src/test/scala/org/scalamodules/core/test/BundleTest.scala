@@ -33,7 +33,6 @@ class BundleTest {
 
   @Test
   def test() {
-
     // Start tracking
     var addingIndex = 0
     var removedIndex = 0
@@ -146,54 +145,6 @@ class BundleTest {
     dependeeRegistration1.unregister()
     result = ctx *> classOf[Reverser] % "(feature=dependOn)" & { _ => }
     assert(result.isEmpty, "But size was: " + result.size) 
-
-//    // Register a managed service
-//    val greeting = new Greeting with BaseManagedService {
-//      override def handleUpdate(properties: Option[Map[String, Any]]) {
-//        properties match {
-//          case None        => salutation = "SALUTATION"; message = "MESSAGE"
-//          case Some(props) => {
-//            props.get("salutation") match {
-//              case None        => salutation = "SALUTATION"
-//              case Some(value) => salutation = value.toString;
-//            }
-//            props.get("message") match {
-//              case None        => message = "MESSAGE"
-//              case Some(value) => message = value.toString
-//            }
-//          }
-//        }
-//      }
-//      override def greet = salutation + " " + message
-//      private var salutation = "SALUTATION"
-//      private var message = "MESSAGE"
-//    }
-//    ctx <As classOf[Greeting] andAs classOf[ManagedService] withProperties 
-//      immutable.Map("name" -> "CM", "service.pid" -> "CM") theService greeting
-//
-//    // Replace configuration for greeting service
-//    ctx configure "CM" replaceWith (immutable.Map("salutation" -> "REPLACED"))
-//    Thread sleep 1000
-//    // Get many services with filter (name=CM)) should result in Some(List("REPLACED MESSAGE"))
-//    var cmResult = 
-//      ctx *> classOf[Greeting] ? "(name=CM)" & { _.greet }
-//    assert(Some(List("REPLACED MESSAGE")) == cmResult, "Was " + cmResult)
-//
-//    // Update configuration for greeting service
-//    ctx configure "CM" updateWith (immutable.Map("message" -> "REPLACED"))
-//    Thread sleep 1000
-//    // Get many services with filter (name=CM)) should result in Some(List("test"))
-//    cmResult = 
-//      ctx *> classOf[Greeting] ? "(name=CM)" & { _.greet }
-//    assert(Some(List("REPLACED REPLACED")) == cmResult, "Was " + cmResult)
-//
-//    // Replace configuration for greeting service once more
-//    ctx configure "CM" replaceWith (immutable.Map("salutation" -> "REPLACED"))
-//    Thread sleep 1000
-//    // Get many services with filter (name=CM)) should result in Some(List("REPLACED MESSAGE"))
-//    cmResult = 
-//      ctx *> classOf[Greeting] ? "(name=CM)" & { _.greet }
-//    assert(Some(List("REPLACED MESSAGE")) == cmResult, "Was " + cmResult)
   }
 
   private val Sorter = (s1: String, s2: String) => s1 < s2

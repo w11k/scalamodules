@@ -33,15 +33,14 @@ private[core] class RichBundleContext(ctx: BundleContext) {
   /**
    * Register an independent service.
    */
-  def <[I <: AnyRef, S <: I](info: RegIndepInfo[I, S]) = register(info)
+  def <[I <: AnyRef, S <: I](info: RegIndepInfo[I, S]) =
+    register(info)
 
   /**
    * Register an independent service.
    */
   def register[I <: AnyRef, S <: I](info: RegIndepInfo[I, S]) = {
-
     require(info != null, "RegIndepInfo must not be null!")
-
     ctx.registerService(srvIntfs(info.srv, info.srvIntf), 
                         info.srv, 
                         props(info.props))
@@ -59,11 +58,8 @@ private[core] class RichBundleContext(ctx: BundleContext) {
    */
   def register[I <: AnyRef, S <: I, D <: AnyRef](info: RegDepInfo[I, S, D])
                                                 (implicit mf: Manifest[D]) = {
-
     require(info != null, "RegIndepInfo must not be null!")
-
     val tracker = new ServiceTracker(ctx, mf.erasure.getName, null) {
-
       override def addingService(ref: ServiceReference) = 
         synchronized {
           satisfied match {
@@ -72,10 +68,11 @@ private[core] class RichBundleContext(ctx: BundleContext) {
               satisfied = true
               val dep = (ctx getService ref).asInstanceOf[D]
               val srv = info.srvFactory(dep)
-              ctx.registerService(srvIntfs(srv, info.srvIntf), srv, props(info.props))
+              ctx.registerService(srvIntfs(srv, info.srvIntf), 
+                                  srv,
+                                  props(info.props))
           }
         }
-
       override def removedService(ref: ServiceReference, reg: AnyRef) = {
         synchronized {
           reg.asInstanceOf[ServiceRegistration].unregister()
@@ -86,44 +83,49 @@ private[core] class RichBundleContext(ctx: BundleContext) {
 
       private var satisfied = false
     }
-
     tracker.open()
-
     tracker
   }
 
   /**
    * Consume a single service.
    */
-  def ?>[I](srvIntf: Class[I]) = getOne(srvIntf)
+  def ?>[I](srvIntf: Class[I]) =
+    getOne(srvIntf)
 
   /**
    * Consume a single service.
    */
-  def getOne[I](srvIntf: Class[I]) = new GetOne[I](ctx, srvIntf)
+  def getOne[I](srvIntf: Class[I]) =
+    new GetOne[I](ctx, srvIntf)
 
   /**
    * Consume multiple services.
    */
-  def *>[I](srvIntf: Class[I]) = getMany(srvIntf)
+  def *>[I](srvIntf: Class[I]) =
+    getMany(srvIntf)
 
   /**
    * Consume multiple services.
    */
-  def getMany[I](srvIntf: Class[I]) = new GetMany[I](ctx, srvIntf)
+  def getMany[I](srvIntf: Class[I]) =
+    new GetMany[I](ctx, srvIntf)
 
   /**
    * Track a service. 
    */
-  def >>[I](srvIntf: Class[I]) = track(srvIntf)
+  def >>[I](srvIntf: Class[I]) =
+    track(srvIntf)
 
   /**
    * Track a service. 
    */
-  def track[I](srvIntf: Class[I]) = new Track[I](ctx, srvIntf)
+  def track[I](srvIntf: Class[I]) =
+    new Track[I](ctx, srvIntf)
 
 
-  private def srvIntfs[I <: AnyRef, S <: I](srv: S, srvIntf: Option[Class[I]]) =
+  private def srvIntfs[I <: AnyRef, S <: I](srv: S,
+                                            srvIntf: Option[Class[I]]) =
     srvIntf match {
       case Some(srvIntf) => Array(srvIntf.getName)
       case None          => interfacesOrClass(srv)
@@ -139,7 +141,8 @@ private[core] class RichBundleContext(ctx: BundleContext) {
 
   def uniqueIntfs[S](clazz: Class[S]): Array[Class[_]] = {
     val intfs = clazz.getInterfaces filter { _ != classOf[ScalaObject] }
-    intfs ++ (intfs flatMap { uniqueIntfs(_) } filter { i => !(intfs contains i) })
+    intfs ++ (
+      intfs flatMap { uniqueIntfs(_) } filter { i => !(intfs contains i) })
   }
 
   private def props(p: Option[Map[String, Any]]) = 

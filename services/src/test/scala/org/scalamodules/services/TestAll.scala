@@ -25,7 +25,7 @@ object Suites {
     ConfigureSpec ::
     PreambleSpec ::
     RichConfigurationSpec ::
-    ServicesBundleContextSpec ::
+    RichBundleContextForServicesSpec ::
     Nil
 
   def main(args: Array[String]) {

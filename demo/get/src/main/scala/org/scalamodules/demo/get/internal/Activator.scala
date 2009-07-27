@@ -23,7 +23,6 @@ import org.osgi.framework.{BundleActivator, BundleContext}
 class Activator extends BundleActivator {
 
   override def start(ctx: BundleContext) {
-
     // Get one Greeting service
     ctx getOne classOf[Greeting] andApply { _.welcome } match {
       case None          => println(NoGreeting) 

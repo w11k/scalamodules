@@ -21,12 +21,13 @@ import org.osgi.framework.BundleContext
  * Rich wrapper for BundleContext: 
  * Makes handling the companion services more convenient and enables the ScalaModules DSL.
  */
-private[services] class ServicesBundleContext(ctx: BundleContext) {
+private[services] class RichBundleContextForServices(ctx: BundleContext) {
 
   require(ctx != null, "BundleContext must not be null!")
 
   /**
    * Provides configuration via Configuration Admin service. 
    */
-  def configure(pid: String) = new Configure(ctx, pid)
+  def configure(pid: String) =
+    new Configure(ctx, pid)
 }
