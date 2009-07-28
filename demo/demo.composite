@@ -1,9 +1,7 @@
-scan-bundle:mvn:org.scalamodules/scalamodules-util/1.1-SNAPSHOT@update
-scan-bundle:mvn:org.scalamodules/scalamodules-core/1.1-SNAPSHOT@update
-scan-bundle:mvn:org.scalamodules/scalamodules-services/1.1-SNAPSHOT@update
-scan-bundle:mvn:org.scalamodules/scalamodules-core/1.1-SNAPSHOT@update
-scan-bundle:mvn:org.scalamodules/scalamodules-demo/1.1-SNAPSHOT@update
-scan-bundle:mvn:org.scalamodules/scalamodules-demo-depend/1.1-SNAPSHOT@update
-scan-bundle:mvn:org.scalamodules/scalamodules-demo-get/1.1-SNAPSHOT@update
-scan-bundle:mvn:org.scalamodules/scalamodules-demo-register/1.1-SNAPSHOT@update
-scan-bundle:mvn:org.scalamodules/scalamodules-demo-track/1.1-SNAPSHOT@update
+scan-bundle:mvn:org.scalamodules/scalamodules-core/2.0-SNAPSHOT@update
+scan-bundle:mvn:org.scalamodules/scalamodules-services/2.0-SNAPSHOT@update
+scan-bundle:mvn:org.scalamodules/scalamodules-demo-api/2.0-SNAPSHOT@update
+scan-bundle:mvn:org.scalamodules/scalamodules-demo-register/2.0-SNAPSHOT@update
+scan-bundle:mvn:org.scalamodules/scalamodules-demo-get/2.0-SNAPSHOT@update
+scan-bundle:mvn:org.scalamodules/scalamodules-demo-track/2.0-SNAPSHOT@update
+scan-bundle:mvn:org.scalamodules/scalamodules-demo-depend/2.0-SNAPSHOT@update

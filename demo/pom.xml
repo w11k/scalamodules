@@ -20,6 +20,7 @@
     <module>register</module>
     <module>get</module>
     <module>track</module>
+    <module>depend</module>
   </modules>
 
   <build>

@@ -26,7 +26,7 @@ import org.osgi.framework.{BundleContext, ServiceReference}
  */
 private class GetOne[I](ctx: BundleContext,
                         srvIntf: Class[I])
-    extends Get(ctx, srvIntf) {
+  extends Get(ctx, srvIntf) {
 
   override private[core] type Result[T] = Option[T]
 

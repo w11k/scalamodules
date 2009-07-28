@@ -13,29 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalamodules.demo.register.internal
+package org.scalamodules.demo.depend.internal
 
 import core.Preamble._
+import core.{Adding, Removed}
 
 import org.osgi.framework.{BundleActivator, BundleContext}
 
 class Activator extends BundleActivator {
 
   override def start(ctx: BundleContext) {
-    // Register a Greeting service
-    val hello = greeting("Hello!", "See you!")
-    ctx register hello
+    // Register a Reverser service depending on a Greeting service using operator notation
+    ctx < { (grt: Greeting) => new GreetingReverser(grt) }
 
-    // Register a Greeting service with properties using operator notation
-    val welcome = greeting("Welcome!", "Goodbye!")
-    ctx < welcome % ("polite" -> "true")
+    // Track the Reverser service using operator notation
+    ctx >> classOf[Reverser] & {
+      case Adding(rev, _) => println("Adding Reverser: " + rev.reverse)
+      case Removed(rev, _) => println("Removed Reverser: " + rev.reverse)
+    }
   }
 
   override def stop(ctx: BundleContext) {}
+}
 
-  private def greeting(_welcome: String, _goodbye: String) =
-    new {
-      val welcome = _welcome
-      val goodbye = _goodbye
-    } with Greeting
+private[internal] class GreetingReverser(grt: Greeting)
+  extends Reverser {
+
+  val reverse = new StringBuilder(grt.welcome).reverse.toString
 }
