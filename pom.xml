@@ -43,6 +43,7 @@
       <groupId>org.scala-lang-osgi</groupId>
       <artifactId>scala-library</artifactId>
       <version>${scala.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
