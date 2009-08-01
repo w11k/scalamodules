@@ -18,9 +18,9 @@ package org.scalamodules.core.filters
 
 import collection.mutable.ListBuffer
 
-object FilterHelpers {
+object Filter {
 
-  private[FilterHelpers] case class PropertyFilterBuilder(attr: String) {
+  private[Filter] case class PropertyFilterBuilder(attr: String) {
 
     def set = Set(attr)
 
@@ -41,28 +41,32 @@ object FilterHelpers {
     def ~==(value: Any) = Approx(attr, value)
   }
 
+  def apply(filter: Filter) = filter
+
   implicit def stringToUnaryPropertyFilterBuilder(attr: String) = PropertyFilterBuilder(attr)
 
   implicit def tupleToIs(tuple: Tuple2[String,Any]) = Set(tuple._1, tuple._2)
 
-  implicit def stringToIsSet(string: String): ServiceFilter = Set(string)
+  implicit def stringToIsSet(string: String): Filter = Set(string)
+
+  implicit def filterToString(filter: Filter): String = filter toString
 }
 
-abstract class ServiceFilter {
+abstract class Filter {
 
   protected def pars(sb :StringBuilder, fun :StringBuilder=>StringBuilder) = fun(sb.append("(")).append(")")
 
   protected def writeTo(sb: StringBuilder)
 
-  private def conc(seq: Seq[ServiceFilter]): Seq[ServiceFilter] = Array.concat(this :: List(seq:_*))
+  private def conc(seq: Seq[Filter]): Seq[Filter] = Array.concat(this :: List(seq:_*))
 
-  def && (filter: ServiceFilter) = and(filter)
+  def && (filter: Filter) = and(filter)
 
-  def and(filters :ServiceFilter*) = And(conc(filters):_*)
+  def and(filters :Filter*) = And(conc(filters):_*)
 
-  def || (filter: ServiceFilter) = or(filter)
+  def || (filter: Filter) = or(filter)
 
-  def or (filters :ServiceFilter*) = Or(conc(filters):_*)
+  def or (filters :Filter*) = Or(conc(filters):_*)
 
   def not() = Not(this)
 
@@ -72,14 +76,14 @@ abstract class ServiceFilter {
     sb.toString
   }
 
-  private[filters] def append(compositeOp :String, lb: ListBuffer[ServiceFilter]):Unit = { }
+  private[filters] def append(compositeOp :String, lb: ListBuffer[Filter]):Unit = { }
 }
 
-object NilFilter extends ServiceFilter {
+object NilFilter extends Filter {
 
-  override def and(filters: ServiceFilter*) = And(filters:_*)
+  override def and(filters: Filter*) = And(filters:_*)
 
-  override def or(filters: ServiceFilter*) = Or(filters:_*)
+  override def or(filters: Filter*) = Or(filters:_*)
 
   override def not = this
 
@@ -88,28 +92,28 @@ object NilFilter extends ServiceFilter {
 
 private [filters] object CompositeFilter {
 
-  def apply(op: String, filters: Seq[ServiceFilter]): ServiceFilter =
+  def apply(op: String, filters: Seq[Filter]): Filter =
     apply(op, filters, false);
 
-  def apply(op: String, filters: Seq[ServiceFilter], unary: Boolean): ServiceFilter =
+  def apply(op: String, filters: Seq[Filter], unary: Boolean): Filter =
     prune(op, filters.filter(_ != NilFilter), unary)
 
-  private def prune(op: String, seq: Seq[ServiceFilter], unary: Boolean) = seq match {
+  private def prune(op: String, seq: Seq[Filter], unary: Boolean) = seq match {
     case Nil => NilFilter
     case Seq(filter) => if (unary) new CompositeFilter(op, filter :: Nil) else filter
     case _ => new CompositeFilter(op, possiblyCollapsed(op, seq))
   }
 
-  private def possiblyCollapsed(op: String, seq: Seq[ServiceFilter]) = {
-    val lb = new ListBuffer[ServiceFilter]
+  private def possiblyCollapsed(op: String, seq: Seq[Filter]) = {
+    val lb = new ListBuffer[Filter]
     seq.foreach(_.append(op, lb))
     lb.toSeq
   }
 }
 
-class CompositeFilter(op: String, filters: Seq[ServiceFilter]) extends ServiceFilter {
+class CompositeFilter(op: String, filters: Seq[Filter]) extends Filter {
 
-  private[filters] override def append(compositeOp :String, lb: ListBuffer[ServiceFilter]) =
+  private[filters] override def append(compositeOp :String, lb: ListBuffer[Filter]) =
     if (compositeOp == op) lb.appendAll(filters) else lb.append(this)
 
   def writeTo(sb: StringBuilder) = pars(sb, _.append(op).append(filters.mkString("")))
@@ -117,45 +121,45 @@ class CompositeFilter(op: String, filters: Seq[ServiceFilter]) extends ServiceFi
 
 private [filters] object PropertyFilter {
 
-  def apply(attr: String, op: String, value: Any): ServiceFilter = apply(attr, op, value, false);
+  def apply(attr: String, op: String, value: Any): Filter = apply(attr, op, value, false);
 
-  def apply(attr: String, op: String, value: Any, allowNull: Boolean): ServiceFilter =
+  def apply(attr: String, op: String, value: Any, allowNull: Boolean): Filter =
     new PropertyFilter(NotNull(attr, "attr"),
       op,
       if (allowNull) IfNull(value, "*") else String.valueOf(NotNull(value, "value")))
 }
 
-class PropertyFilter(attr: String, op: String, value: String) extends ServiceFilter {
+class PropertyFilter(attr: String, op: String, value: String) extends Filter {
 
-  private[filters] override def append(compositeOp :String, lb: ListBuffer[ServiceFilter]) = lb.append(this)
+  private[filters] override def append(compositeOp :String, lb: ListBuffer[Filter]) = lb.append(this)
 
   def writeTo(sb: StringBuilder) = pars(sb, _.append(attr).append(op).append(value))
 }
 
 object And {
 
-  def apply(filters: ServiceFilter*) = CompositeFilter("&", filters)
+  def apply(filters: Filter*) = CompositeFilter("&", filters)
 }
 
 object Or {
 
-  def apply(filters: ServiceFilter*) = CompositeFilter("|", filters)
+  def apply(filters: Filter*) = CompositeFilter("|", filters)
 }
 
 object Not {
-  def apply(filter: ServiceFilter) = CompositeFilter("!", filter :: Nil, true)
+  def apply(filter: Filter) = CompositeFilter("!", filter :: Nil, true)
 }
 
 object Set {
 
-  def apply(attr: String): ServiceFilter = apply(attr, null)
+  def apply(attr: String): Filter = apply(attr, null)
 
   def apply(attr: String, value: Any) = PropertyFilter(attr, "=", value, true)
 }
 
 object NotSet {
 
-  def apply(attr: String): ServiceFilter = apply(attr, null)
+  def apply(attr: String): Filter = apply(attr, null)
 
   def apply(attr: String, value: Any) = Not(Set(attr, value))
 }
