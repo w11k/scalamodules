@@ -1,4 +1,4 @@
 target/
-vanadis*.iml
-vanadis*.ipr
-vanadis*.iws
+scalamodules*.iml
+scalamodules*.ipr
+scalamodules*.iws

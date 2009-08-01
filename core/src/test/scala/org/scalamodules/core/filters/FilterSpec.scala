@@ -19,42 +19,42 @@ import scalatest.matchers.ShouldMatchers
 import scalatest.Spec
 
 import Filter._
+import Filter.{not => notf}
 
 class FilterSpec extends Spec with ShouldMatchers {
 
   describe("Null checks") {
-
     it("Should not allow null filter attributes") {
       intercept[NullPointerException] {
-        Set(null, 10)
+        set(null, 10)
       }
     }
   }
 
   describe("Textual representations") {
     it("Should become a legal & filter") {
-      And(Set("foo"), Not(Set("bar"))) should equal("(&(foo=*)(!(bar=*)))")
+      and(set("foo"), notf(set("bar"))) should equal("(&(foo=*)(!(bar=*)))")
     }
     it("Should become a legal | filter") {
-      Or(Set("foo", "bar"), Set("zot", 4)).toString should equal("(|(foo=bar)(zot=4))")
+      or(set("foo", "bar"), set("zot", 4)).toString should equal("(|(foo=bar)(zot=4))")
     }
     it("Should become a legal ! filter") {
-      Not(Set("foo", "bar")).toString should equal("(!(foo=bar))")
+      notf(set("foo", "bar")).toString should equal("(!(foo=bar))")
     }
     it("Should become a legal ! atom filter") {
-      NotSet("foo", "bar").toString should equal("(!(foo=bar))")
+      notSet("foo", "bar").toString should equal("(!(foo=bar))")
     }
     it("Should become truth filter") {
-      IsTrue("foo").toString should equal("(foo=true)")
+      isTrue("foo").toString should equal("(foo=true)")
     }
     it("Should become set filter") {
-      Set("foo").toString should equal("(foo=*)")
+      set("foo").toString should equal("(foo=*)")
     }
     it("Should become lt filter") {
-      Lt("foo", 5).toString should equal("(foo<=5")
+      lt("foo", 5).toString should equal("(foo<=5")
     }
     it("Should become bt filter") {
-      Bt("foo", 5).toString should equal("(foo>=5")
+      lt("foo", 5).toString should equal("(foo>=5")
     }
     it("Should become nil filter") {
       NilFilter.toString should equal("")
@@ -63,70 +63,70 @@ class FilterSpec extends Spec with ShouldMatchers {
 
   describe("Implicit from tuple") {
     it("Should become set filter") {
-      ("foo" -> 10) should equal(Set("foo", 5))
+      ("foo" -> 10) should equal(set("foo", 5))
     }
     it("Should become set filter") {
-      ("foo" -> null) should equal(Set("foo", 5))
+      ("foo" -> null) should equal(set("foo", 5))
     }
     it("Should work!") {
-      ("zit" === "bar") && "foo" && ("zot" -> "zip") should equal(And(Set("zit", "bar"),Set("foo"),Set("zot", "zip")))
+      ("zit" === "bar") && "foo" && ("zot" -> "zip") should equal(and(set("zit", "bar"),set("foo"),set("zot", "zip")))
     }
   }
 
   describe("Collapsing of composition") {
     it("Should collapse to a single level") {
-      And(And(("zot" -> "zip"), ("foo" -> "bar")),
+      and(and(("zot" -> "zip"), ("foo" -> "bar")),
         ("a" -> "b"),
-        And(("yin" -> "yang"), ("peace" -> "war"))) should equal(And
-                (Set("zot", "zip"), Set("foo", "bar"), Set("a", "b"), Set("yin", "yang"), Set("peace", "war")))
+        and(("yin" -> "yang"), ("peace" -> "war"))) should equal(and
+                (set("zot", "zip"), set("foo", "bar"), set("a", "b"), set("yin", "yang"), set("peace", "war")))
     }
     it("Should not collapse") {
-      Or(And(("zot" -> "zip"), ("foo" -> "bar")), ("a" -> "b"),
-        And(("yin" -> "yang"), ("peace" -> "war"))).toString should equal("(|(&(zot=zip)(foo=bar))(a=b)(&(yin=yang)(peace=war)))")
+      or(and(("zot" -> "zip"), ("foo" -> "bar")), ("a" -> "b"),
+        and(("yin" -> "yang"), ("peace" -> "war"))).toString should equal("(|(&(zot=zip)(foo=bar))(a=b)(&(yin=yang)(peace=war)))")
     }
   }
 
   describe("Compose from methods") {
     it("Should become an and") {
-      IsTrue("foo") && Set("zot", "zip") should equal(And(IsTrue("foo"), Set("zot", "zip")))
+      isTrue("foo") && set("zot", "zip") should equal(and(isTrue("foo"), set("zot", "zip")))
     }
     it("Should become an and") {
-      IsTrue("foo") and Set("zot", "zip") should equal(And(IsTrue("foo"), Set("zot", "zip")))
+      isTrue("foo") and set("zot", "zip") should equal(and(isTrue("foo"), set("zot", "zip")))
     }
   }
 
   describe("NilFilter treatment") {
     it("Should remove NilFilters") {
-      And(NilFilter,
-        Set("foo", "bar"), NilFilter, NilFilter,
-        Set("zip", 5), NilFilter) should equal (And(Set("foo", "bar"), Set("zip", 5)))
+      and(NilFilter,
+        set("foo", "bar"), NilFilter, NilFilter,
+        set("zip", 5), NilFilter) should equal (and(set("foo", "bar"), set("zip", 5)))
     }
     it("Should become a simple filter") {
-      Set("foo", 5) && NilFilter should equal(Set("foo", 5))
+      set("foo", 5) && NilFilter should equal(set("foo", 5))
     }
   }
 
   describe("Implicit builders") {
     it("Should become a PropertyFilterBuilder and invoke ===") {
-      ("foo" === 5) should equal(Set("foo", 5))
+      ("foo" === 5) should equal(set("foo", 5))
     }
     it("Should become a PropertyFilterBuilder and invoke <==") {
-      ("foo" <== 4) should equal(Lt("foo", 4))
+      ("foo" <== 4) should equal(lt("foo", 4))
     }
     it("Should become a PropertyFilterBuilder and invoke >==") {
-      ("foo" >== 3) should equal(Bt("foo", 3))
+      ("foo" >== 3) should equal(bt("foo", 3))
     }
     it("Should become a PropertyFilterBuilder and invoke ~==") {
-      ("foo" ~== 5) should equal(Approx("foo", 5))
+      ("foo" ~== 5) should equal(approx("foo", 5))
     }
     it("Should become a PropertyFilterBuilder and invoke ===") {
-      ("foo" === true) should equal(IsTrue("foo"))
+      ("foo" === true) should equal(isTrue("foo"))
     }
     it("Should become a PropertyFilterBuilder and invoke isTrue") {
-      ("foo" isTrue) should equal(IsTrue("foo"))
+      ("foo" isTrue) should equal(isTrue("foo"))
     }
     it("Should become a PropertyFilterBuilder and invoke set") {
-      ("foo" set) should equal(Set("foo"))
+      ("foo" set) should equal(set("foo"))
     }
   }
 }
