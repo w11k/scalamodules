@@ -75,7 +75,7 @@ object Filter {
 
     override def not = this
 
-    override protected def writeTo(sb: StringBuilder) = sb
+    override def writeTo(sb: StringBuilder) = sb
   }
 
   implicit def stringToUnaryPropertyFilterBuilder(attr: String) = PropertyFilterBuilder(attr)
@@ -126,15 +126,11 @@ abstract class Filter {
 
   def not = Filter.not(this)
 
-  override final def toString = {
-    val sb = new StringBuilder
-    writeTo(sb)
-    sb.toString
-  }
+  override final def toString = writeTo(new StringBuilder).toString
 
   protected def pars(sb :StringBuilder, fun :StringBuilder=>StringBuilder) = fun(sb.append("(")).append(")")
 
-  protected def writeTo(sb: StringBuilder)
+  def writeTo(sb: StringBuilder): StringBuilder
 
   protected def append(compositeOp :String, lb: ListBuffer[Filter]):Unit = { }
 
@@ -146,13 +142,15 @@ final class CompositeFilter(op: String, filters: Seq[Filter]) extends Filter {
   protected override def append(compositeOp :String, lb: ListBuffer[Filter]) =
     if (compositeOp == op) lb.appendAll(filters) else lb.append(this)
 
-  def writeTo(sb: StringBuilder) = pars(sb, _.append(op).append(filters.mkString("")))
+  override def writeTo(sb: StringBuilder) = pars(sb, (sb: StringBuilder) => appendFilters(sb.append(op)))
+
+  private def appendFilters(sb: StringBuilder): StringBuilder = { filters.foreach(_.writeTo(sb)); sb }
 }
 
 final class PropertyFilter(attr: String, op: String, value: String) extends Filter {
 
   protected override def append(compositeOp :String, lb: ListBuffer[Filter]) = lb.append(this)
 
-  def writeTo(sb: StringBuilder) = pars(sb, _.append(attr).append(op).append(value))
+  override def writeTo(sb: StringBuilder) = pars(sb, _.append(attr).append(op).append(value))
 }
 
