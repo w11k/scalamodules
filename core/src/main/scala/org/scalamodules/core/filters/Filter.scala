@@ -49,23 +49,23 @@ object Filter {
 
   private[Filter] case class PropertyFilterBuilder(attr: String) {
 
-    def set = Filter.set(attr)
+    def set = Filter set(attr)
 
-    def notSet = Filter.notSet(attr)
+    def notSet = Filter notSet(attr)
 
-    def isTrue = Filter.isTrue(attr)
+    def isTrue = Filter isTrue(attr)
 
-    def isFalse = Filter.isFalse(attr)
+    def isFalse = Filter isFalse(attr)
 
-    def ===(value: Any) = Filter.set(attr, value)
+    def ===(value: Any) = Filter set(attr, value)
 
-    def !==(value: Any) = Filter.notSet(attr, value)
+    def !==(value: Any) = Filter notSet(attr, value)
 
-    def <==(value: Any) = Filter.lt(attr, value)
+    def <==(value: Any) = Filter lt(attr, value)
 
-    def >==(value: Any) = Filter.bt(attr, value)
+    def >==(value: Any) = Filter bt(attr, value)
 
-    def ~==(value: Any) = Filter.approx(attr, value)
+    def ~==(value: Any) = Filter approx(attr, value)
   }
 
   object NilFilter extends Filter {
@@ -75,14 +75,14 @@ object Filter {
 
   implicit def stringToUnaryPropertyFilterBuilder(attr: String) = PropertyFilterBuilder(attr)
 
-  implicit def tupleToIs(tuple: Tuple2[String,Any]) = set(tuple._1, tuple._2)
+  implicit def tupleToIs(tuple: Tuple2[String,Any]) = set(tuple _1, tuple _2)
 
   implicit def stringToIsSet(string: String): Filter = set(string)
 
   implicit def filterToString(filter: Filter): String = filter toString
 
   private def compose(op: String, filters: Seq[Filter], unary: Boolean): Filter =
-    prune(op, filters.filter(_ != NilFilter), unary)
+    prune(op, filters filter(_ != NilFilter), unary)
 
   private def prune(op: String, seq: Seq[Filter], unary: Boolean) = seq match {
     case Nil => NilFilter
@@ -92,18 +92,18 @@ object Filter {
 
   private def possiblyCollapsed(op: String, seq: Seq[Filter]) = {
     val lb = new ListBuffer[Filter]
-    seq.foreach(_.append(op, lb))
-    lb.toSeq
+    seq foreach(_ append(op, lb))
+    lb toSeq
   }
 
-  private def ifNull[T](obj: T, fallback: String):String = if (obj == null) fallback else String.valueOf(obj)
+  private def ifNull[T](obj: T, fallback: String):String = if (obj == null) fallback else String valueOf(obj)
 
   private def atom(attr: String, op: String, value: Any): Filter = atom(attr, op, value, false);
 
   private def atom(attr: String, op: String, value: Any, allowNull: Boolean): Filter =
     new PropertyFilter(notNull(attr, "attr"),
       op,
-      if (allowNull) ifNull(value, "*") else String.valueOf(notNull(value, "value")))
+      if (allowNull) ifNull(value, "*") else String valueOf(notNull(value, "value")))
 
   private def notNull[T](obj: T, msg: String): T =
     if (obj == null) throw new NullPointerException("Expected non-null: " + msg) else obj
@@ -115,39 +115,39 @@ abstract class Filter {
 
   final def || (filter: Filter) = or(filter)
 
-  def and(filters :Filter*) = Filter.and(conc(filters):_*)
+  def and(filters :Filter*) = Filter and(conc(filters):_*)
 
-  def or (filters :Filter*) = Filter.or(conc(filters):_*)
+  def or (filters :Filter*) = Filter or(conc(filters):_*)
 
-  def not = Filter.not(this)
+  def not = Filter not(this)
 
-  override final def toString = writeTo(new Bldr).toString
+  override final def toString = writeTo(new Bldr) toString
 
-  protected def pars(b :Bldr, writeBody :Bldr => Bldr) = writeBody(b.append("(")).append(")")
+  protected def pars(b :Bldr, writeBody :Bldr => Bldr) = writeBody(b append("(")) append(")")
 
   protected def writeTo(b: Bldr): Bldr = b
 
   protected def append(compositeOp :String, lb: ListBuffer[Filter]):Unit = { }
 
   protected def appendFilters(b: Bldr, filters: Seq[Filter]): Bldr =
-    { filters.foreach(_.writeTo(b)); b }
+    { filters foreach(_ writeTo(b)); b }
 
-  private def conc(seq: Seq[Filter]): Seq[Filter] = Array.concat(this :: List(seq:_*))
+  private def conc(seq: Seq[Filter]): Seq[Filter] = Array concat(this :: List(seq:_*))
 }
 
 final class CompositeFilter(op: String, filters: Seq[Filter]) extends Filter {
 
   protected override def append(compositeOp :String, lb: ListBuffer[Filter]) =
-    if (compositeOp == op) lb.appendAll(filters) else lb.append(this)
+    if (compositeOp == op) lb appendAll(filters) else lb append(this)
 
-  private def appendSubfilters(b: Bldr) = appendFilters(b.append(op), filters)
+  private def appendSubfilters(b: Bldr) = appendFilters(b append(op), filters)
 
   protected override def writeTo(b: Bldr) = pars(b, appendSubfilters(_))
 }
 
 final class PropertyFilter(attr: String, op: String, value: String) extends Filter {
 
-  protected override def append(compositeOp :String, lb: ListBuffer[Filter]) = lb.append(this)
+  protected override def append(compositeOp :String, lb: ListBuffer[Filter]) = lb append(this)
 
-  protected override def writeTo(b: Bldr) = pars(b, _.append(attr).append(op).append(value))
+  protected override def writeTo(b: Bldr) = pars(b, _ append(attr) append(op) append(value))
 }
