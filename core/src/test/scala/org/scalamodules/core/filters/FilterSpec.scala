@@ -23,6 +23,12 @@ import Filter.{not => notf}
 
 class FilterSpec extends Spec with ShouldMatchers {
 
+  object emptyObject { override def toString = "   " }
+
+  object namedObject { override def toString = "foo" }
+
+  private def asFilter(filter: Filter) = filter
+
   describe("Null checks") {
     it("Should not allow null filter attributes") {
       intercept[NullPointerException] {
@@ -58,6 +64,28 @@ class FilterSpec extends Spec with ShouldMatchers {
     }
     it("Should become nil filter") {
       NilFilter.toString should equal("")
+    }
+  }
+
+  describe("Object attributes") {
+    it("Should work with a non-string attribute") {
+      set(namedObject, 5) should equal(set("foo", 5))
+    }
+    it("Should work with a non-string attribute") {
+      bt(namedObject, 3) should equal(bt("foo", 3))
+    }
+    it("Should work with a non-string attribute") {
+      lt(namedObject, 4) should equal(lt("foo", 4))
+    }
+    it ("Should not become a Filter, attribute is empty") {
+      intercept[IllegalArgumentException] {
+        set(emptyObject, 5)
+      }
+    }
+    it ("Should not become a Filter") {
+      intercept[IllegalArgumentException] {
+        set(emptyObject)
+      }
     }
   }
 
@@ -127,6 +155,20 @@ class FilterSpec extends Spec with ShouldMatchers {
     }
     it("Should become a PropertyFilterBuilder and invoke set") {
       ("foo" set) should equal(set("foo"))
+    }
+    it ("Should become an empty Filter") {
+      asFilter("foo" -> emptyObject) should equal(set("foo"))
+    }
+    it ("Should not become a Filter") {
+      intercept[IllegalArgumentException] {
+        asFilter("  ")
+      }
+    }
+    it ("Should not become a Filter") {
+      intercept[NullPointerException] {
+        val s: String = null
+        asFilter(s)
+      }
     }
   }
 }

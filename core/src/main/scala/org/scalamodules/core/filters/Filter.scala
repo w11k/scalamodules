@@ -29,25 +29,26 @@ object Filter {
 
   def not(filter: Filter) = compose("!", filter :: Nil, true)
 
-  def set(attr: String):Filter = set(attr, null)
+  def set(attr: Any):Filter = set(attr, null)
 
-  def set(attr: String, value: Any) = atom(attr, "=", value, true)
+  def set(attr: Any, value: Any) = atom(attr, "=", value, true)
 
-  def notSet(attr: String):Filter = notSet(attr, null)
+  def notSet(attr: Any):Filter = notSet(attr, null)
 
-  def notSet(attr: String, value: Any) = not(set(attr, value))
+  def notSet(attr: Any, value: Any) = not(set(attr, value))
 
-  def isTrue(attr: String) = atom(attr, "=", true)
+  def isTrue(attr: Any) = atom(attr, "=", true)
 
-  def isFalse(attr: String) = atom(attr, "=", false)
+  def isFalse(attr: Any) = atom(attr, "=", false)
 
-  def lt(attr: String, value: Any) = atom(attr, "<=", value)
+  def lt(attr: Any, value: Any) = atom(attr, "<=", value)
 
-  def bt(attr: String, value: Any) = atom(attr, ">=", value)
+  def bt(attr: Any, value: Any) = atom(attr, ">=", value)
 
-  def approx(attr: String, value: Any) = atom(attr, "~=", value)
+  def approx(attr: Any, value: Any) = atom(attr, "~=", value)
 
-  private[Filter] case class PropertyFilterBuilder(attr: String) {
+  private[Filter] case class PropertyFilterBuilder(attr: Any) {
+    validString(attr, "attribute")
 
     def set = Filter set(attr)
 
@@ -73,13 +74,22 @@ object Filter {
     override def not = this
   }
 
-  implicit def stringToUnaryPropertyFilterBuilder(attr: String) = PropertyFilterBuilder(attr)
+  implicit def toFilterBuilder(attr: String): PropertyFilterBuilder = PropertyFilterBuilder(attr)
 
-  implicit def tupleToIs(tuple: Tuple2[String,Any]) = set(tuple _1, tuple _2)
+  implicit def toIsSet(attr: String): Filter = attr match {
+    case null => NilFilter
+    case obj:Any => set(obj)
+  }
 
-  implicit def stringToIsSet(string: String): Filter = set(string)
+  implicit def tupleToSet(tuple: Tuple2[String,Any]) = tuple match {
+    case null => NilFilter
+    case t:Tuple2[Any,Any] => set(tuple _1, tuple _2)
+  }
 
-  implicit def filterToString(filter: Filter): String = filter toString
+  implicit def filterToString(filter: Filter): String = filter match {
+    case null => ""
+    case f:Filter => f toString
+  }
 
   private def compose(op: String, filters: Seq[Filter], unary: Boolean): Filter =
     prune(op, filters filter(_ != NilFilter), unary)
@@ -96,17 +106,26 @@ object Filter {
     lb toSeq
   }
 
-  private def ifNull[T](obj: T, fallback: String):String = if (obj == null) fallback else String valueOf(obj)
+  private def atom(attr: Any, op: String, value: Any): Filter = atom(attr, op, value, false);
 
-  private def atom(attr: String, op: String, value: Any): Filter = atom(attr, op, value, false);
+  private def atom(attr: Any, op: String, value: Any, allowNull: Boolean): Filter =
+    new PropertyFilter(validString(attr, "attribute"), op, stringValue(value, allowNull))
 
-  private def atom(attr: String, op: String, value: Any, allowNull: Boolean): Filter =
-    new PropertyFilter(notNull(attr, "attr"),
-      op,
-      if (allowNull) ifNull(value, "*") else String valueOf(notNull(value, "value")))
+  private def stringValue(value: Any, allowNull: boolean) =
+    if (allowNull) ifNull(value, "*") else validString(value, "value")
 
-  private def notNull[T](obj: T, msg: String): T =
-    if (obj == null) throw new NullPointerException("Expected non-null: " + msg) else obj
+  private def ifNull[T](obj: T, fallback: String):String =
+    if (obj == null) fallback else validNonNullString(obj, "value")
+
+  private def validString(obj: Any, item: Any): String = obj match {
+    case null => throw new NullPointerException("Expected non-null " + item)
+    case _ => validNonNullString(obj, item)
+  }
+
+  private def validNonNullString(obj: Any, item: Any): String = String valueOf obj match {
+    case s:String if (s.trim.isEmpty) => throw new IllegalArgumentException("Expected non-empty " + item)
+    case s:String => s
+  }
 }
 
 abstract class Filter {
@@ -115,9 +134,9 @@ abstract class Filter {
 
   final def || (filter: Filter) = or(filter)
 
-  def and(filters :Filter*) = Filter and(conc(filters):_*)
+  def and(filters :Filter*) = Filter and(concat(filters):_*)
 
-  def or (filters :Filter*) = Filter or(conc(filters):_*)
+  def or (filters :Filter*) = Filter or(concat(filters):_*)
 
   def not = Filter not(this)
 
@@ -129,10 +148,9 @@ abstract class Filter {
 
   protected def append(compositeOp :String, lb: ListBuffer[Filter]):Unit = { }
 
-  protected def appendFilters(b: Bldr, filters: Seq[Filter]): Bldr =
-    { filters foreach(_ writeTo(b)); b }
+  protected def appendFilters(b: Bldr, filters: Seq[Filter]): Bldr = { filters foreach(_ writeTo(b)); b }
 
-  private def conc(seq: Seq[Filter]): Seq[Filter] = Array concat(this :: List(seq:_*))
+  private def concat(seq: Seq[Filter]): Seq[Filter] = this :: List(seq:_*)
 }
 
 final class CompositeFilter(op: String, filters: Seq[Filter]) extends Filter {
@@ -140,9 +158,9 @@ final class CompositeFilter(op: String, filters: Seq[Filter]) extends Filter {
   protected override def append(compositeOp :String, lb: ListBuffer[Filter]) =
     if (compositeOp == op) lb appendAll(filters) else lb append(this)
 
-  private def appendSubfilters(b: Bldr) = appendFilters(b append(op), filters)
-
   protected override def writeTo(b: Bldr) = pars(b, appendSubfilters(_))
+
+  private def appendSubfilters(b: Bldr) = appendFilters(b append(op), filters)
 }
 
 final class PropertyFilter(attr: String, op: String, value: String) extends Filter {
