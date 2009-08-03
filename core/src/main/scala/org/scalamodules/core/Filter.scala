@@ -21,7 +21,7 @@ import collection.mutable.ListBuffer
 /**
  * Importing Filter._ will enable the factory methods
  */
-object  Filter {
+object Filter {
 
   def and(filters: Filter*) = compose("&", filters, false)
 
@@ -149,9 +149,9 @@ trait Filter {
 
   final def || (filter: Filter) = or(filter)
 
-  def and(filters :Filter*) = Filter and(concat(filters):_*)
+  def and(filters: Filter*) = Filter and(concat(filters):_*)
 
-  def or (filters :Filter*) = Filter or(concat(filters):_*)
+  def or (filters: Filter*) = Filter or(concat(filters):_*)
 
   def not = Filter not(this)
 
@@ -159,20 +159,21 @@ trait Filter {
 
   override final def toString = asString
 
-  protected def pars(b :Bldr, writeBody :Bldr => Bldr) = writeBody(b append("(")) append(")")
+  protected def pars(b: Bldr, writeBody: Bldr => Bldr) = writeBody(b append("(")) append(")")
 
   protected def writeTo(b: Bldr): Bldr = b
 
-  protected def append(compositeOp :String, lb: ListBuffer[Filter]):Unit = { }
+  protected def append(compositeOp: String, lb: ListBuffer[Filter]):Unit = { }
 
-  protected def appendFilters(b: Bldr, filters: Seq[Filter]): Bldr = { filters foreach(_ writeTo(b)); b }
+  protected def appendFilters(b: Bldr, filters: Seq[Filter]): Bldr =
+    { filters foreach(_ writeTo(b)); b }
 
   private def concat(seq: Seq[Filter]): Seq[Filter] = this :: List(seq:_*)
 }
 
 case class CompositeFilter(composite: String, filters: Seq[Filter]) extends Filter {
 
-  protected override def append(superComposite :String, lb: ListBuffer[Filter]) =
+  protected override def append(superComposite: String, lb: ListBuffer[Filter]) =
     if (superComposite == composite) lb appendAll(filters) else lb append(this)
 
   protected override def writeTo(b: Bldr) = pars(b, appendSubfilters(_))
@@ -182,7 +183,7 @@ case class CompositeFilter(composite: String, filters: Seq[Filter]) extends Filt
 
 case class PropertyFilter(attr: String, op: String, value: String) extends Filter {
 
-  protected override def append(compositeOp :String, lb: ListBuffer[Filter]) = lb append(this)
+  protected override def append(compositeOp: String, lb: ListBuffer[Filter]) = lb append(this)
 
   protected override def writeTo(b: Bldr) = pars(b, _ append(attr) append(op) append(value))
 }
