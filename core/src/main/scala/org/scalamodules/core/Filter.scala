@@ -111,13 +111,15 @@ object Filter {
   private def atom(attr: Any, op: String, value: Any): Filter = atom(attr, op, value, false);
 
   private def atom(attr: Any, op: String, value: Any, allowNull: Boolean): Filter =
-    new PropertyFilter(validAttr(validString(attr, "attribute")), op, stringValue(value, allowNull))
+    new PropertyFilter(validAttr(validString(attr, "attribute")),
+      op,
+      validStringValue(value, allowNull))
 
-  private def stringValue(value: Any, allowNull: boolean) =
-    if (allowNull) ifNull(value, "*") else validString(value, "value")
+  private def validStringValue(value: Any, allowNull: boolean) =
+    if (allowNull) ifNullFallback(value, "*") else validString(value, "value")
 
-  private def ifNull[T](obj: T, fallback: String):String =
-    if (obj == null) fallback else validMaybeNullString(obj, fallback)
+  private def ifNullFallback[T](obj: T, fallback: String):String =
+    if (obj == null) fallback else validStringOrFallback(obj, fallback)
 
   private def validAttr(attr: String): String = {
     List("=", ">", "<", "~", "(", ")").foreach((s: String) => if (attr.contains(s))
@@ -135,7 +137,7 @@ object Filter {
     case s:String => s
   }
 
-  private def validMaybeNullString(obj: Any, fallback: String): String = String valueOf obj trim match {
+  private def validStringOrFallback(obj: Any, fallback: String): String = String valueOf obj trim match {
     case s:String if (s isEmpty) => fallback
     case s:String => s
   }
