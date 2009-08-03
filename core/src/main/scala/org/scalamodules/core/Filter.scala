@@ -21,7 +21,7 @@ import collection.mutable.ListBuffer
 /**
  * Importing Filter._ will enable the factory methods
  */
-object Filter {
+object  Filter {
 
   def and(filters: Filter*) = compose("&", filters, false)
 
