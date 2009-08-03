@@ -20,7 +20,8 @@ import org.scalatest.{Report, Reporter, Stopper, Suite}
 
 object Suites {
 
-  def suites = 
+  def suites =
+    FilterSpec ::
     GetSpec :: 
     GetOneSpec ::
     GetManySpec ::
@@ -29,7 +30,7 @@ object Suites {
     RichBundleContextSpec ::
     RichServiceReferenceSpec ::
     TrackSpec ::
-    UtilSpec :: 
+    UtilSpec ::
     Nil
 
   def main(args: Array[String]) {
@@ -57,7 +58,7 @@ class TestAll {
       override def nestedSuites = Suites.suites
     }
 
-    suite.execute(None, reporter, new Stopper {}, Set[String](), Set[String](), 
+    suite.execute(None, reporter, new Stopper {}, Set[String](), Set[String](),
                   Map(), None)
   }
 }

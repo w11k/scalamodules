@@ -18,21 +18,21 @@ package org.scalamodules.core
 import Preamble.toRichServiceReference
 import Util.toOption
 
-import org.osgi.framework.{BundleContext, Filter, ServiceReference}
+import org.osgi.framework.{BundleContext, Filter => OSGiFilter, ServiceReference}
 import org.osgi.util.tracker.ServiceTracker
 import scala.collection.Map
 
 /**
- * Provides service tracking. 
+ * Provides service tracking.
  */
-private class Track[I](ctx: BundleContext, 
+private class Track[I](ctx: BundleContext,
                        srvIntf: Class[I],
                        filter: Option[String]) {
 
   require(ctx != null, "BundleContext must not be null!")
   require(srvIntf != null, "Service interface must not be null!")
   require(filter != null, "Option for filter must not be null!")
-  
+
   def this(ctx: BundleContext, srvIntf: Class[I]) =
     this(ctx, srvIntf, None)
 
@@ -72,7 +72,7 @@ private class Track[I](ctx: BundleContext,
         ctx.ungetService(ref)
       }
       override def removedService(ref: ServiceReference, service: AnyRef) = {
-        val trackEvent = Removed(service.asInstanceOf[I], ref.properties) 
+        val trackEvent = Removed(service.asInstanceOf[I], ref.properties)
         if (f.isDefinedAt(trackEvent)) f(trackEvent)
         ctx.ungetService(ref)
       }
@@ -80,16 +80,16 @@ private class Track[I](ctx: BundleContext,
     tracker.open()
     tracker
   }
-  
+
   private var tracker: ServiceTracker = _
 
-  private def createFilter: Filter = {
+  private def createFilter: OSGiFilter = {
     val filterString = filter match {
       case None    => String.format("(objectClass=%s)", srvIntf.getName)
       case Some(s) => String.format("(&(objectClass=%s)%s)", srvIntf.getName, s)
     }
     ctx.createFilter(filterString)
-  } 
+  }
 }
 
 /**

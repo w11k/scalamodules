@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalamodules.core.filters
+package org.scalamodules.core
 
 import scala.{StringBuilder => Bldr}
 import collection.mutable.ListBuffer
@@ -76,6 +76,8 @@ object Filter {
 
   implicit def toFilterBuilder(attr: String): PropertyFilterBuilder = PropertyFilterBuilder(attr)
 
+  implicit def toFilter(objectClass: Class[_]): Filter = set("objectClass", objectClass getName)
+
   implicit def toIsSet(attr: String): Filter = attr match {
     case null => NilFilter
     case obj:Any => set(obj)
@@ -88,7 +90,7 @@ object Filter {
 
   implicit def filterToString(filter: Filter): String = filter match {
     case null => ""
-    case f:Filter => f toString
+    case f:Filter => f asString
   }
 
   private def compose(op: String, filters: Seq[Filter], unary: Boolean): Filter =
@@ -109,26 +111,37 @@ object Filter {
   private def atom(attr: Any, op: String, value: Any): Filter = atom(attr, op, value, false);
 
   private def atom(attr: Any, op: String, value: Any, allowNull: Boolean): Filter =
-    new PropertyFilter(validString(attr, "attribute"), op, stringValue(value, allowNull))
+    new PropertyFilter(validAttr(validString(attr, "attribute")), op, stringValue(value, allowNull))
 
   private def stringValue(value: Any, allowNull: boolean) =
     if (allowNull) ifNull(value, "*") else validString(value, "value")
 
   private def ifNull[T](obj: T, fallback: String):String =
-    if (obj == null) fallback else validNonNullString(obj, "value")
+    if (obj == null) fallback else validMaybeNullString(obj, fallback)
+
+  private def validAttr(attr: String): String = {
+    List("=", ">", "<", "~", "(", ")").foreach((s: String) => if (attr.contains(s))
+      throw new IllegalArgumentException("Illegal character " + s + " in " + attr))
+    attr
+  }
 
   private def validString(obj: Any, item: Any): String = obj match {
     case null => throw new NullPointerException("Expected non-null " + item)
     case _ => validNonNullString(obj, item)
   }
 
-  private def validNonNullString(obj: Any, item: Any): String = String valueOf obj match {
-    case s:String if (s.trim.isEmpty) => throw new IllegalArgumentException("Expected non-empty " + item)
+  private def validNonNullString(obj: Any, item: Any): String = String valueOf obj trim match {
+    case s:String if (s isEmpty) => throw new IllegalArgumentException("Expected non-empty " + item)
+    case s:String => s
+  }
+
+  private def validMaybeNullString(obj: Any, fallback: String): String = String valueOf obj trim match {
+    case s:String if (s isEmpty) => fallback
     case s:String => s
   }
 }
 
-abstract class Filter {
+trait Filter {
 
   final def && (filter: Filter) = and(filter)
 
@@ -140,7 +153,9 @@ abstract class Filter {
 
   def not = Filter not(this)
 
-  override final def toString = writeTo(new Bldr) toString
+  final def asString = writeTo(new Bldr) toString
+
+  override final def toString = asString
 
   protected def pars(b :Bldr, writeBody :Bldr => Bldr) = writeBody(b append("(")) append(")")
 
@@ -153,17 +168,17 @@ abstract class Filter {
   private def concat(seq: Seq[Filter]): Seq[Filter] = this :: List(seq:_*)
 }
 
-final class CompositeFilter(op: String, filters: Seq[Filter]) extends Filter {
+case class CompositeFilter(composite: String, filters: Seq[Filter]) extends Filter {
 
-  protected override def append(compositeOp :String, lb: ListBuffer[Filter]) =
-    if (compositeOp == op) lb appendAll(filters) else lb append(this)
+  protected override def append(superComposite :String, lb: ListBuffer[Filter]) =
+    if (superComposite == composite) lb appendAll(filters) else lb append(this)
 
   protected override def writeTo(b: Bldr) = pars(b, appendSubfilters(_))
 
-  private def appendSubfilters(b: Bldr) = appendFilters(b append(op), filters)
+  private def appendSubfilters(b: Bldr) = appendFilters(b append(composite), filters)
 }
 
-final class PropertyFilter(attr: String, op: String, value: String) extends Filter {
+case class PropertyFilter(attr: String, op: String, value: String) extends Filter {
 
   protected override def append(compositeOp :String, lb: ListBuffer[Filter]) = lb append(this)
 

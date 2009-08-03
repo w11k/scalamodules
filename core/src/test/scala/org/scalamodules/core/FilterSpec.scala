@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalamodules.core.filters
+package org.scalamodules.core
 
 import scalatest.matchers.ShouldMatchers
 import scalatest.Spec
@@ -21,7 +21,7 @@ import scalatest.Spec
 import Filter._
 import Filter.{not => notf}
 
-class FilterSpec extends Spec with ShouldMatchers {
+object FilterSpec extends Spec with ShouldMatchers {
 
   object emptyObject { override def toString = "   " }
 
@@ -30,7 +30,7 @@ class FilterSpec extends Spec with ShouldMatchers {
   private def asFilter(filter: Filter) = filter
 
   describe("Null checks") {
-    it("Should not allow null filter attributes") {
+    it("should not allow null filter attributes") {
       intercept[NullPointerException] {
         set(null, 10)
       }
@@ -38,43 +38,47 @@ class FilterSpec extends Spec with ShouldMatchers {
   }
 
   describe("Textual representations") {
-    it("Should become a legal & filter") {
-      and(set("foo"), notf(set("bar"))) should equal("(&(foo=*)(!(bar=*)))")
+    it("should become a legal & filter") {
+      and(set("foo"), notf(set("bar"))).asString should equal("(&(foo=*)(!(bar=*)))")
     }
-    it("Should become a legal | filter") {
-      or(set("foo", "bar"), set("zot", 4)).toString should equal("(|(foo=bar)(zot=4))")
+    it("should become a legal | filter") {
+      or(set("foo", "bar"), set("zot", 4)).asString should equal("(|(foo=bar)(zot=4))")
     }
-    it("Should become a legal ! filter") {
-      notf(set("foo", "bar")).toString should equal("(!(foo=bar))")
+    it("should become a legal ! filter") {
+      notf(set("foo", "bar")).asString should equal("(!(foo=bar))")
     }
-    it("Should become a legal ! atom filter") {
-      notSet("foo", "bar").toString should equal("(!(foo=bar))")
+    it("should become a legal ! atom filter") {
+      notSet("foo", "bar").asString should equal("(!(foo=bar))")
     }
-    it("Should become truth filter") {
-      isTrue("foo").toString should equal("(foo=true)")
+    it("should become truth filter") {
+      isTrue("foo").asString should equal("(foo=true)")
     }
-    it("Should become set filter") {
-      set("foo").toString should equal("(foo=*)")
+    it("should become set filter") {
+      set("foo").asString should equal("(foo=*)")
     }
-    it("Should become lt filter") {
-      lt("foo", 5).toString should equal("(foo<=5")
+    it("should become lt filter") {
+      lt("foo", 5).asString should equal("(foo<=5)")
     }
-    it("Should become bt filter") {
-      lt("foo", 5).toString should equal("(foo>=5")
+    it("should become bt filter") {
+      bt("foo", 5).asString should equal("(foo>=5)")
     }
-    it("Should become nil filter") {
-      NilFilter.toString should equal("")
+    it("should become nil filter") {
+      NilFilter.asString should equal("")
     }
   }
 
+  describe("Invalid attributes") {
+    it("should catch =") { intercept[IllegalArgumentException] { set("foo=bar", "foo") } }
+  }
+
   describe("Object attributes") {
-    it("Should work with a non-string attribute") {
+    it("should work with a non-string attribute (set)") {
       set(namedObject, 5) should equal(set("foo", 5))
     }
-    it("Should work with a non-string attribute") {
+    it("should work with a non-string attribute (bt)") {
       bt(namedObject, 3) should equal(bt("foo", 3))
     }
-    it("Should work with a non-string attribute") {
+    it("should work with a non-string attribute (lt)") {
       lt(namedObject, 4) should equal(lt("foo", 4))
     }
     it ("Should not become a Filter, attribute is empty") {
@@ -90,84 +94,84 @@ class FilterSpec extends Spec with ShouldMatchers {
   }
 
   describe("Implicit from tuple") {
-    it("Should become set filter") {
-      ("foo" -> 10) should equal(set("foo", 5))
+    it("should become set filter") {
+      asFilter("foo" -> 10) should equal(set("foo", 10))
     }
-    it("Should become set filter") {
-      ("foo" -> null) should equal(set("foo", 5))
+    it("should become set filter, part II") {
+      asFilter("foo" -> null) should equal(set("foo"))
     }
-    it("Should work!") {
+    it("should work!") {
       ("zit" === "bar") && "foo" && ("zot" -> "zip") should equal(and(set("zit", "bar"),set("foo"),set("zot", "zip")))
     }
   }
 
+  describe("Implicit from type") {
+    it("should become an objectclass filter") {
+      asFilter(classOf[String]) should equal (set("objectClass", "java.lang.String"))
+    }
+  }
+
   describe("Collapsing of composition") {
-    it("Should collapse to a single level") {
+    it("should collapse to a single level") {
       and(and(("zot" -> "zip"), ("foo" -> "bar")),
         ("a" -> "b"),
         and(("yin" -> "yang"), ("peace" -> "war"))) should equal(and
                 (set("zot", "zip"), set("foo", "bar"), set("a", "b"), set("yin", "yang"), set("peace", "war")))
     }
-    it("Should not collapse") {
+    it("should not collapse") {
       or(and(("zot" -> "zip"), ("foo" -> "bar")), ("a" -> "b"),
-        and(("yin" -> "yang"), ("peace" -> "war"))).toString should equal("(|(&(zot=zip)(foo=bar))(a=b)(&(yin=yang)(peace=war)))")
+        and(("yin" -> "yang"), ("peace" -> "war"))).asString should equal("(|(&(zot=zip)(foo=bar))(a=b)(&(yin=yang)(peace=war)))")
     }
   }
 
   describe("Compose from methods") {
-    it("Should become an and") {
+    it("should become an and") {
       isTrue("foo") && set("zot", "zip") should equal(and(isTrue("foo"), set("zot", "zip")))
     }
-    it("Should become an and") {
+    it("should become an and, part II") {
       isTrue("foo") and set("zot", "zip") should equal(and(isTrue("foo"), set("zot", "zip")))
     }
   }
 
   describe("NilFilter treatment") {
-    it("Should remove NilFilters") {
+    it("should remove NilFilters") {
       and(NilFilter,
         set("foo", "bar"), NilFilter, NilFilter,
         set("zip", 5), NilFilter) should equal (and(set("foo", "bar"), set("zip", 5)))
     }
-    it("Should become a simple filter") {
+    it("should become a simple filter") {
       set("foo", 5) && NilFilter should equal(set("foo", 5))
     }
   }
 
   describe("Implicit builders") {
-    it("Should become a PropertyFilterBuilder and invoke ===") {
+    it("should become a PropertyFilterBuilder and invoke ===") {
       ("foo" === 5) should equal(set("foo", 5))
     }
-    it("Should become a PropertyFilterBuilder and invoke <==") {
+    it("should become a PropertyFilterBuilder and invoke <==") {
       ("foo" <== 4) should equal(lt("foo", 4))
     }
-    it("Should become a PropertyFilterBuilder and invoke >==") {
+    it("should become a PropertyFilterBuilder and invoke >==") {
       ("foo" >== 3) should equal(bt("foo", 3))
     }
-    it("Should become a PropertyFilterBuilder and invoke ~==") {
+    it("should become a PropertyFilterBuilder and invoke ~==") {
       ("foo" ~== 5) should equal(approx("foo", 5))
     }
-    it("Should become a PropertyFilterBuilder and invoke ===") {
+    it("should become a PropertyFilterBuilder and invoke isTrue") {
       ("foo" === true) should equal(isTrue("foo"))
     }
-    it("Should become a PropertyFilterBuilder and invoke isTrue") {
+    it("should become a PropertyFilterBuilder and invoke isTrue, part II") {
       ("foo" isTrue) should equal(isTrue("foo"))
     }
-    it("Should become a PropertyFilterBuilder and invoke set") {
+    it("should become a PropertyFilterBuilder and invoke set") {
       ("foo" set) should equal(set("foo"))
     }
-    it ("Should become an empty Filter") {
+    it("should become an empty Filter") {
       asFilter("foo" -> emptyObject) should equal(set("foo"))
     }
-    it ("Should not become a Filter") {
+    it("should not become a Filter") {
       intercept[IllegalArgumentException] {
         asFilter("  ")
-      }
-    }
-    it ("Should not become a Filter") {
-      intercept[NullPointerException] {
-        val s: String = null
-        asFilter(s)
       }
     }
   }
