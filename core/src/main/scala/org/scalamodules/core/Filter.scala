@@ -104,7 +104,7 @@ object Filter {
 
   private def possiblyCollapsed(op: String, seq: Seq[Filter]) = {
     val lb = new ListBuffer[Filter]
-    seq foreach(_ append(op, lb))
+    seq foreach(_ append(op, lb)) // Laugh all you want, o functional guru, then show me how.
     lb toSeq
   }
 
@@ -113,7 +113,7 @@ object Filter {
   private def atom(attr: Any, op: String, value: Any, allowNull: Boolean): Filter =
     new PropertyFilter(validAttr(validString(attr, "attribute")), op, resolveValue(value))
 
-  private def resolveValue(value:Any): Any = value match {
+  private def resolveValue(value: Any): Any = value match {
     case null => "*"
     case seq: Seq[Any] if (seq isEmpty) => "*"
     case _ => String valueOf value trim match {
@@ -122,14 +122,13 @@ object Filter {
     }
   }
 
+  private lazy val invalidAttributeChars = List("=", ">", "<", "~", "(", ")")
+
   private def validAttr(attr: String): String = {
-    List("=", ">", "<", "~", "(", ")").foreach((s: String) => if (attr.contains(s))
+    invalidAttributeChars foreach ((s: String) => if (attr contains s)
       throw new IllegalArgumentException("Illegal character " + s + " in " + attr))
     attr
   }
-//
-//  private def validStringValue(value: Any, allowNull: boolean) =
-//    if (allowNull) legalValue(value) else validString(value, "value")
 
   private def validString(obj: Any, item: Any): String = obj match {
     case null => throw new NullPointerException("Expected non-null " + item)
