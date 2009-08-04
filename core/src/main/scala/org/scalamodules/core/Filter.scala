@@ -76,21 +76,21 @@ object Filter {
 
   implicit def toFilterBuilder(attr: String): PropertyFilterBuilder = PropertyFilterBuilder(attr)
 
-  implicit def toFilter(objectClass: Class[_]): Filter = set("objectClass", objectClass getName)
+  implicit def toFilter(objectClass: Class[_]) = set("objectClass", objectClass getName)
 
   implicit def toIsSet(attr: String): Filter = attr match {
     case null => NilFilter
-    case obj:Any => set(obj)
+    case _ => set(attr)
   }
 
   implicit def tupleToSet(tuple: Tuple2[String,Any]) = tuple match {
     case null => NilFilter
-    case t:Tuple2[Any,Any] => set(tuple _1, tuple _2)
+    case _ => set(tuple _1, tuple _2)
   }
 
   implicit def filterToString(filter: Filter): String = filter match {
     case null => ""
-    case f:Filter => f asString
+    case _  => filter asString
   }
 
   private def compose(op: String, filters: Seq[Filter], unary: Boolean): Filter =
@@ -117,7 +117,7 @@ object Filter {
     case null => "*"
     case seq: Seq[Any] if (seq isEmpty) => "*"
     case _ => String valueOf value trim match {
-      case string: String if (string isEmpty) => "*"
+      case string if (string isEmpty) => "*"
       case _ => value
     }
   }
@@ -136,8 +136,8 @@ object Filter {
   }
 
   private def validNonNullString(obj: Any, item: Any): String = String valueOf obj trim match {
-    case s:String if (s isEmpty) => throw new IllegalArgumentException("Expected non-empty " + item)
-    case s:String => s
+    case string if (string isEmpty) => throw new IllegalArgumentException("Expected non-empty " + item)
+    case string => string
   }
 }
 
@@ -182,15 +182,15 @@ case class PropertyFilter(attr: String, op: String, value: Any) extends Filter {
 
   protected override def writeTo(b: Bldr) = pars(b, _ append(attr) append(op) append(valueString))
 
+  protected override def append(compositeOp: String, lb: ListBuffer[Filter]) = lb append(this)
+
   private def valueString: String = value match {
     case seq: Seq[Any] => "[" + (seq mkString ",") + "]"
     case _ => validStringOrFallback(value)
   }
 
   private def validStringOrFallback(obj: Any): String = String valueOf obj trim match {
-    case s:String if (s isEmpty) => "*"
-    case s:String => s
+    case string if (string isEmpty) => "*"
+    case string => string
   }
-
-  protected override def append(compositeOp: String, lb: ListBuffer[Filter]) = lb append(this)
 }
