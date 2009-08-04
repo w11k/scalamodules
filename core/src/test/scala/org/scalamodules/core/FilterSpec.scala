@@ -37,38 +37,64 @@ object FilterSpec extends Spec with ShouldMatchers {
     }
   }
 
-  describe("Textual representations") {
-    it("should become a legal & filter") {
+  describe("Textual representation") {
+    it("should be an & filter") {
       and(set("foo"), notf(set("bar"))).asString should equal("(&(foo=*)(!(bar=*)))")
     }
-    it("should become a legal | filter") {
+    it("should be an | filter") {
       or(set("foo", "bar"), set("zot", 4)).asString should equal("(|(foo=bar)(zot=4))")
     }
-    it("should become a legal ! filter") {
+    it("should be a ! filter") {
       notf(set("foo", "bar")).asString should equal("(!(foo=bar))")
     }
-    it("should become a legal ! atom filter") {
+    it("should be a negated property filter") {
       notSet("foo", "bar").asString should equal("(!(foo=bar))")
     }
-    it("should become truth filter") {
+    it("should be a truth filter") {
       isTrue("foo").asString should equal("(foo=true)")
     }
-    it("should become set filter") {
+    it("should be a property set filter") {
       set("foo").asString should equal("(foo=*)")
     }
-    it("should become lt filter") {
+    it("should be an lt filter") {
       lt("foo", 5).asString should equal("(foo<=5)")
     }
-    it("should become bt filter") {
+    it("should be a bt filter") {
       bt("foo", 5).asString should equal("(foo>=5)")
     }
-    it("should become nil filter") {
+    it("should be a nil filter") {
       NilFilter.asString should equal("")
+    }
+    it("should be an empty filter, from empty string array") {
+      set("foo", Array[String]()).asString should equal("(foo=*)")
+    }
+    it("should be an empty filter, from empty integer array") {
+      set("foo", Array[Integer]()).asString should equal("(foo=*)")
+    }
+    it("should be an int array filter") {
+      set("foo", Array(1, 2, 6)).asString should equal("(foo=[1,2,6])")
+    }
+    it("should be a string array filter") {
+      set("foo", Array("a", "b", "c")).asString should equal("(foo=[a,b,c])")
     }
   }
 
   describe("Invalid attributes") {
-    it("should catch =") { intercept[IllegalArgumentException] { set("foo=bar", "foo") } }
+    it("should be caught, equals sign for example") {
+      intercept[IllegalArgumentException] {
+        set("foo=bar", "foo")
+      }
+    }
+    it("should be caught, like parantheses") {
+      intercept[IllegalArgumentException] {
+        set("foo(bar", "foo")
+      }
+    }
+    it("should be caught, like tildes") {
+      intercept[IllegalArgumentException] {
+        set("foo~bar", "foo")
+      }
+    }
   }
 
   describe("Object attributes") {
@@ -81,23 +107,23 @@ object FilterSpec extends Spec with ShouldMatchers {
     it("should work with a non-string attribute (lt)") {
       lt(namedObject, 4) should equal(lt("foo", 4))
     }
-    it ("Should not become a Filter, attribute is empty") {
+    it ("should not become a Filter when attribute is empty") {
       intercept[IllegalArgumentException] {
         set(emptyObject, 5)
       }
     }
-    it ("Should not become a Filter") {
+    it ("should not become a Filter from an empty-string object") {
       intercept[IllegalArgumentException] {
         set(emptyObject)
       }
     }
   }
 
-  describe("Implicit from tuple") {
-    it("should become set filter") {
+  describe("Implicits from tuple") {
+    it("should become a property filter") {
       asFilter("foo" -> 10) should equal(set("foo", 10))
     }
-    it("should become set filter, part II") {
+    it("should become a present filter") {
       asFilter("foo" -> null) should equal(set("foo"))
     }
     it("should work!") {

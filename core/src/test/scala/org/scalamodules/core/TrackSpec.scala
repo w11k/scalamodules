@@ -34,19 +34,19 @@ object TrackSpec extends Spec with ShouldMatchers {
   describe("The class Track") {
 
     it("should throw an IAE when constructed with a null BundleContext") {
-      intercept[IllegalArgumentException] { 
+      intercept[IllegalArgumentException] {
         new Track(null, classOf[String], None)
       }
     }
 
     it("should throw an IAE when constructed with a null service interface") {
-      intercept[IllegalArgumentException] { 
+      intercept[IllegalArgumentException] {
         new Track(mockCtx, null, None)
       }
     }
 
     it("should throw an IAE when constructed with a null filter option") {
-      intercept[IllegalArgumentException] { 
+      intercept[IllegalArgumentException] {
         new Track(mockCtx, classOf[String], null)
       }
     }
@@ -56,7 +56,7 @@ object TrackSpec extends Spec with ShouldMatchers {
 
     it("should return a new Track when called with a not-null filter") {
       val track = new Track(mockCtx, classOf[String])
-      val newTrack = track withFilter "(Scala=Modules)"
+      val newTrack = track withFilter "(Scala=[Modules,FooBar])"
       newTrack should not be null
     }
 
@@ -70,7 +70,7 @@ object TrackSpec extends Spec with ShouldMatchers {
   describe("Track.on") {
 
     it("should throw an IAE when called with a null handler") {
-      intercept[IllegalArgumentException] { 
+      intercept[IllegalArgumentException] {
         val track = new Track(mockCtx, classOf[String])
         track & null
       }

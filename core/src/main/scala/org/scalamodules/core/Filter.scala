@@ -111,21 +111,25 @@ object Filter {
   private def atom(attr: Any, op: String, value: Any): Filter = atom(attr, op, value, false);
 
   private def atom(attr: Any, op: String, value: Any, allowNull: Boolean): Filter =
-    new PropertyFilter(validAttr(validString(attr, "attribute")),
-      op,
-      validStringValue(value, allowNull))
+    new PropertyFilter(validAttr(validString(attr, "attribute")), op, resolveValue(value))
 
-  private def validStringValue(value: Any, allowNull: boolean) =
-    if (allowNull) ifNullFallback(value, "*") else validString(value, "value")
-
-  private def ifNullFallback[T](obj: T, fallback: String):String =
-    if (obj == null) fallback else validStringOrFallback(obj, fallback)
+  private def resolveValue(value:Any): Any = value match {
+    case null => "*"
+    case seq: Seq[Any] if (seq isEmpty) => "*"
+    case _ => String valueOf value trim match {
+      case string: String if (string isEmpty) => "*"
+      case _ => value
+    }
+  }
 
   private def validAttr(attr: String): String = {
     List("=", ">", "<", "~", "(", ")").foreach((s: String) => if (attr.contains(s))
       throw new IllegalArgumentException("Illegal character " + s + " in " + attr))
     attr
   }
+//
+//  private def validStringValue(value: Any, allowNull: boolean) =
+//    if (allowNull) legalValue(value) else validString(value, "value")
 
   private def validString(obj: Any, item: Any): String = obj match {
     case null => throw new NullPointerException("Expected non-null " + item)
@@ -134,11 +138,6 @@ object Filter {
 
   private def validNonNullString(obj: Any, item: Any): String = String valueOf obj trim match {
     case s:String if (s isEmpty) => throw new IllegalArgumentException("Expected non-empty " + item)
-    case s:String => s
-  }
-
-  private def validStringOrFallback(obj: Any, fallback: String): String = String valueOf obj trim match {
-    case s:String if (s isEmpty) => fallback
     case s:String => s
   }
 }
@@ -151,7 +150,7 @@ trait Filter {
 
   def and(filters: Filter*) = Filter and(concat(filters):_*)
 
-  def or (filters: Filter*) = Filter or(concat(filters):_*)
+  def or(filters: Filter*) = Filter or(concat(filters):_*)
 
   def not = Filter not(this)
 
@@ -165,25 +164,34 @@ trait Filter {
 
   protected def append(compositeOp: String, lb: ListBuffer[Filter]):Unit = { }
 
-  protected def appendFilters(b: Bldr, filters: Seq[Filter]): Bldr =
-    { filters foreach(_ writeTo(b)); b }
+  protected def appendFilters(b: Bldr, filters: Seq[Filter]): Bldr = { filters foreach(_ writeTo(b)); b }
 
   private def concat(seq: Seq[Filter]): Seq[Filter] = this :: List(seq:_*)
 }
 
 case class CompositeFilter(composite: String, filters: Seq[Filter]) extends Filter {
 
+  protected override def writeTo(b: Bldr) = pars(b, appendSubfilters(_))
+
   protected override def append(superComposite: String, lb: ListBuffer[Filter]) =
     if (superComposite == composite) lb appendAll(filters) else lb append(this)
-
-  protected override def writeTo(b: Bldr) = pars(b, appendSubfilters(_))
 
   private def appendSubfilters(b: Bldr) = appendFilters(b append(composite), filters)
 }
 
-case class PropertyFilter(attr: String, op: String, value: String) extends Filter {
+case class PropertyFilter(attr: String, op: String, value: Any) extends Filter {
+
+  protected override def writeTo(b: Bldr) = pars(b, _ append(attr) append(op) append(valueString))
+
+  private def valueString: String = value match {
+    case seq: Seq[Any] => "[" + (seq mkString ",") + "]"
+    case _ => validStringOrFallback(value)
+  }
+
+  private def validStringOrFallback(obj: Any): String = String valueOf obj trim match {
+    case s:String if (s isEmpty) => "*"
+    case s:String => s
+  }
 
   protected override def append(compositeOp: String, lb: ListBuffer[Filter]) = lb append(this)
-
-  protected override def writeTo(b: Bldr) = pars(b, _ append(attr) append(op) append(value))
 }
