@@ -19,7 +19,7 @@ import scalatest.matchers.ShouldMatchers
 import scalatest.Spec
 
 import Filter._
-import Filter.{not => notf}
+import Filter.{not => notf} // To avoid collision with Spec stuff
 
 object FilterSpec extends Spec with ShouldMatchers {
 
@@ -53,8 +53,20 @@ object FilterSpec extends Spec with ShouldMatchers {
     it("should be a truth filter") {
       isTrue("foo").asString should equal("(foo=true)")
     }
-    it("should be a property set filter") {
+    it("should be an object classes filter") {
+      objectClass(classOf[String], classOf[Integer]).asString should equal("(objectClass=[java.lang.String,java.lang.Integer])")
+    }
+    it("should be an object classes present filter") {
+      objectClass().asString should equal("(objectClass=*)")
+    }
+    it("should be a property present filter") {
       set("foo").asString should equal("(foo=*)")
+    }
+    it("should be a property present filter, from single-null array") {
+      set("foo", List[String](null)).asString should equal("(foo=*)")
+    }
+    it("should be a property filter, from single-value array") {
+      set("foo", List[String]("6")).asString should equal("(foo=6)")
     }
     it("should be an lt filter") {
       lt("foo", 5).asString should equal("(foo<=5)")
@@ -74,8 +86,14 @@ object FilterSpec extends Spec with ShouldMatchers {
     it("should be an int array filter") {
       set("foo", Array(1, 2, 6)).asString should equal("(foo=[1,2,6])")
     }
+    it("should be an int array filter, from varargs") {
+      set("foo", 1, 2, 6).asString should equal("(foo=[1,2,6])")
+    }
     it("should be a string array filter") {
       set("foo", Array("a", "b", "c")).asString should equal("(foo=[a,b,c])")
+    }
+    it("should be a string array filter, from varargs") {
+      set("foo", "a", "b", "c").asString should equal("(foo=[a,b,c])")
     }
   }
 
@@ -116,6 +134,15 @@ object FilterSpec extends Spec with ShouldMatchers {
       intercept[IllegalArgumentException] {
         set(emptyObject)
       }
+    }
+  }
+
+  describe("Option attributes") {
+    it("should work with None") {
+      set("foo", None) should equal(set("foo"))
+    }
+    it("should work with Some object") {
+      set("foo", Some(5)) should equal(set("foo", 5))
     }
   }
 

@@ -29,9 +29,9 @@ object Filter {
 
   def not(filter: Filter) = compose("!", filter :: Nil, true)
 
-  def set(attr: Any):Filter = set(attr, null)
+  def objectClass(value: Class[_]*) = atom(OBJECT_CLASS, "=", value map(_ getName), true)
 
-  def set(attr: Any, value: Any) = atom(attr, "=", value, true)
+  def set(attr: Any, value: Any*) = atom(attr, "=", value, true)
 
   def notSet(attr: Any):Filter = notSet(attr, null)
 
@@ -76,7 +76,7 @@ object Filter {
 
   implicit def toFilterBuilder(attr: String): PropertyFilterBuilder = PropertyFilterBuilder(attr)
 
-  implicit def toFilter(objectClass: Class[_]) = set("objectClass", objectClass getName)
+  implicit def toFilter(objectClass: Class[_]) = set(OBJECT_CLASS, objectClass getName)
 
   implicit def toIsSet(attr: String): Filter = attr match {
     case null => NilFilter
@@ -114,13 +114,20 @@ object Filter {
     new PropertyFilter(validAttr(validString(attr, "attribute")), op, resolveValue(value))
 
   private def resolveValue(value: Any): Any = value match {
-    case null => "*"
-    case seq: Seq[Any] if (seq isEmpty) => "*"
-    case _ => String valueOf value trim match {
-      case string if (string isEmpty) => "*"
+    case null => PRESENT
+    case None => PRESENT
+    case Some(obj) => resolveValue(obj)
+    case seq: Seq[Any] if (seq isEmpty) => PRESENT
+    case seq: Seq[Any] if (seq.length == 1) => resolveValue(seq(0))
+    case any:Any => String valueOf value trim match {
+      case string if (string isEmpty) => PRESENT
       case _ => value
     }
   }
+
+  private[core] lazy val PRESENT = "*"
+
+  private[core] lazy val OBJECT_CLASS = "objectClass"
 
   private lazy val invalidAttributeChars = List("=", ">", "<", "~", "(", ")")
 
@@ -190,7 +197,7 @@ case class PropertyFilter(attr: String, op: String, value: Any) extends Filter {
   }
 
   private def validStringOrFallback(obj: Any): String = String valueOf obj trim match {
-    case string if (string isEmpty) => "*"
+    case string if (string isEmpty) => Filter.PRESENT
     case string => string
   }
 }
