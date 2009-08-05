@@ -29,6 +29,8 @@ import org.osgi.service.cm.ManagedService
 import scala.collection.Map
 import scala.collection.immutable.{Map => IMap}
 
+import core.Filter.set
+
 @RunWith(classOf[MavenConfiguredJUnit4TestRunner])
 class BundleTest {
 
@@ -61,21 +63,21 @@ class BundleTest {
     ctx configure "CM" replaceWith (IMap("salutation" -> "REPLACED"))
     Thread sleep 1000
     // Get many services with filter (name=CM)) should result in Some(List("REPLACED MESSAGE"))
-    var result = ctx getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
+    var result = ctx getMany classOf[Greeting] withFilter set("name", "CM") andApply { _.greet }
     assert(List("REPLACED MESSAGE") == result, "Was " + result)
 
     // Update configuration for greeting service
     ctx configure "CM" updateWith (("message" -> "REPLACED"))
     Thread sleep 1000
     // Get many services with filter (name=CM)) should result in Some(List("test"))
-    result = ctx getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
+    result = ctx getMany classOf[Greeting] withFilter set("name", "CM") andApply { _.greet }
     assert(List("REPLACED REPLACED") == result, "Was " + result)
 
     // Replace configuration for greeting service once more
     ctx configure "CM" replaceWith (("salutation" -> "REPLACED"))
     Thread sleep 1000
     // Get many services with filter (name=CM)) should result in Some(List("REPLACED MESSAGE"))
-    result = ctx getMany classOf[Greeting] withFilter "(name=CM)" andApply { _.greet }
+    result = ctx getMany classOf[Greeting] withFilter set("name", "CM") andApply { _.greet }
     assert(List("REPLACED MESSAGE") == result, "Was " + result)
   }
 

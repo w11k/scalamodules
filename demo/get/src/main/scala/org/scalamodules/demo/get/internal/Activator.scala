@@ -19,43 +19,44 @@ import core.Preamble._
 
 import java.lang.Boolean.parseBoolean
 import org.osgi.framework.{BundleActivator, BundleContext}
+import core.Filter.isTrue
 
 class Activator extends BundleActivator {
 
   override def start(ctx: BundleContext) {
     // Get one Greeting service
     ctx getOne classOf[Greeting] andApply { _.welcome } match {
-      case None          => println(NoGreeting) 
+      case None          => println(NoGreeting)
       case Some(welcome) => println(welcome)
     }
 
     // Get one Greeting service once more using operator notation
     ctx ?> classOf[Greeting] & { _.welcome } match {
-      case None          => println(NoGreeting) 
+      case None          => println(NoGreeting)
       case Some(welcome) => println(welcome)
     }
 
     // Get many Greeting services, but only polite ones by applying a fiter
-    ctx getMany classOf[Greeting] withFilter "(polite=true)" andApply { _.welcome } match {
-      case Nil      => println(NoGreeting) 
+    ctx getMany classOf[Greeting] withFilter isTrue("polite") andApply { _.welcome } match {
+      case Nil      => println(NoGreeting)
       case welcomes => welcomes foreach { println }
     }
 
     // Get many filtered Greeting services once more using operator notation
     ctx *> classOf[Greeting] % "(polite=true)" & { _.welcome } match {
-      case Nil      => println(NoGreeting) 
+      case Nil      => println(NoGreeting)
       case welcomes => welcomes foreach { println }
     }
 
     // Get many Greeting services and their properties
-    ctx getMany classOf[Greeting] andApply { 
+    ctx getMany classOf[Greeting] andApply {
       (grt, props) => {
         val polite = if (parseBoolean(props.getOrElse("polite", "false").toString)) "polite"
                      else "not polite"
         grt.welcome + " is " + polite
       }
     } match {
-      case Nil      => println(NoGreeting) 
+      case Nil      => println(NoGreeting)
       case welcomes => welcomes.foreach { println }
     }
   }

@@ -26,6 +26,7 @@ import org.scalatest.Spec
 import org.scalatest.matchers.ShouldMatchers
 import scala.collection.Map
 import scala.collection.immutable.{Map => IMap}
+import Filter.set
 
 object TrackSpec extends Spec with ShouldMatchers {
 
@@ -56,7 +57,7 @@ object TrackSpec extends Spec with ShouldMatchers {
 
     it("should return a new Track when called with a not-null filter") {
       val track = new Track(mockCtx, classOf[String])
-      val newTrack = track withFilter "(Scala=[Modules,FooBar])"
+      val newTrack = track withFilter set("Scala", "Modules", "FooBar")
       newTrack should not be null
     }
 
