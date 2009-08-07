@@ -238,11 +238,11 @@ object FilterSpec extends Spec with ShouldMatchers {
     }
   }
 
-  describe("Invalid values") {
-    it("should fail when argument is nested array") {
-      intercept[IllegalArgumentException] {
-        set("foo", Array(Array(5,6),Array(6,7)))
-      }
-    }
-  }
+//  describe("Invalid values") {
+//    it("should fail when argument is nested array") {
+//      intercept[IllegalArgumentException] {
+//        set("foo", Array(Array(5,6),Array(6,7)))
+//      }
+//    }
+//  }
 }

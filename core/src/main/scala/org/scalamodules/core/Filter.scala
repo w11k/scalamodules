@@ -117,12 +117,13 @@ object Filter {
     case null => PRESENT
     case None => PRESENT
     case Some(obj) => resolveValue(obj)
-    case seq: Seq[Any] if (seq isEmpty) => PRESENT
-    case seq: Seq[Any] if (seq.length == 1) => resolveValue(seq(0))
-    case seq: Seq[Any] => seq filter (resolveValue(_) != PRESENT) match {
-      case seq:Seq[Any] if (seq isEmpty) => PRESENT
-      case seq:Seq[Any] if (seq.length == 1) => seq(0)
-      case seq:Seq[Any] => seq }
+    case seq: Seq[_] if (seq isEmpty) => PRESENT
+    case seq: Seq[_] if (seq.length == 1) => resolveValue(seq(0))
+    case seq: Seq[_] => seq filter (resolveValue(_) != PRESENT) match {
+      case seq:Seq[_] if (seq isEmpty) => PRESENT
+      case seq:Seq[_] if (seq.length == 1) => seq(0)
+      case seq:Seq[_] => seq
+    }
     case any:Any => String valueOf value trim match {
       case string if (string isEmpty) => PRESENT
       case _ => value
@@ -196,7 +197,7 @@ case class PropertyFilter(attr: String, op: String, value: Any) extends Filter {
   protected override def append(compositeOp: String, lb: ListBuffer[Filter]) = lb append(this)
 
   private def valueString: String = value match {
-    case seq: Seq[Any] => "[" + (seq mkString ",") + "]"
+    case seq: Seq[_] => "[" + (seq mkString ",") + "]"
     case _ => validStringOrFallback(value)
   }
 
