@@ -119,6 +119,10 @@ object Filter {
     case Some(obj) => resolveValue(obj)
     case seq: Seq[Any] if (seq isEmpty) => PRESENT
     case seq: Seq[Any] if (seq.length == 1) => resolveValue(seq(0))
+    case seq: Seq[Any] => seq filter (resolveValue(_) != PRESENT) match {
+      case seq:Seq[Any] if (seq isEmpty) => PRESENT
+      case seq:Seq[Any] if (seq.length == 1) => seq(0)
+      case seq:Seq[Any] => seq }
     case any:Any => String valueOf value trim match {
       case string if (string isEmpty) => PRESENT
       case _ => value

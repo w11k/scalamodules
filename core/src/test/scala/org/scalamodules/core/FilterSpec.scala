@@ -95,6 +95,15 @@ object FilterSpec extends Spec with ShouldMatchers {
     it("should be a string array filter, from varargs") {
       set("foo", "a", "b", "c").asString should equal("(foo=[a,b,c])")
     }
+    it("should be a string array filter, from varargs with pruning") {
+      set("foo", "a", None, "c").asString should equal("(foo=[a,c])")
+    }
+    it("should be a string array filter, from varargs with more pruning") {
+      set("foo", "a", None, "").asString should equal("(foo=a)")
+    }
+    it("should be a string array filter, from varargs with full pruning") {
+      set("foo", emptyObject, None, "").asString should equal("(foo=*)")
+    }
   }
 
   describe("Invalid attributes") {
@@ -225,6 +234,14 @@ object FilterSpec extends Spec with ShouldMatchers {
     it("should not become a Filter") {
       intercept[IllegalArgumentException] {
         asFilter("  ")
+      }
+    }
+  }
+
+  describe("Invalid values") {
+    it("should fail when argument is nested array") {
+      intercept[IllegalArgumentException] {
+        set("foo", Array(Array(5,6),Array(6,7)))
       }
     }
   }
