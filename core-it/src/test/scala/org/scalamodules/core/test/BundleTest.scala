@@ -25,6 +25,7 @@ import org.ops4j.pax.exam.Inject
 import org.ops4j.pax.exam.junit._
 import org.osgi.framework._
 import org.osgi.service.cm.ManagedService
+import org.scalamodules.core.Filter._
 import scala.collection.Map
 import scala.collection.immutable.{Map => IMap}
 
@@ -61,12 +62,12 @@ class BundleTest {
     val welcome = new Greeting {
       override val greet = "Welcome!"
     }
-    val welcomeRegistration = 
+    val welcomeRegistration =
       ctx < welcome / classOf[Greeting] % ("service.ranking" -> 1, "name" -> "ScalaModules")
     assert(greetingStatus == "ADDING-2", "But was: " + greetingStatus)
 
     // Get one service should result in Some("Welcome...")
-    val welcomeResult = ctx ?> classOf[Greeting] & { 
+    val welcomeResult = ctx ?> classOf[Greeting] & {
       (greeting, properties) => {
         val name = properties.get("name") match {
           case None    => "UNKNOWN"
@@ -96,13 +97,13 @@ class BundleTest {
     // Get many services should result in Some(List("Hello!", "Welcome!", "Howdy!))
     val greetingsResult = ctx *> classOf[Greeting] & { _.greet }
     assert(greetingsResult != None)
-    assert(List("Hello!", "Welcome!", "Howdy!").sort(Sorter) == greetingsResult.sort(Sorter), 
+    assert(List("Hello!", "Welcome!", "Howdy!").sort(Sorter) == greetingsResult.sort(Sorter),
            "But was: " + greetingsResult)
 
     // Get many services with filter (!(name=*)) should result in Some(List("Hello!", "Howdy!"))
-    val filteredGreetingsResult = 
-      ctx *> classOf[Greeting] % "(!(name=*))" & { _.greet }
-    assert(List("Hello!", "Howdy!").sort(Sorter) == filteredGreetingsResult.sort(Sorter), 
+    val filteredGreetingsResult =
+      ctx *> classOf[Greeting] % notSet("name") & { _.greet }
+    assert(List("Hello!", "Howdy!").sort(Sorter) == filteredGreetingsResult.sort(Sorter),
            "But was: " + filteredGreetingsResult)
 
     // Because of the partial function support this must not throw an error!
@@ -112,10 +113,10 @@ class BundleTest {
     welcomeRegistration.unregister()
     assert(greetingStatus == "REMOVED-1", "But was: " + greetingStatus)
 
-    // Stopping the tracking should result in greetingStatus == "REMOVED-3" (three Greeting services untracked) 
+    // Stopping the tracking should result in greetingStatus == "REMOVED-3" (three Greeting services untracked)
     tracker.close()
     assert(greetingStatus == "REMOVED-3", "But was: " + greetingStatus)
-    
+
     helloRegistration.unregister()
     multiRegistration.unregister()
 
@@ -123,28 +124,28 @@ class BundleTest {
       val reverse = new StringBuilder(grt.greet).reverse.toString
     }
 
-    ctx < { grt: Greeting => new GreetingReverser(grt) } % IMap("feature" -> "dependOn") 
-    var result = ctx *> classOf[Reverser] % "(feature=dependOn)" & { _ => }
-    assert(result.isEmpty, "But size was: " + result.size) 
+    ctx < { grt: Greeting => new GreetingReverser(grt) } % IMap("feature" -> "dependOn")
+    var result = ctx *> classOf[Reverser] % ("feature" === "dependOn") & { _ => }
+    assert(result.isEmpty, "But size was: " + result.size)
 
     val dependeeRegistration1 = ctx < hello
-    result = ctx *> classOf[Reverser] % "(feature=dependOn)" & { _ => }
-    assert(result != None) 
+    result = ctx *> classOf[Reverser] % ("feature" === "dependOn") & { _ => }
+    assert(result != None)
     assert(result.size == 1, "But size was: " + result.size)
 
     val dependeeRegistration2 = ctx < welcome
-    result = ctx *> classOf[Reverser] % "(feature=dependOn)" & { _ => }
-    assert(result != None) 
+    result = ctx *> classOf[Reverser] % ("feature" === "dependOn") & { _ => }
+    assert(result != None)
     assert(result.size == 1, "But size was: " + result.size)
 
     dependeeRegistration2.unregister()
-    result = ctx *> classOf[Reverser] % "(feature=dependOn)" & { _ => }
-    assert(result != None) 
+    result = ctx *> classOf[Reverser] % ("feature" === "dependOn") & { _ => }
+    assert(result != None)
     assert(result.size == 1, "But size was: " + result.size)
 
     dependeeRegistration1.unregister()
-    result = ctx *> classOf[Reverser] % "(feature=dependOn)" & { _ => }
-    assert(result.isEmpty, "But size was: " + result.size) 
+    result = ctx *> classOf[Reverser] % ("feature" === "dependOn") & { _ => }
+    assert(result.isEmpty, "But size was: " + result.size)
   }
 
   private val Sorter = (s1: String, s2: String) => s1 < s2

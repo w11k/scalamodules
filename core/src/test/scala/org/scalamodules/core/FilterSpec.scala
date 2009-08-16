@@ -38,6 +38,12 @@ object FilterSpec extends Spec with ShouldMatchers {
   }
 
   describe("Textual representation") {
+    it("should be an exists filter") {
+      exists("foo").asString should equal("(foo=*)")
+    }
+    it("should be an exists filter, from empty set") {
+      set("foo").asString should equal("(foo=*)")
+    }
     it("should be an & filter") {
       and(set("foo"), notf(set("bar"))).asString should equal("(&(foo=*)(!(bar=*)))")
     }
@@ -81,7 +87,7 @@ object FilterSpec extends Spec with ShouldMatchers {
       set("foo", Array[String]()).asString should equal("(foo=*)")
     }
     it("should be an empty filter, from empty integer array") {
-      set("foo", Array[Integer]()).asString should equal("(foo=*)")
+      set("foo", Array[String]()).asString should equal("(foo=*)")
     }
     it("should be an int array filter") {
       set("foo", Array(1, 2, 6)).asString should equal("(foo=[1,2,6])")
@@ -170,6 +176,15 @@ object FilterSpec extends Spec with ShouldMatchers {
   describe("Implicit from type") {
     it("should become an objectclass filter") {
       asFilter(classOf[String]) should equal (set("objectClass", "java.lang.String"))
+    }
+  }
+
+  describe("Composing with null") {
+    it("should work with and-null") {
+      (set("foo", 5) && null) should equal (set("foo", 5))
+    }
+    it("should work with or-null") {
+      (set("foo", 5) || null) should equal (set("foo", 5))
     }
   }
 

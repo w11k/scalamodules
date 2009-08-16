@@ -171,7 +171,6 @@ object GetManySpec extends Spec with ShouldMatchers {
       result should contain ("BindForge")
     }
 
-
     it("""should return List containing "ScalaModules" when the Strings "ScalaModules" and "BindForge" are registered as services, x with property ("p" => "modules") and a filter is applied looking for "p" """) {
       val aMockRef = EasyMock createNiceMock classOf[ServiceReference]
       val bMockRef = EasyMock createNiceMock classOf[ServiceReference]
@@ -181,7 +180,7 @@ object GetManySpec extends Spec with ShouldMatchers {
       EasyMock expect (mockCtx getService bMockRef) andReturn "BindForge"
       EasyMock replay mockCtx
 
-      val result = getMany % "(p=*)" & { s: String => s }
+      val result = getMany % Filter.exists("p") & { s: String => s }
       result should equal ("ScalaModules" :: Nil)
     }
   }

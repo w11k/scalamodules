@@ -31,6 +31,8 @@ object Filter {
 
   def objectClass(value: Class[_]*) = atom(OBJECT_CLASS, "=", value map(_ getName), true)
 
+  def exists(attr: Any) = set(attr)
+
   def set(attr: Any, value: Any*) = atom(attr, "=", value, true)
 
   def notSet(attr: Any):Filter = notSet(attr, null)
@@ -88,13 +90,10 @@ object Filter {
     case _ => set(tuple _1, tuple _2)
   }
 
-  implicit def filterToString(filter: Filter): String = filter match {
-    case null => ""
-    case _  => filter asString
-  }
-
   private def compose(op: String, filters: Seq[Filter], unary: Boolean): Filter =
-    prune(op, filters filter(_ != NilFilter), unary)
+    prune(op, filters filter(nonNull _), unary)
+
+  private def nonNull(filter: Filter) = filter != null && filter != NilFilter
 
   private def prune(op: String, seq: Seq[Filter], unary: Boolean) = seq match {
     case Nil => NilFilter
@@ -104,14 +103,14 @@ object Filter {
 
   private def possiblyCollapsed(op: String, seq: Seq[Filter]) = {
     val lb = new ListBuffer[Filter]
-    seq foreach(_ append(op, lb)) // Laugh all you want, o functional guru, then show me how.
+    seq foreach(filter => if (filter != null) filter append(op, lb)) // Laugh all you want, o functional guru, then show me how.
     lb toSeq
   }
 
   private def atom(attr: Any, op: String, value: Any): Filter = atom(attr, op, value, false);
 
   private def atom(attr: Any, op: String, value: Any, allowNull: Boolean): Filter =
-    new PropertyFilter(validAttr(validString(attr, "attribute")), op, resolveValue(value))
+    new PropertyFilter(validAttr(validString(attr, "attribute")), op, valueString(resolveValue(value)))
 
   private def resolveValue(value: Any): Any = value match {
     case null => PRESENT
@@ -151,9 +150,20 @@ object Filter {
     case string if (string isEmpty) => throw new IllegalArgumentException("Expected non-empty " + item)
     case string => string
   }
+
+  private def valueString(value: Any): String = value match {
+    case string: String => string
+    case seq: Seq[_] => "[" + (seq mkString ",") + "]"
+    case _ => validStringOrFallback(value)
+  }
+
+  private def validStringOrFallback(obj: Any): String = String valueOf obj trim match {
+    case string if (string isEmpty) => Filter.PRESENT
+    case string => string
+  }
 }
 
-trait Filter {
+abstract class Filter {
 
   final def && (filter: Filter) = and(filter)
 
@@ -187,22 +197,12 @@ case class CompositeFilter(composite: String, filters: Seq[Filter]) extends Filt
   protected override def append(superComposite: String, lb: ListBuffer[Filter]) =
     if (superComposite == composite) lb appendAll(filters) else lb append(this)
 
-  private def appendSubfilters(b: Bldr) = appendFilters(b append(composite), filters)
+  private def appendSubfilters(b: Bldr): Bldr = appendFilters(b append(composite), filters)
 }
 
-case class PropertyFilter(attr: String, op: String, value: Any) extends Filter {
+case class PropertyFilter(attr: String, op: String, value: String) extends Filter {
 
-  protected override def writeTo(b: Bldr) = pars(b, _ append(attr) append(op) append(valueString))
+  protected override def writeTo(b: Bldr) = pars(b, _ append(attr) append(op) append(value))
 
   protected override def append(compositeOp: String, lb: ListBuffer[Filter]) = lb append(this)
-
-  private def valueString: String = value match {
-    case seq: Seq[_] => "[" + (seq mkString ",") + "]"
-    case _ => validStringOrFallback(value)
-  }
-
-  private def validStringOrFallback(obj: Any): String = String valueOf obj trim match {
-    case string if (string isEmpty) => Filter.PRESENT
-    case string => string
-  }
 }

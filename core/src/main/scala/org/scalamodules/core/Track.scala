@@ -15,6 +15,7 @@
  */
 package org.scalamodules.core
 
+import core.Filter.NilFilter
 import Preamble.toRichServiceReference
 import Util.toOption
 
@@ -27,7 +28,7 @@ import scala.collection.Map
  */
 private class Track[I](ctx: BundleContext,
                        srvIntf: Class[I],
-                       filter: Option[String]) {
+                       filter: Option[Filter]) {
 
   require(ctx != null, "BundleContext must not be null!")
   require(srvIntf != null, "Service interface must not be null!")
@@ -45,7 +46,7 @@ private class Track[I](ctx: BundleContext,
   /**
    * Sets the given filter for service look-ups.
    */
-  def withFilter(filter: String) =
+  def withFilter(filter: Filter) =
     new Track(ctx, srvIntf, filter)
 
   /**
@@ -83,13 +84,9 @@ private class Track[I](ctx: BundleContext,
 
   private var tracker: ServiceTracker = _
 
-  private def createFilter: OSGiFilter = {
-    val filterString = filter match {
-      case None    => String.format("(objectClass=%s)", srvIntf.getName)
-      case Some(s) => String.format("(&(objectClass=%s)%s)", srvIntf.getName, s)
-    }
-    ctx.createFilter(filterString)
-  }
+  private def createFilter: OSGiFilter = ctx.createFilter(fullFilter asString)
+  
+  private def fullFilter = Filter.objectClass(srvIntf) && (filter getOrElse NilFilter)
 }
 
 /**
