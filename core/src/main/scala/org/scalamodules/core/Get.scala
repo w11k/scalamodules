@@ -44,7 +44,7 @@ private class GetOne[I](ctx: BundleContext,
  */
 private class GetMany[I](ctx: BundleContext,
                          srvIntf: Class[I],
-                         filter: Option[String])
+                         filter: Option[Filter])
   extends Get(ctx, srvIntf) {
 
   require(filter != null, "Option for filter must not be null!")
@@ -55,24 +55,25 @@ private class GetMany[I](ctx: BundleContext,
   /**
    * Sets the given filter for service look-ups.
    */
-  def %(filter: String) =
+  def %(filter: Filter) =
     withFilter(filter)
 
   /**
    * Sets the given filter for service look-ups.
    */
-  def withFilter(filter: String) =
+  def withFilter(filter: Filter) =
     new GetMany(ctx, srvIntf, filter)
 
   override private[core] type Result[T] = List[T]
 
   override private[core] def work[T](f: ServiceReference => Option[T]): Result[T] = {
     assert(f != null, "Function to be applied must not be null!")
-    // TODO Can we do this without var?
+    // TODO Can we do this without var
     var result: List[Option[T]] = Nil
-    ctx.getServiceReferences(srvIntf.getName, filter getOrElse null) match {
+    val filterString = filter map(_ asString) getOrElse null
+    ctx.getServiceReferences(srvIntf.getName, filterString) match {
       case null =>
-      case refs => refs foreach { ref => result = f(ref) :: result } 
+      case refs => refs foreach { ref => result = f(ref) :: result }
     }
     result flatMap { o => o }
   }

@@ -1,10 +1,4 @@
-.DS_Store
-.classpath
-.launch
-.manager
-.metadata
-.project
-.settings
-.svn
-runner
-target
+target/
+scalamodules*.iml
+scalamodules*.ipr
+scalamodules*.iws

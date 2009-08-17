@@ -20,6 +20,7 @@ import org.osgi.framework.{BundleContext, ServiceReference}
 import scala.collection.Map
 import org.scalatest.Spec
 import org.scalatest.matchers.ShouldMatchers
+import Filter.set
 
 object GetSpec extends Spec with ShouldMatchers {
 
@@ -28,7 +29,7 @@ object GetSpec extends Spec with ShouldMatchers {
   describe("The base class Get") {
 
     it("should throw an IAE when constructed with a null BundleContext") {
-      intercept[IllegalArgumentException] { 
+      intercept[IllegalArgumentException] {
         new MockGet(null, classOf[String])
       }
     }
@@ -45,13 +46,13 @@ object GetSpec extends Spec with ShouldMatchers {
     val get = new MockGet(mockCtx, classOf[String])
 
     it("should throw an IAE when called with a null function") {
-      intercept[IllegalArgumentException] { 
+      intercept[IllegalArgumentException] {
         get & null.asInstanceOf[(String) => String]
       }
     }
 
     it("should throw an IAE when called with another null function") {
-      intercept[IllegalArgumentException] { 
+      intercept[IllegalArgumentException] {
         get & null.asInstanceOf[(String, Map[String, Any]) => String]
       }
     }
@@ -78,7 +79,7 @@ object GetOneSpec extends Spec with ShouldMatchers {
       EasyMock expect (mockCtx getServiceReference classOf[String].getName) andReturn mockRef
       EasyMock expect (mockCtx getService mockRef) andReturn "ScalaModules"
       EasyMock replay mockCtx
-      
+
       val result = getOne & { s: String => s }
       result should equal (Some("ScalaModules"))
     }
@@ -92,9 +93,9 @@ object GetOneSpec extends Spec with ShouldMatchers {
       EasyMock expect (mockCtx getServiceReference classOf[String].getName) andReturn mockRef
       EasyMock expect (mockCtx getService mockRef) andReturn "Scala"
       EasyMock replay mockCtx
-      
-      val result = getOne & { 
-        (s: String, props: Map[String, Any]) => s + (props get "p" getOrElse "") 
+
+      val result = getOne & {
+        (s: String, props: Map[String, Any]) => s + (props get "p" getOrElse "")
       }
       result should equal (Some("ScalaModules"))
     }
@@ -108,7 +109,7 @@ object GetManySpec extends Spec with ShouldMatchers {
   describe("The class GetMany") {
 
     it("should throw an IAE when constructed with a null filter") {
-      intercept[IllegalArgumentException] { 
+      intercept[IllegalArgumentException] {
         new GetMany(mockCtx, classOf[String], null)
       }
     }
@@ -119,7 +120,7 @@ object GetManySpec extends Spec with ShouldMatchers {
     val getMany = new GetMany(mockCtx, classOf[String], None)
 
     it("should return a new GetMany when called with a not-null filter") {
-      val newGetMany =  getMany % "(p=*)"
+      val newGetMany =  getMany % set("p")
       newGetMany should not be null
     }
 
@@ -148,7 +149,7 @@ object GetManySpec extends Spec with ShouldMatchers {
       EasyMock expect (mockCtx.getServiceReferences(classOf[String].getName, null)) andReturn ArrayHelper.create(mockRef)
       EasyMock expect (mockCtx getService mockRef) andReturn "Scala"
       EasyMock replay mockCtx
- 
+
       val result = getMany & {
         (s: String, props: Map[String, Any]) => s + (props get "p" getOrElse "")
       }
@@ -163,13 +164,12 @@ object GetManySpec extends Spec with ShouldMatchers {
       EasyMock expect (mockCtx getService aMockRef) andReturn "ScalaModules"
       EasyMock expect (mockCtx getService bMockRef) andReturn "BindForge"
       EasyMock replay mockCtx
-      
+
       val result = getMany & { s: String => s }
       result should have size 2
       result should contain ("ScalaModules")
       result should contain ("BindForge")
     }
-    
 
     it("""should return List containing "ScalaModules" when the Strings "ScalaModules" and "BindForge" are registered as services, x with property ("p" => "modules") and a filter is applied looking for "p" """) {
       val aMockRef = EasyMock createNiceMock classOf[ServiceReference]
@@ -179,14 +179,14 @@ object GetManySpec extends Spec with ShouldMatchers {
       EasyMock expect (mockCtx getService aMockRef) andReturn "ScalaModules"
       EasyMock expect (mockCtx getService bMockRef) andReturn "BindForge"
       EasyMock replay mockCtx
-      
-      val result = getMany % "(p=*)" & { s: String => s }
+
+      val result = getMany % Filter.exists("p") & { s: String => s }
       result should equal ("ScalaModules" :: Nil)
     }
   }
 }
 
-private class MockGet[I](ctx: BundleContext, srvIntf: Class[I]) 
+private class MockGet[I](ctx: BundleContext, srvIntf: Class[I])
   extends Get[I](ctx, srvIntf) {
 
   override private[core] type Result[T] = Option[T]

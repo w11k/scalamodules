@@ -12,7 +12,7 @@
   <artifactId>scalamodules-core</artifactId>
   <name>ScalaModules Core</name>
   <description>ScalaModules Core provides a domain specific language for general OSGi concepts like life cycle or service usage.</description>
-  <packaging>jar</packaging>
+  <packaging>bundle</packaging>
 
   <dependencies>
     <dependency>
@@ -40,6 +40,12 @@
   <build>
     <plugins>
       <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>com.google.code.maven-license-plugin</groupId>
         <artifactId>maven-license-plugin</artifactId>
       </plugin>
@@ -49,7 +55,7 @@
         <configuration>
           <instructions>
             <Private-Package>org.scalamodules.core.internal.*"</Private-Package>
-            <Export-Package>org.scalamodules.core;version="2.0"</Export-Package>
+            <Export-Package>org.scalamodules.core;version="2.0",org.scalamodules.core.filters;version="2.0"</Export-Package>
           </instructions>
         </configuration>
       </plugin>
