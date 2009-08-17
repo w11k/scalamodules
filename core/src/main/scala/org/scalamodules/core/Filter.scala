@@ -16,7 +16,7 @@
 package org.scalamodules.core
 
 import scala.{StringBuilder => Bldr}
-import collection.mutable.ListBuffer
+import scala.collection.mutable.ListBuffer
 
 /**
  * Importing Filter._ will enable the factory methods

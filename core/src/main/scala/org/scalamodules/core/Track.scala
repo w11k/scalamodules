@@ -15,7 +15,7 @@
  */
 package org.scalamodules.core
 
-import core.Filter.NilFilter
+import Filter.NilFilter
 import Preamble.toRichServiceReference
 import Util.toOption
 

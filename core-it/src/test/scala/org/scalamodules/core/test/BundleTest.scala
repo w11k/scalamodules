@@ -15,6 +15,7 @@
  */
 package org.scalamodules.core.test
 
+import Filter.{notSet, toFilterBuilder}
 import Preamble._
 
 import java.util.{Date, Dictionary}
@@ -25,7 +26,6 @@ import org.ops4j.pax.exam.Inject
 import org.ops4j.pax.exam.junit._
 import org.osgi.framework._
 import org.osgi.service.cm.ManagedService
-import org.scalamodules.core.Filter._
 import scala.collection.Map
 import scala.collection.immutable.{Map => IMap}
 

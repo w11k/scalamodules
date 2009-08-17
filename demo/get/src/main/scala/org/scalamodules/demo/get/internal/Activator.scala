@@ -15,11 +15,11 @@
  */
 package org.scalamodules.demo.get.internal
 
+import core.Filter.isTrue
 import core.Preamble._
 
 import java.lang.Boolean.parseBoolean
 import org.osgi.framework.{BundleActivator, BundleContext}
-import core.Filter.isTrue
 
 class Activator extends BundleActivator {
 

@@ -18,8 +18,8 @@ package org.scalamodules.core
 import Preamble.toRichServiceReference
 import Util.toOption
 
-import scala.collection.Map
 import org.osgi.framework.{BundleContext, ServiceReference}
+import scala.collection.Map
 
 /**
  * Consume a single service.

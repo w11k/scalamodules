@@ -16,11 +16,10 @@
 package org.scalamodules.demo.track.internal
 
 import core.{Adding, Removed}
+import core.Filter.isTrue
 import core.Preamble._
 
 import org.osgi.framework.{BundleActivator, BundleContext}
-
-import core.Filter.isTrue
 
 class Activator extends BundleActivator {
 
