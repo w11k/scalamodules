@@ -243,8 +243,11 @@ object FilterSpec extends Spec with ShouldMatchers {
     it("should become a PropertyFilterBuilder and invoke set") {
       ("foo" set) should equal(set("foo"))
     }
-    it("should become an empty Filter") {
+    it("should become an empty Filter, from a tuple with empty right-hand side") {
       asFilter("foo" -> emptyObject) should equal(set("foo"))
+    }
+    it("should become an empty Filter, from a simple string") {
+      asFilter("foo") should equal(set("foo"))
     }
     it("should not become a Filter") {
       intercept[IllegalArgumentException] {
