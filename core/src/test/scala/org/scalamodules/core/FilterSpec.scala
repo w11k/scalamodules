@@ -38,6 +38,9 @@ object FilterSpec extends Spec with ShouldMatchers {
   }
 
   describe("Textual representation") {
+    it("should a simple equals filter") {
+      set("foo", "wobble").asString should equal("(foo=wobble)")
+    }
     it("should be an exists filter") {
       exists("foo").asString should equal("(foo=*)")
     }
@@ -256,11 +259,24 @@ object FilterSpec extends Spec with ShouldMatchers {
     }
   }
 
-//  describe("Invalid values") {
-//    it("should fail when argument is nested array") {
-//      intercept[IllegalArgumentException] {
-//        set("foo", Array(Array(5,6),Array(6,7)))
-//      }
-//    }
-//  }
+  describe("Fool-proof argument checking") {
+    it("should unpack nested arg") {
+      set("foo", List(List("bar"))) should equal(set("foo", "bar"))
+    }
+    it("should unpack double -list") {
+      set("hookcrook", List("in"), null, List("for", "", List(None, "mation"))) should equal(set("hookcrook", "in", "for", "mation"))
+    }
+    it("should clear away all the fluff") {
+      set("foo", List(None), List(List("", "", List()), List(None, None)), None, None, "") should equal(set("foo"))
+    }
+    it("should clear away all the fluff and become a present filter") {
+      set("foo", List(None), List(List("", "", List("*")), List(None, None)), "*", None, None, "") should equal(set("foo"))
+    }
+    it("should clear away all the fluff and become a present filter, overriding any other dat") {
+      set("foo", List(None), List(List("", "", List("*")), List(None, None)), "*", None, None, "", "nevermindme") should equal(set("foo"))
+    }
+    it("should clear away all the fluff and find something") {
+      set("foo", List(None), List(List("", "", List()), "6", List(None, None)), None, None, "") should equal(set("foo", 6))
+    }
+  }
 }

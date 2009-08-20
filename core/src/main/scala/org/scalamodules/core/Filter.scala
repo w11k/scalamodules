@@ -27,27 +27,27 @@ object Filter {
 
   def or(filters: Filter*) = compose("|", filters, false)
 
-  def not(filter: Filter) = compose("!", filter :: Nil, true)
+  def not(filter: Filter) = compose("!", List(filter), true)
 
   def objectClass(value: Class[_]*) = atom(OBJECT_CLASS, "=", value map(_ getName), true)
 
   def exists(attr: Any) = set(attr)
 
-  def set(attr: Any, value: Any*) = atom(attr, "=", value, true)
+  def set(attr: Any, value: Any*) = atom(attr, "=", sequenceArray(value:_*), true)
 
   def notSet(attr: Any):Filter = notSet(attr, null)
 
   def notSet(attr: Any, value: Any) = not(set(attr, value))
 
-  def isTrue(attr: Any) = atom(attr, "=", true)
+  def isTrue(attr: Any) = atom(attr, "=", List(true))
 
-  def isFalse(attr: Any) = atom(attr, "=", false)
+  def isFalse(attr: Any) = atom(attr, "=", List(false))
 
-  def lt(attr: Any, value: Any) = atom(attr, "<=", value)
+  def lt(attr: Any, value: Any) = atom(attr, "<=", List(value))
 
-  def bt(attr: Any, value: Any) = atom(attr, ">=", value)
+  def bt(attr: Any, value: Any) = atom(attr, ">=", List(value))
 
-  def approx(attr: Any, value: Any) = atom(attr, "~=", value)
+  def approx(attr: Any, value: Any) = atom(attr, "~=", List(value))
 
   private[Filter] case class PropertyFilterBuilder(attr: Any) {
     validString(attr, "attribute")
@@ -97,8 +97,8 @@ object Filter {
 
   private def prune(op: String, seq: Seq[Filter], unary: Boolean) = seq match {
     case Nil => NilFilter
-    case Seq(filter) => if (unary) new CompositeFilter(op, filter :: Nil) else filter
-    case _ => new CompositeFilter(op, possiblyCollapsed(op, seq))
+    case Seq(filter) => if (unary) CompositeFilter(op, filter :: Nil) else filter
+    case _ => CompositeFilter(op, possiblyCollapsed(op, seq))
   }
 
   private def possiblyCollapsed(op: String, seq: Seq[Filter]) = {
@@ -107,26 +107,27 @@ object Filter {
     lb toSeq
   }
 
-  private def atom(attr: Any, op: String, value: Any): Filter = atom(attr, op, value, false);
+  private def atom(attr: Any, op: String, value: Seq[_]): Filter = atom(attr, op, value, false)
 
-  private def atom(attr: Any, op: String, value: Any, allowNull: Boolean): Filter =
-    new PropertyFilter(validAttr(validString(attr, "attribute")), op, valueString(resolveValue(value)))
+  private def atom(attr: Any, op: String, value: Seq[_], allowNull: Boolean): Filter =
+    PropertyFilter(validAttr(validString(attr, "attribute")), op, arguments(value))
 
-  private def resolveValue(value: Any): Any = value match {
-    case null => PRESENT
-    case None => PRESENT
-    case Some(obj) => resolveValue(obj)
-    case seq: Seq[_] if (seq isEmpty) => PRESENT
-    case seq: Seq[_] if (seq.length == 1) => resolveValue(seq(0))
-    case seq: Seq[_] => seq filter (resolveValue(_) != PRESENT) match {
-      case seq:Seq[_] if (seq isEmpty) => PRESENT
-      case seq:Seq[_] if (seq.length == 1) => seq(0)
-      case seq:Seq[_] => seq
+  private def arguments(value: Seq[_]) = valueString(sequence(value, new ListBuffer[Any]))
+
+  private def sequence(seq: Seq[_], lb: ListBuffer[Any]): List[Any] = {
+    for (s <- seq) {
+      s match {
+        case nestedArray: Array[_] => sequence(sequenceArray(nestedArray:_*), lb)
+        case nestedSeq: Seq[_] => sequence(nestedSeq, lb)
+        case string: String if string.trim.isEmpty =>
+        case string: String if string.trim == "*" => return Nil
+        case None =>
+        case null =>
+        case Some(x) => lb += x
+        case _ => lb += s
+      }
     }
-    case any:Any => String valueOf value trim match {
-      case string if (string isEmpty) => PRESENT
-      case _ => value
-    }
+    lb toList
   }
 
   private[core] lazy val PRESENT = "*"
@@ -151,15 +152,21 @@ object Filter {
     case string => string
   }
 
-  private def valueString(value: Any): String = value match {
-    case string: String => string
-    case seq: Seq[_] => "[" + (seq mkString ",") + "]"
-    case _ => validStringOrFallback(value)
+  private def valueString(value: List[_]): String = value match {
+    case Nil => PRESENT
+    case head::Nil => validStringOrFallback(head)
+    case seq => "[" + (seq mkString ",") + "]"
   }
 
   private def validStringOrFallback(obj: Any): String = String valueOf obj trim match {
     case string if (string isEmpty) => Filter.PRESENT
     case string => string
+  }
+
+  private def sequenceArray[A](args: A*):Seq[A] = {
+    val lb = new ListBuffer[A]
+    for (arg <- args) lb += arg
+    lb.toSeq
   }
 }
 
