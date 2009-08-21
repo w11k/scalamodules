@@ -33,7 +33,7 @@ object Filter {
 
   def exists(attr: Any) = set(attr)
 
-  def set(attr: Any, value: Any*) = atom(attr, "=", sequenceArray(value:_*), true)
+  def set(attr: Any, value: Any*) = atom(attr, "=", toSeq(value:_*), true)
 
   def notSet(attr: Any):Filter = notSet(attr, null)
 
@@ -117,7 +117,7 @@ object Filter {
   private def sequence(seq: Seq[_], lb: ListBuffer[Any]): List[Any] = {
     for (s <- seq) {
       s match {
-        case nestedArray: Array[_] => sequence(sequenceArray(nestedArray:_*), lb)
+        case nestedArray: Array[_] => sequence(toSeq(nestedArray:_*), lb)
         case nestedSeq: Seq[_] => sequence(nestedSeq, lb)
         case string: String if string.trim.isEmpty =>
         case string: String if string.trim == "*" => return Nil
@@ -163,11 +163,7 @@ object Filter {
     case string => string
   }
 
-  private def sequenceArray[A](args: A*):Seq[A] = {
-    val lb = new ListBuffer[A]
-    for (arg <- args) lb += arg
-    lb.toSeq
-  }
+  private def toSeq[A](args: A*):Seq[A] = List.fromArray(args.asInstanceOf[Array[A]])
 }
 
 abstract class Filter {
