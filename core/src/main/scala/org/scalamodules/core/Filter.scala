@@ -23,9 +23,9 @@ import scala.collection.mutable.ListBuffer
  */
 object Filter {
 
-  def and(filters: Filter*) = compose("&", filters, false)
+  def and(filters: Filter*) = compose("&", toList(filters:_*), false)
 
-  def or(filters: Filter*) = compose("|", filters, false)
+  def or(filters: Filter*) = compose("|", toList(filters:_*), false)
 
   def not(filter: Filter) = compose("!", List(filter), true)
 
@@ -33,7 +33,7 @@ object Filter {
 
   def exists(attr: Any) = set(attr)
 
-  def set(attr: Any, value: Any*) = atom(attr, "=", toSeq(value:_*), true)
+  def set(attr: Any, value: Any*) = atom(attr, "=", toList(value:_*), true)
 
   def notSet(attr: Any):Filter = notSet(attr, null)
 
@@ -90,21 +90,21 @@ object Filter {
     case _ => set(tuple _1, tuple _2)
   }
 
-  private def compose(op: String, filters: Seq[Filter], unary: Boolean): Filter =
+  private def compose(op: String, filters: List[Filter], unary: Boolean): Filter =
     prune(op, filters filter(nonNull _), unary)
 
   private def nonNull(filter: Filter) = filter != null && filter != NilFilter
 
-  private def prune(op: String, seq: Seq[Filter], unary: Boolean) = seq match {
+  private def prune(op: String, list: List[Filter], unary: Boolean) = list match {
     case Nil => NilFilter
-    case Seq(filter) => if (unary) CompositeFilter(op, filter :: Nil) else filter
-    case _ => CompositeFilter(op, possiblyCollapsed(op, seq))
+    case Seq(filter) => if (unary) CompositeFilter(op, List(filter)) else filter
+    case _ => CompositeFilter(op, possiblyCollapsed(op, list))
   }
 
-  private def possiblyCollapsed(op: String, seq: Seq[Filter]) = {
-    val lb = new ListBuffer[Filter]
-    seq foreach(filter => if (filter != null) filter append(op, lb)) // Laugh all you want, o functional guru, then show me how.
-    lb toSeq
+  private def possiblyCollapsed(op: String, seq: List[Filter]) = {
+    var list = List[Filter]()
+    seq filter(_ != null) filter(_ != NilFilter) foreach(filter => list = filter.append(op, list))
+    list
   }
 
   private def atom(attr: Any, op: String, value: Seq[_]): Filter = atom(attr, op, value, false)
@@ -114,10 +114,10 @@ object Filter {
 
   private def arguments(value: Seq[_]) = valueString(sequence(value, new ListBuffer[Any]))
 
-  private def sequence(seq: Seq[_], lb: ListBuffer[Any]): List[Any] = {
-    for (s <- seq) {
+  private def sequence(list: Seq[_], lb: ListBuffer[Any]): List[Any] = {
+    for (s <- list) {
       s match {
-        case nestedArray: Array[_] => sequence(toSeq(nestedArray:_*), lb)
+        case nestedArray: Array[_] => sequence(toList(nestedArray:_*), lb)
         case nestedSeq: Seq[_] => sequence(nestedSeq, lb)
         case string: String if string.trim.isEmpty =>
         case string: String if string.trim == "*" => return Nil
@@ -163,7 +163,18 @@ object Filter {
     case string => string
   }
 
-  private def toSeq[A](args: A*):Seq[A] = List.fromArray(args.asInstanceOf[Array[A]])
+  /**
+   * Trying to distil all the ugliness out on the bottom here.
+   */
+  private def toList[A](args: A*):List[A] = {
+    if (args.isInstanceOf[Array[A]]) {
+      List.fromArray(args.asInstanceOf[Array[A]])
+    } else if (args.isInstanceOf[List[A]]) {
+      args.asInstanceOf[List[A]]
+    } else {
+      throw new RuntimeException("Unexpected varargs input: " + args); // http://lampsvn.epfl.ch/trac/scala/ticket/1360
+    }
+  }
 }
 
 abstract class Filter {
@@ -186,26 +197,29 @@ abstract class Filter {
 
   protected def writeTo(b: Bldr): Bldr = b
 
-  protected def append(compositeOp: String, lb: ListBuffer[Filter]):Unit = { }
-
-  protected def appendFilters(b: Bldr, filters: Seq[Filter]): Bldr = { filters foreach(_ writeTo(b)); b }
+  protected def append(compositeOp: String, list: List[Filter]):List[Filter] = list
 
   private def concat(seq: Seq[Filter]): Seq[Filter] = this :: List(seq:_*)
+
+  protected def appendFilters(b: Bldr, filters: List[Filter]): Bldr = {
+    filters foreach(_ writeTo(b))
+    b
+  }
 }
 
-case class CompositeFilter(composite: String, filters: Seq[Filter]) extends Filter {
+final case class CompositeFilter(composite: String, filters: List[Filter]) extends Filter {
+
+  override protected def append(compositeOp: String, list: List[Filter]) =
+    if (compositeOp == composite) list ++ filters else list + this
 
   protected override def writeTo(b: Bldr) = pars(b, appendSubfilters(_))
-
-  protected override def append(superComposite: String, lb: ListBuffer[Filter]) =
-    if (superComposite == composite) lb appendAll(filters) else lb append(this)
 
   private def appendSubfilters(b: Bldr): Bldr = appendFilters(b append(composite), filters)
 }
 
-case class PropertyFilter(attr: String, op: String, value: String) extends Filter {
+final case class PropertyFilter(attr: String, op: String, value: String) extends Filter {
 
-  protected override def writeTo(b: Bldr) = pars(b, _ append(attr) append(op) append(value))
+  override protected def append(compositeOp: String, list: List[Filter]):List[Filter] = list + this
 
-  protected override def append(compositeOp: String, lb: ListBuffer[Filter]) = lb append(this)
+  override protected def writeTo(b: Bldr) = pars(b, _ append(attr) append(op) append(value))
 }
