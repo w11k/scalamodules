@@ -120,7 +120,7 @@ object Filter {
         case nestedArray: Array[_] => sequence(toList(nestedArray:_*), lb)
         case nestedSeq: Seq[_] => sequence(nestedSeq, lb)
         case string: String if string.trim.isEmpty =>
-        case string: String if string.trim == "*" => return Nil
+        case string: String if string.trim == PRESENT => return Nil
         case None =>
         case null =>
         case Some(x) => lb += x
