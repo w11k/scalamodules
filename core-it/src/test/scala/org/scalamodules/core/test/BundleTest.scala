@@ -15,7 +15,7 @@
  */
 package org.scalamodules.core.test
 
-import Filter.{notSet, toFilterBuilder}
+import Filter.{notSet, attributeToPropertyFilterBuilder}
 import Preamble._
 
 import java.util.{Date, Dictionary}

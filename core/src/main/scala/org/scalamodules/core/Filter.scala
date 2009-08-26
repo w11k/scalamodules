@@ -76,18 +76,18 @@ object Filter {
     override def not = this
   }
 
-  implicit def toFilterBuilder(attr: String): PropertyFilterBuilder = PropertyFilterBuilder(attr)
+  implicit def attributeToPropertyFilterBuilder(attr: String): PropertyFilterBuilder = PropertyFilterBuilder(attr)
 
-  implicit def toFilter(objectClass: Class[_]) = set(OBJECT_CLASS, objectClass getName)
+  implicit def classToObjectClassFilter(objectClass: Class[_]) = Filter objectClass(objectClass)
 
-  implicit def toIsSet(attr: String): Filter = attr match {
+  implicit def attributeToIsSetFilter(attr: String): Filter = attr match {
     case null => NilFilter
-    case _ => set(attr)
+    case _ => Filter set(attr)
   }
 
-  implicit def tupleToSet(tuple: Tuple2[String,Any]) = tuple match {
+  implicit def twoTupleToSetFilter(tuple: Tuple2[String,Any]) = tuple match {
     case null => NilFilter
-    case _ => set(tuple _1, tuple _2)
+    case _ => Filter set(tuple _1, tuple _2)
   }
 
   private def compose(op: String, filters: List[Filter], unary: Boolean): Filter =
@@ -212,7 +212,7 @@ final case class CompositeFilter(composite: String, filters: List[Filter]) exten
   override protected def append(compositeOp: String, list: List[Filter]) =
     if (compositeOp == composite) list ++ filters else list + this
 
-  protected override def writeTo(b: Bldr) = pars(b, appendSubfilters(_))
+  protected override def writeTo(b: Bldr) = pars(b, appendSubfilters _)
 
   private def appendSubfilters(b: Bldr): Bldr = appendFilters(b append(composite), filters)
 }
