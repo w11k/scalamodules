@@ -43,7 +43,7 @@ class Activator extends BundleActivator {
     }
 
     // Get many filtered Greeting services once more using operator notation
-    ctx *> classOf[Greeting] % "(polite=true)" & { _.welcome } match {
+    ctx *> classOf[Greeting] % ("polite" -> "true") & { _.welcome } match {
       case Nil      => println(NoGreeting)
       case welcomes => welcomes foreach { println }
     }
