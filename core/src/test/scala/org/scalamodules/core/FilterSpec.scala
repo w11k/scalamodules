@@ -37,6 +37,24 @@ object FilterSpec extends Spec with ShouldMatchers {
     }
   }
 
+  describe("Literal filters") {
+    it("should return its input") {
+      literal("(foo=5)").asString should equal("(foo=5)")
+    }
+    it("should return its input verbatim") {
+      literal("zip-a-dee").asString should equal("zip-a-dee")
+    }
+    it("should combine with other filters") {
+      (literal("zip-a-dee") && ("foo" -> 5)).asString should equal("(&zip-a-dee(foo=5))")
+    }
+    it("should combine with other VALID filters") {
+      (literal("(bar=vips)") && ("foo" -> 5)).asString should equal("(&(bar=vips)(foo=5))")
+    }
+    it("should survive intact, even if collapsible - so as to be recognizable - principle of least surprise") {
+      (literal("(&(foo=1)(bar=2))") && ("foo" -> 5)).asString should equal("(&(&(foo=1)(bar=2))(foo=5))")
+    }
+  }
+
   describe("Textual representation") {
     it("should a simple equals filter") {
       set("foo", "wobble").asString should equal("(foo=wobble)")

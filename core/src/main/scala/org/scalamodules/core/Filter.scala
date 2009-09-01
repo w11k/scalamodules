@@ -49,6 +49,11 @@ object Filter {
 
   def approx(attr: Any, value: Any) = atom(attr, "~=", List(value))
 
+  def literal(filter: AnyRef) = toStr(filter) match {
+    case null => NilFilter
+    case str => LiteralFilter(str)
+  }
+
   private[Filter] case class PropertyFilterBuilder(attr: Any) {
     validString(attr, "attribute")
 
@@ -89,6 +94,8 @@ object Filter {
     case null => NilFilter
     case _ => Filter set(tuple _1, tuple _2)
   }
+
+  private def toStr(any: Any) = if (any == null) null else String valueOf(any) trim
 
   private def compose(op: String, filters: List[Filter], unary: Boolean) =
     prune(op, filters filter(nonNull _), unary)
@@ -148,7 +155,7 @@ object Filter {
     case _ => validNonNullString(obj, item)
   }
 
-  private def validNonNullString(obj: Any, item: Any) = String valueOf obj trim match {
+  private def validNonNullString(obj: Any, item: Any) = toStr(obj) match {
     case string if (string isEmpty) => throw new IllegalArgumentException("Expected non-empty " + item)
     case string => string
   }
@@ -159,7 +166,7 @@ object Filter {
     case seq => "[" + (seq mkString ",") + "]"
   }
 
-  private def validStringOrFallback(obj: Any) = String valueOf obj trim match {
+  private def validStringOrFallback(obj: Any) = toStr(obj) match {
     case string if (string isEmpty) => Filter.PRESENT
     case string => string
   }
@@ -208,6 +215,11 @@ abstract class Filter {
   }
 }
 
+trait AtomicFilter extends Filter {
+
+  override protected def append(compositeOp: String, list: List[Filter]):List[Filter] = list + this
+}
+
 final case class CompositeFilter(composite: String, filters: List[Filter]) extends Filter {
 
   override protected def append(compositeOp: String, list: List[Filter]) =
@@ -218,9 +230,12 @@ final case class CompositeFilter(composite: String, filters: List[Filter]) exten
   private def appendSubfilters(b: Bldr): Bldr = appendFilters(b append(composite), filters)
 }
 
-final case class PropertyFilter(attr: String, op: String, value: String) extends Filter {
-
-  override protected def append(compositeOp: String, list: List[Filter]):List[Filter] = list + this
+final case class PropertyFilter(attr: String, op: String, value: String) extends AtomicFilter {
 
   override protected def writeTo(b: Bldr) = pars(b, _ append(attr) append(op) append(value))
+}
+
+final case class LiteralFilter(literal: String) extends AtomicFilter {
+
+  override protected def writeTo(b: Bldr) = b append(literal)
 }
