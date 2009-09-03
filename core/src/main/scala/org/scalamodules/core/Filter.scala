@@ -23,6 +23,8 @@ import scala.collection.mutable.ListBuffer
  */
 object Filter {
 
+  val nil = NilFilter
+
   def and(filters: Filter*) = compose("&", toList(filters:_*), false)
 
   def or(filters: Filter*) = compose("|", toList(filters:_*), false)
@@ -76,11 +78,6 @@ object Filter {
     def ~==(value: Any) = Filter approx(attr, value)
   }
 
-  object NilFilter extends Filter {
-
-    override def not = this
-  }
-
   implicit def attributeToPropertyFilterBuilder(attr: String) = PropertyFilterBuilder(attr)
 
   implicit def classToObjectClassFilter(objectClass: Class[_]) = Filter objectClass(objectClass)
@@ -95,7 +92,10 @@ object Filter {
     case _ => Filter set(tuple _1, tuple _2)
   }
 
-  private def toStr(any: Any) = if (any == null) null else String valueOf(any) trim
+  private def toStr(any: Any) = any match {
+    case null => null
+    case _ => String valueOf(any) trim
+  }
 
   private def compose(op: String, filters: List[Filter], unary: Boolean) =
     prune(op, filters filter(nonNull _), unary)
@@ -215,9 +215,9 @@ abstract class Filter {
   }
 }
 
-trait AtomicFilter extends Filter {
+object NilFilter extends Filter {
 
-  override protected def append(compositeOp: String, list: List[Filter]):List[Filter] = list + this
+  override def not = this
 }
 
 final case class CompositeFilter(composite: String, filters: List[Filter]) extends Filter {
@@ -228,6 +228,11 @@ final case class CompositeFilter(composite: String, filters: List[Filter]) exten
   protected override def writeTo(b: Bldr) = pars(b, appendSubfilters _)
 
   private def appendSubfilters(b: Bldr): Bldr = appendFilters(b append(composite), filters)
+}
+
+trait AtomicFilter extends Filter {
+
+  override protected def append(compositeOp: String, list: List[Filter]):List[Filter] = this :: list
 }
 
 final case class PropertyFilter(attr: String, op: String, value: String) extends AtomicFilter {

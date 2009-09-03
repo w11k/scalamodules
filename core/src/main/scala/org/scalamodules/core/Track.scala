@@ -15,7 +15,6 @@
  */
 package org.scalamodules.core
 
-import Filter.NilFilter
 import Preamble.toRichServiceReference
 import Util.toOption
 
@@ -85,7 +84,7 @@ private class Track[I](ctx: BundleContext,
   private var tracker: ServiceTracker = _
 
   private def createFilter: OSGiFilter = ctx.createFilter(fullFilter asString)
-  
+
   private def fullFilter = Filter.objectClass(srvIntf) && (filter getOrElse NilFilter)
 }
 
