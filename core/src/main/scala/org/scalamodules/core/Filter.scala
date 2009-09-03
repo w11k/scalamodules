@@ -232,7 +232,7 @@ final case class CompositeFilter(composite: String, filters: List[Filter]) exten
 
 trait AtomicFilter extends Filter {
 
-  override protected def append(compositeOp: String, list: List[Filter]):List[Filter] = this :: list
+  override protected def append(compositeOp: String, list: List[Filter]):List[Filter] = list ::: List(this)
 }
 
 final case class PropertyFilter(attr: String, op: String, value: String) extends AtomicFilter {
