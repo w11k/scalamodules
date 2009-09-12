@@ -23,6 +23,8 @@ import scala.collection.mutable.ListBuffer
  */
 object Filter {
 
+  val nil = NilFilter
+
   def and(filters: Filter*) = compose("&", toList(filters:_*), false)
 
   def or(filters: Filter*) = compose("|", toList(filters:_*), false)
@@ -49,6 +51,11 @@ object Filter {
 
   def approx(attr: Any, value: Any) = atom(attr, "~=", List(value))
 
+  def literal(filter: AnyRef) = toStr(filter) match {
+    case null => NilFilter
+    case str => LiteralFilter(str)
+  }
+
   private[Filter] case class PropertyFilterBuilder(attr: Any) {
     validString(attr, "attribute")
 
@@ -71,16 +78,11 @@ object Filter {
     def ~==(value: Any) = Filter approx(attr, value)
   }
 
-  object NilFilter extends Filter {
-
-    override def not = this
-  }
-
-  implicit def attributeToPropertyFilterBuilder(attr: String): PropertyFilterBuilder = PropertyFilterBuilder(attr)
+  implicit def attributeToPropertyFilterBuilder(attr: String) = PropertyFilterBuilder(attr)
 
   implicit def classToObjectClassFilter(objectClass: Class[_]) = Filter objectClass(objectClass)
 
-  implicit def attributeToIsSetFilter(attr: String): Filter = attr match {
+  implicit def attributeToIsSetFilter(attr: String) = attr match {
     case null => NilFilter
     case _ => Filter set(attr)
   }
@@ -90,7 +92,12 @@ object Filter {
     case _ => Filter set(tuple _1, tuple _2)
   }
 
-  private def compose(op: String, filters: List[Filter], unary: Boolean): Filter =
+  private def toStr(any: Any) = any match {
+    case null => null
+    case _ => String valueOf(any) trim
+  }
+
+  private def compose(op: String, filters: List[Filter], unary: Boolean) =
     prune(op, filters filter(nonNull _), unary)
 
   private def nonNull(filter: Filter) = filter != null && filter != NilFilter
@@ -136,29 +143,30 @@ object Filter {
 
   private lazy val invalidAttributeChars = List("=", ">", "<", "~", "(", ")")
 
-  private def validAttr(attr: String): String = {
+  private def validAttr(attr: String) = {
     invalidAttributeChars foreach ((s: String) => if (attr contains s)
-      throw new IllegalArgumentException("Illegal character " + s + " in " + attr))
+      throw new IllegalArgumentException
+        ("Illegal character '" + s + "' found in attribute name '" + attr + "'"))
     attr
   }
 
-  private def validString(obj: Any, item: Any): String = obj match {
+  private def validString(obj: Any, item: Any) = obj match {
     case null => throw new NullPointerException("Expected non-null " + item)
     case _ => validNonNullString(obj, item)
   }
 
-  private def validNonNullString(obj: Any, item: Any): String = String valueOf obj trim match {
+  private def validNonNullString(obj: Any, item: Any) = toStr(obj) match {
     case string if (string isEmpty) => throw new IllegalArgumentException("Expected non-empty " + item)
     case string => string
   }
 
-  private def valueString(value: List[_]): String = value match {
+  private def valueString(value: List[_]) = value match {
     case Nil => PRESENT
     case head::Nil => validStringOrFallback(head)
     case seq => "[" + (seq mkString ",") + "]"
   }
 
-  private def validStringOrFallback(obj: Any): String = String valueOf obj trim match {
+  private def validStringOrFallback(obj: Any) = toStr(obj) match {
     case string if (string isEmpty) => Filter.PRESENT
     case string => string
   }
@@ -207,6 +215,11 @@ abstract class Filter {
   }
 }
 
+object NilFilter extends Filter {
+
+  override def not = this
+}
+
 final case class CompositeFilter(composite: String, filters: List[Filter]) extends Filter {
 
   override protected def append(compositeOp: String, list: List[Filter]) =
@@ -217,9 +230,17 @@ final case class CompositeFilter(composite: String, filters: List[Filter]) exten
   private def appendSubfilters(b: Bldr): Bldr = appendFilters(b append(composite), filters)
 }
 
-final case class PropertyFilter(attr: String, op: String, value: String) extends Filter {
+trait AtomicFilter extends Filter {
 
-  override protected def append(compositeOp: String, list: List[Filter]):List[Filter] = list + this
+  override protected def append(compositeOp: String, list: List[Filter]):List[Filter] = list ::: List(this)
+}
+
+final case class PropertyFilter(attr: String, op: String, value: String) extends AtomicFilter {
 
   override protected def writeTo(b: Bldr) = pars(b, _ append(attr) append(op) append(value))
+}
+
+final case class LiteralFilter(literal: String) extends AtomicFilter {
+
+  override protected def writeTo(b: Bldr) = b append(literal)
 }
