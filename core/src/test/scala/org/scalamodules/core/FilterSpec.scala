@@ -290,11 +290,14 @@ object FilterSpec extends Spec with ShouldMatchers {
     it("should clear away all the fluff and become a present filter") {
       set("foo", List(None), List(List("", "", List("*")), List(None, None)), "*", None, None, "") should equal(set("foo"))
     }
-    it("should clear away all the fluff and become a present filter, overriding any other dat") {
+    it("should clear away all the fluff and become a present filter, overriding any other data") {
       set("foo", List(None), List(List("", "", List("*")), List(None, None)), "*", None, None, "", "nevermindme") should equal(set("foo"))
     }
     it("should clear away all the fluff and find something") {
       set("foo", List(None), List(List("", "", List()), "6", List(None, None)), None, None, "") should equal(set("foo", 6))
+    }
+    it("should clear away all the fluff, ignore the 6 and reduce to a present filter") {
+      set("foo", List(None), List(List("", "", List()), "6", List(None, None)), None, List("*", None), None, "") should equal(set("foo"))
     }
   }
 }

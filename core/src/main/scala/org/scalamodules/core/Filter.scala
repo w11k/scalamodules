@@ -31,11 +31,11 @@ object Filter {
 
   def not(filter: Filter) = compose("!", List(filter), true)
 
-  def objectClass(value: Class[_]*) = atom(OBJECT_CLASS, "=", value map(_ getName), true)
+  def objectClass(value: Class[_]*) = atom(OBJECT_CLASS, "=", toList(value:_*) map(_ getName))
 
   def exists(attr: Any) = set(attr)
 
-  def set(attr: Any, value: Any*) = atom(attr, "=", toList(value:_*), true)
+  def set(attr: Any, value: Any*) = nullableAtom(attr, "=", toList(value:_*))
 
   def notSet(attr: Any):Filter = notSet(attr, null)
 
@@ -105,37 +105,32 @@ object Filter {
   private def prune(op: String, list: List[Filter], unary: Boolean) = list match {
     case Nil => NilFilter
     case Seq(filter) => if (unary) CompositeFilter(op, List(filter)) else filter
-    case _ => CompositeFilter(op, possiblyCollapsed(op, list))
+    case _ => CompositeFilter(op, collapsed(op, list))
   }
 
-  private def possiblyCollapsed(op: String, seq: List[Filter]) = {
-    var list = List[Filter]()
-    seq filter(_ != null) filter(_ != NilFilter) foreach(filter => list = filter.append(op, list))
-    list
-  }
+  private def collapsed(op: String, filters: List[Filter]) = filters filter(nonNull _) flatMap(_ sublist(op))
 
-  private def atom(attr: Any, op: String, value: Seq[_]): Filter = atom(attr, op, value, false)
+  private def atom(attr: Any, op: String, value: List[_]) = newAtom(attr, op, value, false)
 
-  private def atom(attr: Any, op: String, value: Seq[_], allowNull: Boolean): Filter =
+  private def nullableAtom(attr: Any, op: String, value: List[_]) = newAtom(attr, op, value, true)
+
+  private def newAtom(attr: Any, op: String, value: List[_], allowNull: Boolean): Filter =
     PropertyFilter(validAttr(validString(attr, "attribute")), op, arguments(value))
 
-  private def arguments(value: Seq[_]) = valueString(sequence(value, new ListBuffer[Any]))
+  private def arguments(value: List[_]) = valueString(sequence(value))
 
-  private def sequence(list: Seq[_], lb: ListBuffer[Any]): List[Any] = {
-    for (s <- list) {
-      s match {
-        case nestedArray: Array[_] => sequence(toList(nestedArray:_*), lb)
-        case nestedSeq: Seq[_] => sequence(nestedSeq, lb)
-        case string: String if string.trim.isEmpty =>
-        case string: String if string.trim == PRESENT => return Nil
-        case None =>
-        case null =>
-        case Some(x) => lb += x
-        case _ => lb += s
-      }
-    }
-    lb toList
+  private def subseq(s:Any): List[Any] = s match {
+    case null => Nil
+    case string: String if string.trim.isEmpty => Nil
+    case string: String if string.trim == PRESENT => List(PRESENT)
+    case nestedArray: Array[_] => sequence(toList(nestedArray:_*))
+    case nestedSeq: Seq[_] => sequence(nestedSeq toList)
+    case None => Nil
+    case Some(x) => List(x)
+    case _ => List(s)
   }
+
+  private def sequence(list: List[Any]): List[Any] = list flatMap (subseq _)
 
   private[core] lazy val PRESENT = "*"
 
@@ -160,12 +155,16 @@ object Filter {
     case string => string
   }
 
-  private def valueString(value: List[_]) = value match {
-    case Nil => PRESENT
-    case head::Nil => validStringOrFallback(head)
-    case seq => "[" + (seq mkString ",") + "]"
+  private def valueString(value: List[Any]) = {
+    val isPresent = (value: Any) => value != null && value.toString.trim == PRESENT
+    if (value == null || value == Nil || value.exists(isPresent)) 
+      PRESENT
+    else value match {
+      case head::Nil => validStringOrFallback(head)
+      case seq => "[" + (seq mkString ",") + "]"
+    }
   }
-
+	
   private def validStringOrFallback(obj: Any) = toStr(obj) match {
     case string if (string isEmpty) => Filter.PRESENT
     case string => string
@@ -205,7 +204,7 @@ abstract class Filter {
 
   protected def writeTo(b: Bldr): Bldr = b
 
-  protected def append(compositeOp: String, list: List[Filter]):List[Filter] = list
+  protected def sublist(compositeOp: String): List[Filter] = Nil
 
   private def concat(seq: Seq[Filter]): Seq[Filter] = this :: List(seq:_*)
 
@@ -217,13 +216,14 @@ abstract class Filter {
 
 object NilFilter extends Filter {
 
+  // Negated null filter is still a null filter
   override def not = this
 }
 
 final case class CompositeFilter(composite: String, filters: List[Filter]) extends Filter {
 
-  override protected def append(compositeOp: String, list: List[Filter]) =
-    if (compositeOp == composite) list ++ filters else list + this
+  override protected def sublist(compositeOp: String) =
+    if (compositeOp == composite) filters else List(this)
 
   protected override def writeTo(b: Bldr) = pars(b, appendSubfilters _)
 
@@ -232,7 +232,7 @@ final case class CompositeFilter(composite: String, filters: List[Filter]) exten
 
 trait AtomicFilter extends Filter {
 
-  override protected def append(compositeOp: String, list: List[Filter]):List[Filter] = list ::: List(this)
+  override protected def sublist(compositeOp: String):List[Filter] = List(this)
 }
 
 final case class PropertyFilter(attr: String, op: String, value: String) extends AtomicFilter {
