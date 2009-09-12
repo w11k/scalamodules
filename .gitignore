@@ -1,4 +1,12 @@
-target/
+.DS_Store
+.classpath
+.launch
+.manager
+.metadata
+.project
+.settings
+runner
+target
 scalamodules*.iml
 scalamodules*.ipr
 scalamodules*.iws
