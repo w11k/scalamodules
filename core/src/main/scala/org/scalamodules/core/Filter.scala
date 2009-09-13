@@ -16,7 +16,6 @@
 package org.scalamodules.core
 
 import scala.{StringBuilder => Bldr}
-import scala.collection.mutable.ListBuffer
 
 /**
  * Importing Filter._ will enable the factory methods
@@ -139,32 +138,29 @@ object Filter {
   private lazy val invalidAttributeChars = List("=", ">", "<", "~", "(", ")")
 
   private def validAttr(attr: String) = {
-    invalidAttributeChars foreach ((s: String) => if (attr contains s)
-      throw new IllegalArgumentException
-        ("Illegal character '" + s + "' found in attribute name '" + attr + "'"))
+    invalidAttributeChars foreach((s: String) =>
+            require(!(attr contains s), "Illegal character '" + s + "' found in attribute name '" + attr + "'"))
     attr
   }
 
-  private def validString(obj: Any, item: Any) = obj match {
-    case null => throw new NullPointerException("Expected non-null " + item)
-    case _ => validNonNullString(obj, item)
-  }
+  private def requireNonNull[T](t: T, msg: Any): T = if (t == null) throw new NullPointerException(msg.toString) else t
 
-  private def validNonNullString(obj: Any, item: Any) = toStr(obj) match {
-    case string if (string isEmpty) => throw new IllegalArgumentException("Expected non-empty " + item)
-    case string => string
+  private def validString(obj: Any, item: Any) = {
+    val str = toStr(requireNonNull(obj, "Expected non-null " + item))
+    require(!(str isEmpty), "Expected non-empty " + item)
+    str
   }
 
   private def valueString(value: List[Any]) = {
     val isPresent = (value: Any) => value != null && value.toString.trim == PRESENT
-    if (value == null || value == Nil || value.exists(isPresent)) 
+    if (value == null || value == Nil || value.exists(isPresent))
       PRESENT
     else value match {
       case head::Nil => validStringOrFallback(head)
       case seq => "[" + (seq mkString ",") + "]"
     }
   }
-	
+
   private def validStringOrFallback(obj: Any) = toStr(obj) match {
     case string if (string isEmpty) => Filter.PRESENT
     case string => string
@@ -179,7 +175,7 @@ object Filter {
     } else if (args.isInstanceOf[List[A]]) {
       args.asInstanceOf[List[A]]
     } else {
-      throw new RuntimeException("Unexpected varargs input: " + args); // http://lampsvn.epfl.ch/trac/scala/ticket/1360
+      error("Unexpected varargs input: " + args); // http://lampsvn.epfl.ch/trac/scala/ticket/1360
     }
   }
 }
