@@ -27,7 +27,7 @@
     <module>services</module>
     <module>services-it</module>
     <module>demo</module>
-    <!--module>assembly</module-->
+    <module>assembly</module>
   </modules>
 
   <properties>
