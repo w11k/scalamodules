@@ -9,9 +9,9 @@
     <version>2.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.scalamodules</groupId>
   <artifactId>scalamodules-demo</artifactId>
   <name>ScalaModules Demo</name>
+  <description>Demo for ScalaModules.</description>
   <packaging>pom</packaging>
 
   <modules>
