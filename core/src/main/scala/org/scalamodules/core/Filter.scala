@@ -138,12 +138,14 @@ object Filter {
   private lazy val invalidAttributeChars = List("=", ">", "<", "~", "(", ")")
 
   private def validAttr(attr: String) = {
-    invalidAttributeChars foreach((s: String) =>
-            require(!(attr contains s), "Illegal character '" + s + "' found in attribute name '" + attr + "'"))
+    invalidAttributeChars foreach((invalid: String) =>
+            require(!(attr contains invalid),
+              "Illegal character '" + invalid + "' found in attribute name '" + attr + "'"))
     attr
   }
 
-  private def requireNonNull[T](t: T, msg: Any): T = if (t == null) throw new NullPointerException(msg.toString) else t
+  private def requireNonNull[T](t: T, msg: Any): T =
+    if (t == null) throw new NullPointerException(msg.toString) else t
 
   private def validString(obj: Any, item: Any) = {
     val str = toStr(requireNonNull(obj, "Expected non-null " + item))
