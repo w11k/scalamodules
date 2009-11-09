@@ -5,9 +5,9 @@
 
   <groupId>org.scalamodules</groupId>
   <artifactId>scalamodules</artifactId>
+  <version>2.0-SNAPSHOT</version>
   <name>ScalaModules</name>
   <description>Root POM for ScalaModules.</description>
-  <version>2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <organization>
@@ -31,10 +31,10 @@
   </modules>
 
   <properties>
-    <scala.version>2.7.5</scala.version>
+    <scala.version>2.7.7</scala.version>
     <scalatest.version>0.9.5</scalatest.version>
     <osgi.version>4.1.0</osgi.version>
-    <pax-exam.version>1.0.0</pax-exam.version>
+    <pax-exam.version>1.2.0</pax-exam.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -114,7 +114,7 @@
       <plugin>
         <groupId>org.scala-tools</groupId>
         <artifactId>maven-scala-plugin</artifactId>
-        <version>2.11</version>
+        <version>2.12.2</version>
         <executions>
           <execution>
             <goals>
@@ -188,7 +188,7 @@
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
-          <version>2.0.0</version>
+          <version>2.0.1</version>
           <extensions>true</extensions>
           <configuration>
             <instructions>
@@ -243,21 +243,28 @@
 
   <repositories>
     <repository>
-      <id>scala-tools-releases</id>
+      <id>scala-tools.org</id>
       <url>http://scala-tools.org/repo-releases</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
     </repository>
     <repository>
-      <id>opsj4-releases</id>
+      <id>scala-tools.org.snapshots</id>
+      <url>http://scala-tools.org/repo-snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>opsj4</id>
       <url>http://repository.ops4j.org/maven2</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
     </repository>
     <repository>
-      <id>opsj4-snapshots</id>
+      <id>opsj4.snapshots</id>
       <url>http://repository.ops4j.org/mvn-snapshots</url>
       <releases>
         <enabled>false</enabled>
@@ -265,31 +272,36 @@
     </repository>
   </repositories>
 
-  <pluginRepositories>
+  <!--pluginRepositories>
     <pluginRepository>
-      <id>opsj4-releases</id>
+      <id>opsj4</id>
       <url>http://repository.ops4j.org/maven2</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
     </pluginRepository>
     <pluginRepository>
-      <id>opsj4-snapshots</id>
+      <id>opsj4.snapshots</id>
       <url>http://repository.ops4j.org/mvn-snapshots</url>
       <releases>
         <enabled>false</enabled>
       </releases>
     </pluginRepository>
-  </pluginRepositories>
+  </pluginRepositories-->
 
   <profiles>
     <profile>
       <id>scala-tools.org</id>
       <distributionManagement>
         <repository>
-          <id>scala-tools.org</id>
+          <id>nexus.scala-tools.org</id>
           <url>http://nexus.scala-tools.org/content/repositories/releases</url>
         </repository>
+        <snapshotRepository>
+          <id>nexus.scala-tools.org</id>
+          <url>http://nexus.scala-tools.org/content/repositories/snapshots</url>
+          <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
       </distributionManagement>
     </profile>
   </profiles>
