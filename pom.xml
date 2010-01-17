@@ -5,7 +5,7 @@
 
   <groupId>org.scalamodules</groupId>
   <artifactId>scalamodules</artifactId>
-  <version>2.0-SNAPSHOT</version>
+  <version>1.5</version>
   <name>ScalaModules</name>
   <description>Root POM for ScalaModules.</description>
   <packaging>pom</packaging>
