@@ -1,0 +1,5 @@
+import org.eclipse.scalamodules.core._
+import org.apache.felix.framework._
+val felix = new Felix(null)
+felix.start()
+val context = felix.getBundleContext

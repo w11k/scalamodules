@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright (c) 2009-2010 WeigleWilczek and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+-->
+
+<!--
+########################################################################################################################
+Integration tests for ScalaModules Core
+########################################################################################################################
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <!--
+  ######################################################################################################################
+  Basics
+  ######################################################################################################################
+  -->
+
+  <parent>
+    <groupId>org.eclipse.scalamodules</groupId>
+    <artifactId>scalamodules-root</artifactId>
+    <version>2.0-SNAPSHOT</version>
+    <relativePath>../../../resources/scalamodules-root/pom.xml</relativePath>
+  </parent>
+  <artifactId>scalamodules-core-it</artifactId>
+  <packaging>jar</packaging>
+
+  <!--
+  ######################################################################################################################
+  More project information
+  ######################################################################################################################
+  -->
+
+  <name>Integration tests for ScalaModules Core</name>
+
+  <!--
+  ######################################################################################################################
+  Dependencies
+  ######################################################################################################################
+  -->
+
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.scalamodules</groupId>
+      <artifactId>scalamodules-core</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.scalamodules</groupId>
+      <artifactId>scalamodules-scala-library</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.scalatest</groupId>
+      <artifactId>scalatest</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-container-default</artifactId>
+    </dependency>
+    <!-- Just for IntelliJ! Overwriting scope in order to avoid provisioning! -->
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-compiler</artifactId>
+      <version>${scala.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <!--
+  ######################################################################################################################
+  Build
+  ######################################################################################################################
+  -->
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.google.code.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>maven-paxexam-plugin</artifactId>
+        <configuration>
+          <options>
+            <autoWrap>true</autoWrap>
+          </options>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.scala-tools</groupId>
+        <artifactId>maven-scala-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
