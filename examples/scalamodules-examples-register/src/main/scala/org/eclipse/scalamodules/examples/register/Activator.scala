@@ -4,6 +4,11 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Heiko Seeberger   - initial API and implementation
+ *   Roman Roelofsen   - initial API and implementation
+ *   Kjetil Valstadsve - initial API and implementation
  */
 package org.eclipse.scalamodules
 package examples
