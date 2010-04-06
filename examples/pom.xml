@@ -53,6 +53,7 @@ Aggregator for ScalaModules Examples
     <module>scalamodules-examples-api</module>
     <module>scalamodules-examples-register</module>
     <module>scalamodules-examples-find</module>
+    <module>scalamodules-examples-watch</module>
   </modules>
 
 </project>
