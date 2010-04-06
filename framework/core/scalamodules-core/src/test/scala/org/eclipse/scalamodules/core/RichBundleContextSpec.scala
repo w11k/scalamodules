@@ -156,9 +156,27 @@ class RichBundleContextSpec extends WordSpec with ShouldMatchers with MockitoSug
     }
 
     "the given service interface is not-null" should {
+      "return a not-null ServicesFinder with the correct interface" in {
+        val servicesFinder = new RichBundleContext(mock[BundleContext]).findServices(classOf[TestInterface1])
+        servicesFinder should not be (null)
+      }
+    }
+  }
+
+  "Calling RichBundleContext.watchService" when {
+
+    "the given service interface is null" should {
+      "throw an IllegalArgumentException" in {
+        evaluating {
+          new RichBundleContext(mock[BundleContext]).watchServices(null.asInstanceOf[Class[TestInterface1]])
+        } should produce [IllegalArgumentException]
+      }
+    }
+
+    "the given service interface is not-null" should {
       "return a not-null ServiceFinder with the correct interface" in {
-        val serviceFinder = new RichBundleContext(mock[BundleContext]).findServices(classOf[TestInterface1])
-        serviceFinder should not be (null)
+        val servicesWatcher = new RichBundleContext(mock[BundleContext]).watchServices(classOf[TestInterface1])
+        servicesWatcher should not be (null)
       }
     }
   }

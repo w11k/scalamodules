@@ -22,8 +22,8 @@ class Activator extends BundleActivator {
     }
     // Find all services and call these also making use of its properties
     context findServices withInterface[Greeting] andApply {
-      (greeting, properties) => "%s: %s".format(properties get "style" getOrElse "UNKNOWN", greeting.welcome) }
-    match {
+      (greeting, properties) => "%s: %s".format(properties get "style" getOrElse "UNKNOWN", greeting.welcome)
+    } match {
       case Nil      => println("No Greeting service available!")
       case welcomes => welcomes foreach println
     }

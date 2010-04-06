@@ -59,6 +59,10 @@ ScalaModules Core
       <artifactId>org.osgi.core</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.scalatest</groupId>
       <artifactId>scalatest</artifactId>
     </dependency>

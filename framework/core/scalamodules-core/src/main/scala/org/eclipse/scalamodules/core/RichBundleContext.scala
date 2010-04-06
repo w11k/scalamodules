@@ -54,4 +54,9 @@ private[scalamodules] class RichBundleContext(context: BundleContext) {
     require(interface != null, "The service interface must not be null!")
     new ServicesFinder(interface)(context)
   }
+
+  def watchServices[I <: AnyRef](interface: Class[I]): ServicesWatcher[I] = {
+    require(interface != null, "The service interface must not be null!")
+    new ServicesWatcher(interface)(context)
+  }
 }

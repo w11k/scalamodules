@@ -10,7 +10,7 @@
 
 <!--
 ########################################################################################################################
-ScalaModules Examples - Register Services
+ScalaModules Examples - Watch Services
 ########################################################################################################################
 -->
 
@@ -32,7 +32,7 @@ ScalaModules Examples - Register Services
     <version>2.0-SNAPSHOT</version>
     <relativePath>../../resources/scalamodules-root/pom.xml</relativePath>
   </parent>
-  <artifactId>scalamodules-examples-register</artifactId>
+  <artifactId>scalamodules-examples-watch</artifactId>
 
   <!--
   ######################################################################################################################
@@ -40,7 +40,7 @@ ScalaModules Examples - Register Services
   ######################################################################################################################
   -->
 
-  <name>ScalaModules Examples - Register Services</name>
+  <name>ScalaModules Examples - Watch Services</name>
 
   <!--
   ######################################################################################################################
@@ -88,8 +88,8 @@ ScalaModules Examples - Register Services
         <artifactId>maven-bundle-plugin</artifactId>
         <configuration>
           <instructions>
-            <Private-Package>org.eclipse.scalamodules.examples.register</Private-Package>
-            <Bundle-Activator>org.eclipse.scalamodules.examples.register.Activator</Bundle-Activator>
+            <Private-Package>org.eclipse.scalamodules.examples.watch</Private-Package>
+            <Bundle-Activator>org.eclipse.scalamodules.examples.watch.Activator</Bundle-Activator>
           </instructions>
         </configuration>
       </plugin>

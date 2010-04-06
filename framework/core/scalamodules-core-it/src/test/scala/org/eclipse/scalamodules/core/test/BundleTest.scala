@@ -14,6 +14,7 @@ import org.ops4j.pax.exam.Inject
 import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner
 import org.osgi.framework.BundleContext
 import org.scalatest.matchers.ShouldMatchers
+import scala.collection.mutable.Map
 
 @org.junit.runner.RunWith(classOf[MavenConfiguredJUnit4TestRunner])
 class BundleTest extends ShouldMatchers {
@@ -22,25 +23,53 @@ class BundleTest extends ShouldMatchers {
   def test() {
     val Service1 = "service1"
     val Service2 = "service2"
-    val Name = "name"
+    val services = Map[String, String]()
+
+    context watchServices withInterface[ServiceInterface] andHandle {
+      case AddingService(service, properties)   => services += (service.name -> nameProperty(properties))
+      case ServiceModified(service, properties) => services += (service.name -> nameProperty(properties))
+      case ServiceRemoved(service, properties)  => services -= service.name
+    }
 
     context findService withInterface[ServiceInterface] andApply { s => s } should be (None)
 
-    context createService (ServiceImplementation(Service1), Name -> Service1)
+    val service1 = ServiceImplementation(Service1)
+    val service1Registration = context.createService(service1, Name -> Service1)
     context findService withInterface[ServiceInterface] andApply { _.name } should be (Some(Service1))
+    services should have size (1)
+    services should contain key (Service1)
+    services should contain value (Service1)
 
-    context createService (ServiceImplementation(Service2), Name -> Service2)
+    val service2 = ServiceImplementation(Service2)
+    val service2Registration = context.createService(service2, Name -> Service2)
     val result = context findServices withInterface[ServiceInterface] andApply {
-      (service, properties) => service.name + (properties get Name getOrElse "")
+      (service, properties) => service.name + nameProperty(properties)
     }
-
     result should have size (2)
     result should contain (Service1 + Service1)
     result should contain (Service2 + Service2)
+    services should have size (2)
+    services should contain key (Service1)
+    services should contain value (Service1)
+    services should contain key (Service2)
+    services should contain value (Service2)
+
+    service2Registration.unregister()
+    services should have size (1)
+    services should contain key (Service1)
+
+    service1Registration setProperties Map(Name -> "CHANGED")
+    services should have size (1)
+    services should contain key (Service1)
+    services should contain value ("CHANGED")
   }
+
+  private val Name = "name"
 
   @Inject
   private var context: BundleContext = _
+
+  private def nameProperty(properties: Properties) = properties get Name getOrElse "" toString
 
   private trait ServiceInterface {
     def name: String
