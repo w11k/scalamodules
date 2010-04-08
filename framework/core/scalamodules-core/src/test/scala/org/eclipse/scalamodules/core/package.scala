@@ -14,22 +14,19 @@ package org.eclipse.scalamodules
 package core
 
 import java.util.Dictionary
-import org.mockito.Mockito._
 import scala.collection.Map
-import org.scalatest.WordSpec
-import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.mock.MockitoSugar
+import org.specs._
+import org.specs.mock.Mockito
 import scala.collection.immutable.{ Map => IMap }
 import org.osgi.framework.{ BundleContext, ServiceReference }
 
-@org.junit.runner.RunWith(classOf[JUnitRunner])
-class coreSpec extends WordSpec with ShouldMatchers with MockitoSugar {
+class coreSpec extends SpecificationWithJUnit with Mockito {
 
   "A BundleContext" should {
     "be converted to a RichBundleContext implicitly" in {
       val context = mock[BundleContext]
       val richBundleContext: RichBundleContext = context
+      richBundleContext mustNotBe null // A Matcher must be executed, else the example is regarded pending!
     }
   }
 
@@ -37,123 +34,88 @@ class coreSpec extends WordSpec with ShouldMatchers with MockitoSugar {
     "be converted to a RichServiceReference implicitly" in {
       val serviceReference = mock[ServiceReference]
       val richServiceReference: RichServiceReference = serviceReference
+      richServiceReference mustNotBe null // A Matcher must be executed, else the example is regarded pending!
     }
   }
 
-  "A Pair" when {
-
-    "null" should {
-      "be converted to a null Map implicitly" in {
-        val tuple2: (String, String) = null
-        val map: Map[String, String] = tuple2
-        map should be (null)
-      }
+  "A Pair" should {
+    "be converted to a null Map implicitly when null" in {
+      val tuple2: (String, String) = null
+      val map: Map[String, String] = tuple2
+      map mustBe null
     }
-
-    "not-null" should {
-      "be converted to Some implicitly" in {
-        val tuple2 = "Scala" -> "Modules"
-        val map: Map[String, String] = tuple2
-        map should have size (1)
-        map should contain key ("Scala")
-        map should contain value ("Modules")
-      }
+    "be converted to Some implicitly when not-null" in {
+      val tuple2 = "Scala" -> "Modules"
+      val map: Map[String, String] = tuple2
+      map must haveSize(1)
+      map must havePair("Scala" -> "Modules")
     }
   }
 
-  "Calling interface" when {
-    "the type is given explicitly" should {
-      "return the correct type" in {
-        interface[String] should be (Some(classOf[String]))
-      }
+  "Calling interface with a given type" should {
+    "return Some containing a class of that type" in {
+      interface[String] mustEqual Some(classOf[String])
     }
   }
 
-  "Calling withInterface" when {
-    "the type is given explicitly" should {
-      "return the correct type" in {
-        withInterface[String] should be (classOf[String])
-      }
+  "Calling withInterface with a given type" should {
+    "return a class of that type" in {
+      withInterface[String] mustEqual classOf[String]
     }
   }
 
-  "Calling scalaMapToJavaDictionary" when {
+  "Calling scalaMapToJavaDictionary" should {
     val emptyScalaMap = IMap[Any, Any]()
-    val notEmptyScalaMap = IMap("a" -> "1")
-
-    "the given Scala Map is null" should {
-      "return null" in {
-        val javaDictionary: Dictionary[Any, Any] = scalaMapToJavaDictionary(null)
-        javaDictionary should be (null)
-      }
+    "return null given null" in {
+      val javaDictionary: Dictionary[Any, Any] = scalaMapToJavaDictionary(null)
+      javaDictionary mustBe null
     }
-
-    "the given Scala map is not-null and empty" should {
-      "return a not-null and empty Java Dictionary" in {
-        val javaDictionary: Dictionary[Any, Any] = scalaMapToJavaDictionary(emptyScalaMap)
-        javaDictionary should not be (null)
-        javaDictionary.size should be (0)
-        javaDictionary.isEmpty should be (true)
-        javaDictionary.keys.hasMoreElements should be (false)
-        javaDictionary.elements.hasMoreElements should be (false)
-        javaDictionary get "" should equal (null)
-        evaluating { javaDictionary.put("", "") } should produce [UnsupportedOperationException]
-        evaluating { javaDictionary remove "" } should produce [UnsupportedOperationException]
-      }
+    "return an empty and immutable Java Dictionary given an empty Scala Map" in {
+      val javaDictionary: Dictionary[Any, Any] = scalaMapToJavaDictionary(emptyScalaMap)
+      javaDictionary mustNotBe null
+      javaDictionary.size mustEqual 0
+      javaDictionary.isEmpty mustBe true
+      javaDictionary.keys.hasMoreElements mustBe false
+      javaDictionary.elements.hasMoreElements mustBe false
+      javaDictionary get "" mustBe null
+      javaDictionary.put("", "") must throwA[UnsupportedOperationException]
+      javaDictionary remove "" must throwA[UnsupportedOperationException]
     }
-
-    "the given Scala map is not-null and not-empty" should {
-      "return a not-null and not-empty Java Dictionary" in {
-        val javaDictionary = scalaMapToJavaDictionary(notEmptyScalaMap)
-        javaDictionary should not be (null)
-        javaDictionary get "a" should not equal (null)
-      }
+    "return an appropriate and immutable Java Dictionary given a non-empty Scala Map" in {
+      val notEmptyScalaMap = IMap("a" -> "1")
+      val javaDictionary = scalaMapToJavaDictionary(notEmptyScalaMap)
+      javaDictionary mustNotBe null
+      javaDictionary.size mustEqual 1
+      javaDictionary.isEmpty mustBe false
+      javaDictionary.keys.hasMoreElements mustBe true
+      javaDictionary.elements.hasMoreElements mustBe true
+      javaDictionary get "a" mustBe "1"
+      javaDictionary.put("", "") must throwA[UnsupportedOperationException]
+      javaDictionary remove "" must throwA[UnsupportedOperationException]
     }
   }
 
-  "Calling invokeService" when {
-
-    "the given BundleContext is null" should {
-      "throw an IllegalArgumentException" in {
-        evaluating {
-          invokeService(mock[ServiceReference], { s: String => "" })(null)
-        } should produce [IllegalArgumentException]
-      }
+  "Calling invokeService" should {
+    val context = mock[BundleContext]
+    val serviceReference = mock[ServiceReference]
+    "throw an IllegalArgumentException given a null BundleContext" in {
+      invokeService(serviceReference, { s: String => "" })(null) must throwA[IllegalArgumentException]
     }
-
-    "the given ServiceReference is null" should {
-      "throw an IllegalArgumentException" in {
-        evaluating {
-          invokeService(null, { s: String => "" })(mock[BundleContext])
-        } should produce [IllegalArgumentException]
-      }
+    "throw an IllegalArgumentException given a null ServiceReference" in {
+      invokeService(null, { s: String => "" })(context) must throwA[IllegalArgumentException]
     }
-
-    "the given function is null" should {
-      "throw an IllegalArgumentException" in {
-        evaluating {
-          invokeService(mock[ServiceReference], null)(mock[BundleContext])
-        } should produce [IllegalArgumentException]
-      }
+    "throw an IllegalArgumentException given a null ServiceReference" in {
+      invokeService(serviceReference, null)(context) must throwA[IllegalArgumentException]
     }
-
-    "there is no service available" should {
-      "result in appropriate calls to BundleContext and return None" in {
-        val context = mock[BundleContext]
-        val serviceReference = mock[ServiceReference]
-        when(context.getService(serviceReference)).thenReturn(null, null)  // TODO Can we get rid of this double arg?
-        invokeService(serviceReference, { s: String => "" })(context) should be (None)
-      }
+    "result in appropriate calls to BundleContext and return None" in {
+      context.getService(serviceReference) returns null
+      invokeService(serviceReference, { s: String => "" })(context) mustBe None
+      context.ungetService(serviceReference) wasnt called
     }
-
-    "there is a service available" should {
-      "result in appropriate calls to BundleContext and return None" in {
-        val context = mock[BundleContext]
-        val serviceReference = mock[ServiceReference]
-        when(context.getService(serviceReference)).thenReturn("Scala", "Scala")  // TODO Can we get rid of this double arg?
-        invokeService(serviceReference, { s: String => s + "Modules" })(context) should be (Some("ScalaModules"))
-        verify(context).ungetService(serviceReference)
-      }
+    "result in appropriate calls to BundleContext and return Some" in {
+      context.getService(serviceReference) returns "Scala"
+      invokeService(serviceReference, { s: String => s + "Modules" })(context) mustEqual Some("ScalaModules")
+      context.ungetService(serviceReference) was called
     }
   }
 }
