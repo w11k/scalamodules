@@ -110,12 +110,12 @@ class coreSpec extends SpecificationWithJUnit with Mockito {
     "result in appropriate calls to BundleContext and return None" in {
       context.getService(serviceReference) returns null
       invokeService(serviceReference, { s: String => "" })(context) mustBe None
-      context.ungetService(serviceReference) wasnt called
+      there was one(context).ungetService(serviceReference)
     }
     "result in appropriate calls to BundleContext and return Some" in {
       context.getService(serviceReference) returns "Scala"
       invokeService(serviceReference, { s: String => s + "Modules" })(context) mustEqual Some("ScalaModules")
-      context.ungetService(serviceReference) was called
+      there was one(context).ungetService(serviceReference)
     }
   }
 }
