@@ -1,10 +1,23 @@
+/**
+ * Copyright (c) 2009-2010 WeigleWilczek and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Heiko Seeberger   - initial API and implementation
+ *   Roman Roelofsen   - initial API and implementation
+ *   Kjetil Valstadsve - initial API and implementation
+ */
 package org.eclipse.scalamodules
 package core
 
 private[scalamodules] object Filter {
   implicit def filterComponentToFilter(component: FilterComponent) = Filter(component)
 }
-private[scalamodules] case class Filter(component: FilterComponent) {
+// TODO Remove after testing!
+/*private[scalamodules]*/ case class Filter(component: FilterComponent) {
   override def toString = "(%s)" format component
 }
 
@@ -45,14 +58,14 @@ private[scalamodules] case object LessEqual extends FilterType {
 }
 
 private[scalamodules] class AndBuilder(component: FilterComponent) {
-  def ^&^(nextComponent: FilterComponent) = and(nextComponent)
+  def &&(nextComponent: FilterComponent) = and(nextComponent)
   def and(nextComponent: FilterComponent) = component match {
     case And(filters) => And(filters :+ Filter(nextComponent))
     case _            => And(Filter(component) :: Filter(nextComponent) :: Nil)
   }
 }
 private[scalamodules] class OrBuilder(component: FilterComponent) {
-  def ^|^(nextComponent: FilterComponent) = or(nextComponent)
+  def ||(nextComponent: FilterComponent) = or(nextComponent)
   def or(nextComponent: FilterComponent) = component match {
     case Or(filters) => Or(filters :+ Filter(nextComponent))
     case _           => Or(Filter(component) :: Filter(nextComponent) :: Nil)
@@ -65,12 +78,12 @@ private[scalamodules] class NotBuilder(component: FilterComponent) {
 private[scalamodules] class SimpleOpBuilder(attr: String) {
   def ===(value: String) = equal(value)
   def equal(value: String) = SimpleOp(attr, Equal, value.toString)
-  def ~=(value: String) = approx(value)
+  def ~==(value: String) = approx(value)
   def approx(value: String) = SimpleOp(attr, Approx, value.toString)
-  def >=(value: String) = greaterEqual(value)
+  def >==(value: String) = greaterEqual(value)
   def ge(value: String) = greaterEqual(value)
   def greaterEqual(value: String) = SimpleOp(attr, GreaterEqual, value.toString)
-  def <=(value: String) = lessEqual(value)
+  def <==(value: String) = lessEqual(value)
   def le(value: String) = lessEqual(value)
   def lessEqual(value: String) = SimpleOp(attr, LessEqual, value.toString)
 }

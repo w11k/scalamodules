@@ -22,20 +22,22 @@ import scala.collection.JavaConversions._
  */
 package object core {
 
-  /** Implicitly converts a BundleContext to a RichBundleContext. Opens the door to the ScalaModules DSL. */
+  /** Implicitly converts a BundleContext into a RichBundleContext. Opens the door to the ScalaModules DSL. */
   implicit def toRichBundleContext(context: BundleContext) = new RichBundleContext(context)
 
-  /** Implicitly converts a ServiceReference to a RichServiceReference. */
+  /** Implicitly converts a ServiceReference into a RichServiceReference. */
   implicit def toRichServiceReference(serviceReference: ServiceReference) = new RichServiceReference(serviceReference)
 
   /** Implicitly converts a Pair into a Map in order to allow for easy definition of single entry service properties. */
   implicit def pairToMap[A, B](pair: (A, B)) = if (pair == null) null else Map(pair)
 
+  /** Returns converts the given string into a builder for a "simple operation" filter component. */
   implicit def stringToSimpleOpBuilder(attr: String) = new SimpleOpBuilder(attr)
 
+  /** Returns converts the given string into a builder for a "present" filter component. */
   implicit def stringToPresentBuilder(attr: String) = new PresentBuilder(attr)
 
-  /** Returns the given or inferred type wrapped in a Some. */
+  /** Returns the given or inferred type wrapped into a Some. */
   def interface[I](implicit manifest: Manifest[I]) = Some(manifest.erasure.asInstanceOf[Class[I]])
 
   /** Returns the given or inferred type. */
