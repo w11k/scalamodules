@@ -16,12 +16,13 @@ package core
 import org.osgi.framework.ServiceReference
 import scala.collection.immutable.{Map => IMap}
 
-private[scalamodules] class RichServiceReference(serviceReference: ServiceReference) {
+/**
+ * Pimped ServiceReference that eases using service properties.
+ */
+class RichServiceReference(serviceReference: ServiceReference) {
   require(serviceReference != null, "The ServiceReference must not be null!")
 
-  /**
-   * Return the service properties as a Scala Map.
-   */
+  /** Return the service properties as a Scala Map. */
   lazy val properties: Properties = IMap(fromServiceReference(serviceReference): _*)
 
   private def fromServiceReference(serviceReference: ServiceReference): Array[(String, Any)] = {
