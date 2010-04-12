@@ -47,17 +47,22 @@ class BundleTest extends ShouldMatchers {
 
     val service2 = ServiceImplementation(Service2)
     val service2Registration = context.createService(service2, Name -> Service2)
-    val result = context findServices withInterface[ServiceInterface] andApply {
+    val names = context findServices withInterface[ServiceInterface] andApply {
       (service, properties) => service.name + nameProperty(properties)
     }
-    result should have size (2)
-    result should contain (Service1 + Service1)
-    result should contain (Service2 + Service2)
+    names should have size (2)
+    names should contain (Service1 + Service1)
+    names should contain (Service2 + Service2)
     services should have size (2)
     services should contain key (Service1)
     services should contain value (Service1)
     services should contain key (Service2)
     services should contain value (Service2)
+
+    val dummies = context findServices withInterface[ServiceInterface] withFilter "name" === "service1" andApply {
+      (_, _) => "dummy"
+    }
+    dummies should have size (1)
 
     service2Registration.unregister()
     services should have size (1)

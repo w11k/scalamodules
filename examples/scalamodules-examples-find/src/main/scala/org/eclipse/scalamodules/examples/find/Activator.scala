@@ -20,14 +20,24 @@ import org.osgi.framework.{ BundleActivator, BundleContext }
 class Activator extends BundleActivator {
 
   override def start(context: BundleContext) {
-    // Find a service and call it
+
+    println("Find a Greeting service and print the result of calling welcome:")
     context findService withInterface[Greeting] andApply { _.welcome } match {
       case None          => println("No Greeting service available!")
       case Some(welcome) => println(welcome)
     }
-    // Find all services and call these also making use of its properties
+
+    println("""Find all Greeting services and print their "style" property plus the result of calling welcome:""")
     context findServices withInterface[Greeting] andApply {
       (greeting, properties) => "%s: %s".format(properties get "style" getOrElse "UNKNOWN", greeting.welcome)
+    } match {
+      case Nil      => println("No Greeting service available!")
+      case welcomes => welcomes foreach println
+    }
+
+    println("""Find all Greeting services matching the filter "style".present and print their "style" property plus the result of calling welcome:""")
+    context findServices withInterface[Greeting] withFilter "style".present andApply {
+      (greeting, properties) => "%s: %s".format(properties("style"), greeting.welcome)
     } match {
       case Nil      => println("No Greeting service available!")
       case welcomes => welcomes foreach println
