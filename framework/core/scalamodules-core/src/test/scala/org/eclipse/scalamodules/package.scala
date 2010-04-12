@@ -11,7 +11,6 @@
  *   Kjetil Valstadsve - initial API and implementation
  */
 package org.eclipse.scalamodules
-package core
 
 import java.util.Dictionary
 import scala.collection.Map
@@ -20,7 +19,7 @@ import org.specs.mock.Mockito
 import scala.collection.immutable.{ Map => IMap }
 import org.osgi.framework.{ BundleContext, ServiceReference }
 
-class coreSpec extends SpecificationWithJUnit with Mockito {
+class scalamodulesSpec extends SpecificationWithJUnit with Mockito {
 
   "A BundleContext" should {
     "be converted to a RichBundleContext implicitly" in {

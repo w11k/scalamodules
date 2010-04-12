@@ -106,7 +106,7 @@ ScalaModules Core
         <artifactId>maven-bundle-plugin</artifactId>
         <configuration>
           <instructions>
-            <Export-Package>org.eclipse.scalamodules.core;version="2.0"</Export-Package>
+            <Export-Package>org.eclipse.scalamodules;version="2.0"</Export-Package>
           </instructions>
         </configuration>
       </plugin>

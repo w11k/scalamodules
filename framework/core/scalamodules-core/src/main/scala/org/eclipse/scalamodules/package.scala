@@ -10,7 +10,7 @@
  *   Roman Roelofsen   - initial API and implementation
  *   Kjetil Valstadsve - initial API and implementation
  */
-package org.eclipse.scalamodules
+package org.eclipse
 
 import java.util.Dictionary
 import org.osgi.framework.{ BundleContext, ServiceReference}
@@ -20,7 +20,7 @@ import scala.collection.JavaConversions._
 /**
  * Some implicit conversions and other stuff essential for the ScalaModules DSL.
  */
-package object core {
+package object scalamodules {
 
   /** Implicitly converts a BundleContext into a RichBundleContext. Opens the door to the ScalaModules DSL. */
   implicit def toRichBundleContext(context: BundleContext) = new RichBundleContext(context)

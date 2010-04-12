@@ -14,7 +14,7 @@ package org.eclipse.scalamodules
 package examples
 package find
 
-import org.eclipse.scalamodules.core._
+import org.eclipse.scalamodules._
 import org.osgi.framework.{ BundleActivator, BundleContext }
 
 class Activator extends BundleActivator {

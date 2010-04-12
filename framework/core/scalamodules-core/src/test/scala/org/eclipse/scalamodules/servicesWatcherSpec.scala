@@ -10,7 +10,7 @@
  *   Roman Roelofsen   - initial API and implementation
  *   Kjetil Valstadsve - initial API and implementation
  */
-package org.eclipse.scalamodules.core
+package org.eclipse.scalamodules
 
 import org.osgi.framework.BundleContext
 import org.specs.SpecificationWithJUnit
