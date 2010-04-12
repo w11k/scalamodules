@@ -12,37 +12,37 @@
  */
 package org.eclipse.scalamodules.core
 
+import org.osgi.framework.BundleContext
 import org.specs.SpecificationWithJUnit
 import org.specs.mock.Mockito
 
 class ServicesWatcherSpec extends SpecificationWithJUnit with Mockito {
 
-//  @org.junit.runner.RunWith(classOf[JUnitRunner])
-//  class ServicesWatcherSpec extends WordSpec with ShouldMatchers with MockitoSugar {
-//
-//    "Creating a ServicesWatcher" when {
-//
-//      "the given service interface is null" should {
-//        "throw an IllegalArgumentException" in {
-//          evaluating { new ServicesWatcher(null)(mock[BundleContext]) } should produce [IllegalArgumentException]
-//        }
-//      }
-//
-//      "the given BundleContext is null" should {
-//        "throw an IllegalArgumentException" in {
-//          evaluating { new ServicesWatcher(classOf[TestInterface1])(null) } should produce [IllegalArgumentException]
-//        }
-//      }
-//    }
-//
-//    "Calling ServicesWatcher.andHandle" when {
-//
-//      "the given partial function to handle ServiceEvents is null" should {
-//        "throw an IllegalArgumentException" in {
-//          evaluating { new ServicesWatcher(classOf[TestInterface1])(mock[BundleContext]).andHandle(null) } should produce [IllegalArgumentException]
-//        }
-//      }
-//    }
-//  }
+  "Creating a ServicesWatcher" should {
+    val interface = classOf[TestInterface1]
+    val context = mock[BundleContext]
+    "throw an IllegalArgumentException given a null service interface" in {
+      new ServicesWatcher(null)(context) must throwA[IllegalArgumentException]
+    }
+    "throw an IllegalArgumentException given a null Filter" in {
+      new ServicesWatcher(interface, null)(context) must throwA[IllegalArgumentException]
+    }
+    "throw an IllegalArgumentException given a null BundleContext" in {
+      new ServicesWatcher(interface)(null) must throwA[IllegalArgumentException]
+    }
+  }
 
+  "Calling ServicesWatcher.withFilter" should {
+    val interface = classOf[TestInterface1]
+    val context = mock[BundleContext]
+    "throw an IllegalArgumentException given a null Filter" in {
+      new ServicesWatcher(interface)(context) withFilter null must throwA[IllegalArgumentException]
+    }
+  }
+
+  "Calling ServicesWatcher.andHandle" should {
+    "throw an IllegalArgumentException given a null partial function to handle ServiceEvents" in {
+      new ServicesWatcher(classOf[TestInterface1])(mock[BundleContext]).andHandle(null) must throwA[IllegalArgumentException]
+    }
+  }
 }

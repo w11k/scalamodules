@@ -16,7 +16,8 @@ package core
 private[scalamodules] object Filter {
   implicit def filterComponentToFilter(component: FilterComponent) = Filter(component)
 }
-private[scalamodules] case class Filter(component: FilterComponent) {
+// TODO Remove comment after testing!
+/*private[scalamodules]*/case class Filter(component: FilterComponent) {
   override def toString = "(%s)" format component
 }
 

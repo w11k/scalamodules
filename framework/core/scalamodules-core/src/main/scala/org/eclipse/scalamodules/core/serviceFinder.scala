@@ -15,8 +15,6 @@ package core
 
 import org.osgi.framework.BundleContext
 
-// TODO Find a common abstraction for different andApply signatures
-
 private[scalamodules] class ServiceFinder[I <: AnyRef](interface: Class[I])(context: BundleContext) {
   require(interface != null, "The service interface must not be null!")
   require(context != null, "The BundleContext must not be null!")
