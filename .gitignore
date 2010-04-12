@@ -1,23 +1,28 @@
-# Build directory
+# SBT
+target
+lib_managed
+src_managed
+boot
+
+# Maven
 target
 
-# Mac stuff
+# Mac
 .DS_Store
 
-# Eclipse stuff
-.scala_dependencies
-.project
+# Eclipse
 .classpath
-.settings
 .launch
-.manager
+.metadata
+.project
+.scala_dependencies
+.settings
 
-# IntelliJ stuff
+# IntelliJ
 .idea
 *.iml
 *.ipr
 *.iws
 
-# Pax Runner stuff
+# Pax Runner
 runner
-
