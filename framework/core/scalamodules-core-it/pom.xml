@@ -112,6 +112,7 @@ Integration tests for ScalaModules Core
         <configuration>
           <options>
             <autoWrap>true</autoWrap>
+            <platform>equinox</platform>
           </options>
         </configuration>
       </plugin>

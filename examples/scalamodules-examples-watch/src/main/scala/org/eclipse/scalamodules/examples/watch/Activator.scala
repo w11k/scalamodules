@@ -20,9 +20,9 @@ import org.osgi.framework.{ BundleActivator, BundleContext }
 class Activator extends BundleActivator {
 
   override def start(context: BundleContext) {
-    def message(property: Option[Any], s: String) = "%s: %s".format(property getOrElse "UNKNOWN", s)
+    def message(property: Option[Any], s: String) = "ServiceEvent - %s: %s".format(property getOrElse "UNKNOWN", s)
     def styleProperty(properties: Properties) = properties get "style"
-    context watchServices withInterface[Greeting] andHandle {
+    context watchServices withInterface[Greeting] withFilter "style".present andHandle {
       case AddingService(greeting, properties)  => println(message(styleProperty(properties), greeting.welcome))
       case ServiceRemoved(greeting, properties) => println(message(styleProperty(properties), greeting.goodbye))
     }

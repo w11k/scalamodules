@@ -22,39 +22,29 @@ import scala.collection.JavaConversions._
  */
 package object core {
 
-  /**
-   * Implicitly converts a BundleContext to a RichBundleContext.
-   */
+  /** Implicitly converts a BundleContext into a RichBundleContext. Opens the door to the ScalaModules DSL. */
   implicit def toRichBundleContext(context: BundleContext) = new RichBundleContext(context)
 
-  /**
-   * Implicitly converts a ServiceReference to a RichServiceReference.
-   */
+  /** Implicitly converts a ServiceReference into a RichServiceReference. */
   implicit def toRichServiceReference(serviceReference: ServiceReference) = new RichServiceReference(serviceReference)
 
-  /**
-   * Implicitly converts a Pair into a Map.
-   */
+  /** Implicitly converts a Pair into a Map in order to allow for easy definition of single entry service properties. */
   implicit def pairToMap[A, B](pair: (A, B)) = if (pair == null) null else Map(pair)
 
-  /**
-   * Returns the given or inferred type wrapped in a Some.
-   */
+  /** Returns converts the given string into a builder for a "simple operation" filter component. */
+  implicit def stringToSimpleOpBuilder(attr: String) = new SimpleOpBuilder(attr)
+
+  /** Returns converts the given string into a builder for a "present" filter component. */
+  implicit def stringToPresentBuilder(attr: String) = new PresentBuilder(attr)
+
+  /** Returns the given or inferred type wrapped into a Some. */
   def interface[I](implicit manifest: Manifest[I]) = Some(manifest.erasure.asInstanceOf[Class[I]])
 
-  /**
-   * Returns the given or inferred type.
-   */
+  /** Returns the given or inferred type. */
   def withInterface[I](implicit manifest: Manifest[I]) = manifest.erasure.asInstanceOf[Class[I]]
 
-  /**
-   * Type for service properties.
-   */
   private[scalamodules] type Properties = Map[String, Any]
 
-  /**
-   * Implicitly converts a Scala Map to a read-only Java Dictionary backed by the given Scala Map.
-   */
   private[scalamodules] implicit def scalaMapToJavaDictionary[K, V](map: Map[K, V]): Dictionary[K, V] = {
     if (map == null) null
     else new Dictionary[K, V] {
@@ -71,9 +61,6 @@ package object core {
     }
   }
 
-  /**
-   * Invokes the given function on the service obtained from the given BundleContext with the given ServiceReference.
-   */
   private[scalamodules] def invokeService[I, T](serviceReference: ServiceReference,
                                                 f: I => T)
                                                (context: BundleContext): Option[T] = {

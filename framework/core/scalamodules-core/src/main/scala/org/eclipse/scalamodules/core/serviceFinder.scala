@@ -36,14 +36,21 @@ private[scalamodules] class ServiceFinder[I <: AnyRef](interface: Class[I])(cont
   }
 }
 
-// TODO Add filter!
-private[scalamodules] class ServicesFinder[I <: AnyRef](interface: Class[I])(context: BundleContext) {
+private[scalamodules] class ServicesFinder[I <: AnyRef]
+                                          (interface: Class[I], filter: Option[Filter] = None)
+                                          (context: BundleContext) {
   require(interface != null, "The service interface must not be null!")
+  require(filter != null, "The filter must not be null!")
   require(context != null, "The BundleContext must not be null!")
+
+  def withFilter(filter: Filter) = {
+    require(filter != null, "The filter must not be null!")
+    new ServicesFinder(interface, Some(filter))(context)
+  }
 
   def andApply[T](f: I => T): List[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
-    context.getServiceReferences(interface.getName, null) match {
+    context.getServiceReferences(interface.getName, filter map { _.toString } orNull) match {
       case null              => Nil
       case serviceReferences => (serviceReferences flatMap { r => invokeService(r, f)(context) }).toList
     }
@@ -51,7 +58,7 @@ private[scalamodules] class ServicesFinder[I <: AnyRef](interface: Class[I])(con
 
   def andApply[T](f: (I, Properties) => T): List[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
-    context.getServiceReferences(interface.getName, null) match {
+    context.getServiceReferences(interface.getName, filter map { _.toString} orNull) match {
       case null              => Nil
       case serviceReferences => (serviceReferences flatMap { r => invokeService(r, f(_: I, r.properties))(context) }).toList
     }
