@@ -10,9 +10,9 @@
  *   Roman Roelofsen   - initial API and implementation
  *   Kjetil Valstadsve - initial API and implementation
  */
-package org.eclipse.scalamodules
-package core
-package test
+package org.eclipse.scalamodules.test
+
+import org.eclipse.scalamodules._
 
 import java.lang.String
 import org.ops4j.pax.exam.Inject

@@ -11,7 +11,6 @@
  *   Kjetil Valstadsve - initial API and implementation
  */
 package org.eclipse.scalamodules
-package core
 
 import org.osgi.framework.BundleContext
 

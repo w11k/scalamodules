@@ -11,7 +11,6 @@
  *   Kjetil Valstadsve - initial API and implementation
  */
 package org.eclipse.scalamodules
-package core
 
 private[scalamodules] object Filter {
   implicit def filterComponentToFilter(component: FilterComponent) = Filter(component)

@@ -10,7 +10,7 @@
  *   Roman Roelofsen   - initial API and implementation
  *   Kjetil Valstadsve - initial API and implementation
  */
-package org.eclipse.scalamodules.core
+package org.eclipse.scalamodules
 
 import org.specs.SpecificationWithJUnit
 import org.specs.mock.Mockito

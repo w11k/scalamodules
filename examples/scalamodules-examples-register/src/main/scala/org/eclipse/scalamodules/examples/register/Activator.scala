@@ -15,7 +15,7 @@ package examples
 package register
 
 import java.io.Serializable
-import org.eclipse.scalamodules.core._
+import org.eclipse.scalamodules._
 import org.osgi.framework.{ BundleActivator, BundleContext }
 
 class Activator extends BundleActivator {
