@@ -1,6 +1,6 @@
 scan-bundle:mvn:org.eclipse.scalamodules/scalamodules-scala-library/2.8.0.Beta1@update
 scan-bundle:mvn:org.eclipse.scalamodules/scalamodules-core/2.0-SNAPSHOT@update
 scan-bundle:mvn:org.eclipse.scalamodules/scalamodules-examples-api/2.0-SNAPSHOT@update
-scan-bundle:mvn:org.eclipse.scalamodules/scalamodules-examples-register/2.0-SNAPSHOT@update
+scan-bundle:mvn:org.eclipse.scalamodules/scalamodules-examples-create/2.0-SNAPSHOT@update
 scan-bundle:mvn:org.eclipse.scalamodules/scalamodules-examples-find/2.0-SNAPSHOT@update
 scan-bundle:mvn:org.eclipse.scalamodules/scalamodules-examples-watch/2.0-SNAPSHOT@update
