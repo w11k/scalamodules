@@ -12,7 +12,7 @@
  */
 package org.eclipse.scalamodules
 package examples
-package register
+package create
 
 import java.io.Serializable
 import org.eclipse.scalamodules._
