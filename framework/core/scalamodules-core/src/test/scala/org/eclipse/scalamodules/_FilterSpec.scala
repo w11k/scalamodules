@@ -15,7 +15,7 @@ package org.eclipse.scalamodules
 import org.specs.SpecificationWithJUnit
 import org.specs.mock.Mockito
 
-class filterSpec extends SpecificationWithJUnit with Mockito {
+class FilterSpec extends SpecificationWithJUnit with Mockito {
 
   """"x" === "1" (equal)""" should {
     """be converted into the filter string "(x=1)" """ in {
