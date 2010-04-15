@@ -13,175 +13,101 @@
 package org.eclipse.scalamodules
 
 import org.mockito.{ ArgumentCaptor, Matchers }
-import org.mockito.Mockito._
 import org.osgi.framework.BundleContext
-import org.scalatest.WordSpec
-import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.mock.MockitoSugar
+import org.specs._
+import org.specs.mock.Mockito
 
-@org.junit.runner.RunWith(classOf[JUnitRunner])
-class RichBundleContextSpec extends WordSpec with ShouldMatchers with MockitoSugar {
+class RichBundleContextSpec extends SpecificationWithJUnit with Mockito {
 
-  "Creating a RichBundleContext" when {
-
-    "the given BundleContext is null" should {
-      "throw an IllegalArgumentException" in {
-        evaluating { new RichBundleContext(null) } should produce [IllegalArgumentException]
-      }
+  "Creating a RichBundleContext" should {
+    "throw an IllegalArgumentException given a null BundleContext" in {
+      new RichBundleContext(null) must throwA[IllegalArgumentException]
     }
   }
 
-  "Calling RichBundleContext.createService" when {
-
-    "the given service object is null" should {
-      "throw an IllegalArgumentException" in {
-        evaluating {
-          new RichBundleContext(mock[BundleContext]).createService(null)
-        } should produce [IllegalArgumentException]
-      }
+  "Calling RichBundleContext.createService" should {
+    val context = mock[BundleContext]
+    val service = new TestClass1
+    "throw an IllegalArgumentException given a null service object" in {
+      new RichBundleContext(context).createService(null) must throwA[IllegalArgumentException]
     }
-
-    "the given service properties are null" should {
-      "throw an IllegalArgumentException" in {
-        evaluating {
-          new RichBundleContext(mock[BundleContext]).createService(new TestClass1, null)
-        } should produce [IllegalArgumentException]
-      }
+    "throw an IllegalArgumentException given null service properties" in {
+      new RichBundleContext(context).createService(service, null) must throwA[IllegalArgumentException]
     }
-
-    "the given first service interface is null" should {
-      "throw an IllegalArgumentException" in {
-        evaluating {
-          new RichBundleContext(mock[BundleContext]).createService(new TestClass1, interface1 = null)
-        } should produce [IllegalArgumentException]
-      }
+    "throw an IllegalArgumentException given a null first service interface" in {
+      new RichBundleContext(context).createService(service, interface1 = null) must throwA[IllegalArgumentException]
     }
-
-    "the given second service interface is null" should {
-      "throw an IllegalArgumentException" in {
-        evaluating {
-          new RichBundleContext(mock[BundleContext]).createService(new TestClass1, interface2 = null)
-        } should produce [IllegalArgumentException]
-      }
+    "throw an IllegalArgumentException given a null second service interface" in {
+      new RichBundleContext(context).createService(service, interface2 = null) must throwA[IllegalArgumentException]
     }
-
-    "the given third service interface is null" should {
-      "throw an IllegalArgumentException" in {
-        evaluating {
-          new RichBundleContext(mock[BundleContext]).createService(new TestClass1, interface3 = null)
-        } should produce [IllegalArgumentException]
-      }
+    "throw an IllegalArgumentException given a null third service interface" in {
+      new RichBundleContext(context).createService(service, interface3 = null) must throwA[IllegalArgumentException]
     }
-
-    "a service object not implementing a service interface is given" should {
-      "call BundleContext.registerService with the class of the service object itself as service interfaces and null as properties" in {
-        val context: BundleContext = mock[BundleContext]
-        val service = new TestClass1
-        new RichBundleContext(context).createService(service)
-        verify(context).registerService(Array(classOf[TestClass1].getName), service, null)
-      }
+    
+    "call BundleContext.registerService with the class of the given service object itself when it does not implement a service interface" in {
+      val service = new TestClass1
+      new RichBundleContext(context).createService(service)
+      there was one(context).registerService(Array(classOf[TestClass1].getName), service, null)
     }
-
-    "a service object implementing one service interface is given" should {
-      "call BundleContext.registerService with the interface implemented by the service object as service interfaces and null as properties" in {
-        val context = mock[BundleContext]
-        val service = new TestClass2
-        new RichBundleContext(context).createService(service)
-        verify(context).registerService(Array(classOf[TestInterface2].getName), service, null)
-      }
+    "call BundleContext.registerService with the one interface implemented by the given service object" in {
+      val service = new TestClass2
+      new RichBundleContext(context).createService(service)
+      there was one(context).registerService(Array(classOf[TestInterface2].getName), service, null)
     }
-
-    "a service object implementing two service interfaces is given" should {
-      "call BundleContext.registerService with both interfaces implemented by the service object as service interfaces and null as properties" in {
-        val context = mock[BundleContext]
-        val service = new TestClass3
-        new RichBundleContext(context).createService(service)
-        verify(context).registerService(Array(classOf[TestInterface2].getName, classOf[TestInterface3].getName), service, null)
-      }
+    "call BundleContext.registerService with the two interfaces implemented by the given service object" in {
+      val service = new TestClass3
+      new RichBundleContext(context).createService(service)
+      there was one(context).registerService(Array(classOf[TestInterface2].getName, classOf[TestInterface3].getName), service, null)
     }
-
-    "a service object implementing two service interfaces is given and one service interface is explicitly given" should {
-      "call BundleContext.registerService with the explicitly give interface as service interfaces and null as properties" in {
-        val context = mock[BundleContext]
-        val service = new TestClass3
-        new RichBundleContext(context).createService(service, interface1 = Some(classOf[TestInterface2]))
-        verify(context).registerService(Array(classOf[TestInterface2].getName), service, null)
-      }
+    "call BundleContext.registerService with the explicitly given service interface" in {
+      val service = new TestClass3
+      new RichBundleContext(context).createService(service, interface1 = Some(classOf[TestInterface2]))
+      there was one(context).registerService(Array(classOf[TestInterface2].getName), service, null)
     }
-
-    "a service object implementing two service interfaces is given and both service interfaces are explicitly given" should {
-      "call BundleContext.registerService with both explicitly give interfaces as service interfaces and null as properties" in {
-        val context = mock[BundleContext]
-        val service = new TestClass3
-        new RichBundleContext(context).createService(service, interface1 = Some(classOf[TestInterface2]), interface2 = Some(classOf[TestInterface3]))
-        verify(context).registerService(Array(classOf[TestInterface2].getName, classOf[TestInterface3].getName), service, null)
-      }
+    "call BundleContext.registerService with all the explicitly given service interfaces" in {
+      val service = new TestClass3
+      new RichBundleContext(context).createService(service, interface1 = Some(classOf[TestInterface2]), interface2 = Some(classOf[TestInterface3]))
+      there was one(context).registerService(Array(classOf[TestInterface2].getName, classOf[TestInterface3].getName), service, null)
     }
-
-    "service properties are given" should {
-      "call BundleContext.registerService with the given service properties" in {
-        val context: BundleContext = mock[BundleContext]
-        val propertiesCaptor = ArgumentCaptor.forClass(classOf[java.util.Dictionary[String, Any]])
-        new RichBundleContext(context).createService(new TestClass1, Map("a" -> "b"))
-        verify(context).registerService(Matchers.any.asInstanceOf[Array[String]], Matchers.any, propertiesCaptor.capture)
-        propertiesCaptor.getValue.size should be (1)
-        propertiesCaptor.getValue.get("a") should be ("b")
-      }
+    "call BundleContext.registerService with the given service properties" in {
+      val propertiesCaptor = ArgumentCaptor.forClass(classOf[java.util.Dictionary[String, Any]])
+      new RichBundleContext(context).createService(new TestClass1, Map("a" -> "b"))
+      there was one(context).registerService(Matchers.any.asInstanceOf[Array[String]], Matchers.any, propertiesCaptor.capture)
+      propertiesCaptor.getValue.size mustEqual 1
+      propertiesCaptor.getValue get "a" mustEqual "b"
     }
   }
 
-  "Calling RichBundleContext.findService" when {
-
-    "the given service interface is null" should {
-      "throw an IllegalArgumentException" in {
-        evaluating {
-          new RichBundleContext(mock[BundleContext]).findService(null.asInstanceOf[Class[TestInterface1]])
-        } should produce [IllegalArgumentException]
-      }
+  "Calling RichBundleContext.findService" should {
+    val context = mock[BundleContext]
+    "throw an IllegalArgumentException given a null service interface" in {
+      new RichBundleContext(context).findService(null.asInstanceOf[Class[TestInterface1]]) must throwA[IllegalArgumentException]
     }
-
-    "the given service interface is not-null" should {
-      "return a not-null ServiceFinder with the correct interface" in {
-        val serviceFinder = new RichBundleContext(mock[BundleContext]).findService(classOf[TestInterface1])
-        serviceFinder should not be (null)
-      }
+    "return a not-null ServiceFinder with the correct interface" in {
+      val serviceFinder = new RichBundleContext(mock[BundleContext]).findService(classOf[TestInterface1])
+      serviceFinder mustNotBe null
     }
   }
 
-  "Calling RichBundleContext.findServices" when {
-
-    "the given service interface is null" should {
-      "throw an IllegalArgumentException" in {
-        evaluating {
-          new RichBundleContext(mock[BundleContext]).findServices(null.asInstanceOf[Class[TestInterface1]])
-        } should produce [IllegalArgumentException]
-      }
+  "Calling RichBundleContext.findServices" should {
+    val context = mock[BundleContext]
+    "throw an IllegalArgumentException given a null service interface" in {
+      new RichBundleContext(context).findServices(null.asInstanceOf[Class[TestInterface1]]) must throwA[IllegalArgumentException]
     }
-
-    "the given service interface is not-null" should {
-      "return a not-null ServicesFinder with the correct interface" in {
-        val servicesFinder = new RichBundleContext(mock[BundleContext]).findServices(classOf[TestInterface1])
-        servicesFinder should not be (null)
-      }
+    "return a not-null ServiceFinder with the correct interface" in {
+      val servicesFinder = new RichBundleContext(mock[BundleContext]).findServices(classOf[TestInterface1])
+      servicesFinder mustNotBe null
     }
   }
 
-  "Calling RichBundleContext.watchService" when {
-
-    "the given service interface is null" should {
-      "throw an IllegalArgumentException" in {
-        evaluating {
-          new RichBundleContext(mock[BundleContext]).watchServices(null.asInstanceOf[Class[TestInterface1]])
-        } should produce [IllegalArgumentException]
-      }
+  "Calling RichBundleContext.watchServices" should {
+    val context = mock[BundleContext]
+    "throw an IllegalArgumentException given a null service interface" in {
+      new RichBundleContext(context).watchServices(null.asInstanceOf[Class[TestInterface1]]) must throwA[IllegalArgumentException]
     }
-
-    "the given service interface is not-null" should {
-      "return a not-null ServiceFinder with the correct interface" in {
-        val servicesWatcher = new RichBundleContext(mock[BundleContext]).watchServices(classOf[TestInterface1])
-        servicesWatcher should not be (null)
-      }
+    "return a not-null ServiceWatcher with the correct interface" in {
+      val servicesWatcher = new RichBundleContext(mock[BundleContext]).watchServices(classOf[TestInterface1])
+      servicesWatcher mustNotBe null
     }
   }
 }

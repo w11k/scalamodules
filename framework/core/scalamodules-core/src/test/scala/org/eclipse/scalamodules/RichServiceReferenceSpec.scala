@@ -12,41 +12,29 @@
  */
 package org.eclipse.scalamodules
 
-import org.mockito.{ ArgumentCaptor, Matchers }
-import org.mockito.Mockito._
 import org.osgi.framework.ServiceReference
-import org.scalatest.WordSpec
-import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.mock.MockitoSugar
+import org.specs._
+import org.specs.mock.Mockito
 
-@org.junit.runner.RunWith(classOf[JUnitRunner])
-class RichServiceReferenceSpec extends WordSpec with ShouldMatchers with MockitoSugar {
+class RichServiceReferenceSpec extends SpecificationWithJUnit with Mockito {
 
-  "Creating a RichServiceReference" when {
-    "the given ServiceReference is null" should {
-      "throw an IllegalArgumentException" in {
-        evaluating { new RichServiceReference(null) } should produce [IllegalArgumentException]
-      }
+  "Creating a RichServiceReference" should {
+    "throw an IllegalArgumentException given a null ServiceReference" in {
+      new RichServiceReference(null) must throwA [IllegalArgumentException]
     }
   }
 
-  "Calling RichServiceReference.properties" when {
-    "there are no service properties" should {
-      "return the empty Map" in {
-        val serviceReference = mock[ServiceReference]
-        when(serviceReference.getPropertyKeys) thenReturn Array[String]()
-        new RichServiceReference(serviceReference).properties should be (Map.empty)
-      }
+  "Calling RichServiceReference.properties" should {
+    val serviceReference = mock[ServiceReference]
+    "return the empty Map given there are no service properties" in {
+      serviceReference.getPropertyKeys returns Array[String]()
+      new RichServiceReference(serviceReference).properties mustEqual Map.empty
     }
-    "there are service properties a=1 and b=b" should {
-      "return a Map containing (a -> a) and (b -> b)" in {
-        val serviceReference = mock[ServiceReference]
-        when(serviceReference.getPropertyKeys).thenReturn(Array("a", "b"))
-        when(serviceReference getProperty "a").thenReturn("a", "a")
-        when(serviceReference getProperty "b").thenReturn("b", "b")
-        new RichServiceReference(serviceReference).properties should be (Map("a" -> "a", "b" -> "b"))
-      }
+    "return a Map containing (a -> a) and (b -> b) given there are service properties a=1 and b=b" in {
+      serviceReference.getPropertyKeys returns Array("a", "b")
+      serviceReference getProperty "a" returns "a"
+      serviceReference getProperty "b" returns "b"
+      new RichServiceReference(serviceReference).properties mustEqual Map("a" -> "a", "b" -> "b")
     }
   }
 }

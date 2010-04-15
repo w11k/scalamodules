@@ -12,79 +12,51 @@
  */
 package org.eclipse.scalamodules
 
-import org.mockito.Mockito._
 import org.osgi.framework.{ BundleContext, ServiceReference }
-import org.scalatest.WordSpec
-import org.scalatest.junit.JUnitRunner
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.mock.MockitoSugar
+import org.specs._
+import org.specs.mock.Mockito
 
-@org.junit.runner.RunWith(classOf[JUnitRunner])
-class ServiceFinderSpec extends WordSpec with ShouldMatchers with MockitoSugar {
+class ServiceFinderSpec extends SpecificationWithJUnit with Mockito {
 
-  // ServiceFinder
-
-  "Creating a ServiceFinder" when {
-
-    "the given service interface is null" should {
-      "throw an IllegalArgumentException" in {
-        evaluating { new ServiceFinder(null)(mock[BundleContext]) } should produce [IllegalArgumentException]
-      }
+  "Creating a ServiceFinder" should {
+    val interface = classOf[TestInterface1]
+    val context = mock[BundleContext]
+    "throw an IllegalArgumentException given a null service interface" in {
+      new ServicesFinder(null)(context) must throwA[IllegalArgumentException]
     }
-
-    "the given BundleContext is null" should {
-      "throw an IllegalArgumentException" in {
-        evaluating { new ServiceFinder(classOf[TestInterface1])(null) } should produce [IllegalArgumentException]
-      }
+    "throw an IllegalArgumentException given a null BundleContext" in {
+      new ServicesFinder(interface)(null) must throwA[IllegalArgumentException]
     }
   }
 
-  "Calling ServiceFinder.andApply" when {
-
-    "the given function to be applied to the service is null" should {
-      "throw an IllegalArgumentException" in {
-        evaluating {
-          new ServiceFinder(classOf[TestInterface1])(mock[BundleContext]) andApply (null: (TestInterface1 => Any))
-        } should produce [IllegalArgumentException]
-      }
+  "Calling ServiceFinder.andApply" should {
+    val context = mock[BundleContext]
+    val serviceReference = mock[ServiceReference]
+    val interface = classOf[TestInterface1]
+    val service = mock[TestInterface1]
+    "throw an IllegalArgumentException given a null function go be applied to the service" in {
+      new ServiceFinder(interface)(context) andApply (null: (TestInterface1 => Any)) must throwA[IllegalArgumentException]
     }
-
-    "the given function to be applied to the service is not-null and there is no TestInterface1 service reference available" should {
-      "result in the proper methods called on the BundleContext and return None" in {
-        val context = mock[BundleContext]
-        when(context.getServiceReference(classOf[TestInterface1].getName)).thenReturn(null)
-        val serviceFinder = new ServiceFinder(classOf[TestInterface1])(context)
-        serviceFinder andApply { _.name } should be (None)
-      }
+    "return None when there is no requested service reference available" in {
+      context.getServiceReference(interface.getName) returns null
+      val serviceFinder = new ServiceFinder(interface)(context)
+      serviceFinder andApply { _.name } mustBe None
     }
-
-    "the given function to be applied to the service is not-null and there is a TestInterface1 service reference available but no service" should {
-      "result in the proper methods called on the BundleContext and return None" in {
-        val context = mock[BundleContext]
-        val serviceReference = mock[ServiceReference]
-        when(context.getServiceReference(classOf[TestInterface1].getName)).thenReturn(serviceReference)
-        val service: TestInterface1 = null
-        when(context.getService(serviceReference)).thenReturn(service, service)  // TODO Can we get rid of this double arg?
-        val serviceFinder = new ServiceFinder(classOf[TestInterface1])(context)
-        serviceFinder andApply { _.name } should be (None)
-        verify(context).ungetService(serviceReference)
-      }
+    "return None when there is a requested service reference available but no service" in {
+      context.getServiceReference(interface.getName) returns serviceReference
+      context.getService(serviceReference) returns null
+      val serviceFinder = new ServiceFinder(interface)(context)
+      serviceFinder andApply { _.name } mustBe None
+      there was one(context).ungetService(serviceReference)
     }
-
-    "the given function to be applied to the service is not-null and there is a TestInterface1 service reference and service available" should {
-      "result in the proper methods called on the BundleContext and return Some()" in {
-        val yes = "YES"
-        val context = mock[BundleContext]
-        val serviceReference = mock[ServiceReference]
-        when(context.getServiceReference(classOf[TestInterface1].getName)).thenReturn(serviceReference)
-        val service = mock[TestInterface1]
-        when(context.getService(serviceReference)).thenReturn(service, service)  // TODO Can we get rid of this double arg?
-        when(service.name).thenReturn(yes)
-        val serviceFinder = new ServiceFinder(classOf[TestInterface1])(context)
-        serviceFinder andApply { _.name } should be (Some(yes))
-        serviceFinder andApply { (service, _) => service.name } should be (Some(yes))
-        verify(context, times(2)).ungetService(serviceReference)
-      }
+    "return Some when there is a requested service reference with service available" in {
+      context.getServiceReference(interface.getName) returns serviceReference
+      context.getService(serviceReference) returns service
+      service.name returns "YES"
+      val serviceFinder = new ServiceFinder(interface)(context)
+      val names = serviceFinder andApply { _.name }
+      names mustEqual Some("YES")
+      there was one(context).ungetService(serviceReference)
     }
   }
 }
