@@ -57,8 +57,9 @@ Integration tests for ScalaModules Core
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.scala-lang</groupId>
+      <groupId>com.weiglewilczek.scala-lang-osgi</groupId>
       <artifactId>scala-library</artifactId>
+      <version>${scala.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
