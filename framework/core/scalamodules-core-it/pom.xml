@@ -57,8 +57,8 @@ Integration tests for ScalaModules Core
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.scalamodules</groupId>
-      <artifactId>scalamodules-scala-library</artifactId>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

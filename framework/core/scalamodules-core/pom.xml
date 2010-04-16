@@ -51,8 +51,8 @@ ScalaModules Core
 
   <dependencies>
     <dependency>
-      <groupId>org.eclipse.scalamodules</groupId>
-      <artifactId>scalamodules-scala-library</artifactId>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>

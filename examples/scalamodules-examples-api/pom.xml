@@ -50,9 +50,8 @@ ScalaModules Examples - API
 
   <dependencies>
     <dependency>
-      <groupId>org.eclipse.scalamodules</groupId>
-      <artifactId>scalamodules-scala-library</artifactId>
-      <version>${scala.version}</version>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
     </dependency>
   </dependencies>
 

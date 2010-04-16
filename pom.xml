@@ -51,7 +51,6 @@ Aggregator for ScalaModules
 
   <modules>
     <module>resources/scalamodules-root</module>
-    <module>scalaosgi</module>
     <module>framework</module>
     <module>examples</module>
   </modules>
