@@ -49,7 +49,7 @@ class BundleTest extends SpecsMatchers {
     val names = context findServices withInterface[ServiceInterface] andApply {
       (service, properties) => service.name + nameProperty(properties)
     }
-    names must haveSize(1)
+    names must haveSize(2)
     names mustContain Service1 + Service1
     names mustContain Service2 + Service2
     services must haveSize(1)
