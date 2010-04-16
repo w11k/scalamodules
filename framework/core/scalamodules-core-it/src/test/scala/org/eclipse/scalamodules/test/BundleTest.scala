@@ -18,11 +18,11 @@ import java.lang.String
 import org.ops4j.pax.exam.Inject
 import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner
 import org.osgi.framework.BundleContext
-import org.scalatest.matchers.ShouldMatchers
+import org.specs._
 import scala.collection.mutable.Map
 
 @org.junit.runner.RunWith(classOf[MavenConfiguredJUnit4TestRunner])
-class BundleTest extends ShouldMatchers {
+class BundleTest extends SpecsMatchers {
 
   @org.junit.Test
   def test() {
@@ -36,37 +36,35 @@ class BundleTest extends ShouldMatchers {
       case ServiceRemoved(service, properties)  => services -= service.name
     }
 
-    context findService withInterface[ServiceInterface] andApply { s => s } should be (None)
+    context findService withInterface[ServiceInterface] andApply { s => s } mustBe None
 
     val service1 = ServiceImplementation(Service1)
     val service1Registration = context.createService(service1, Map(Name -> Service1, ForFilter -> "true"))
-    context findService withInterface[ServiceInterface] andApply { _.name } should be (Some(Service1))
-    services should have size (1)
-    services should contain key (Service1)
-    services should contain value (Service1)
+    context findService withInterface[ServiceInterface] andApply { _.name } mustEqual Some(Service1)
+    services must haveSize(1)
+    services must havePair(Service1 -> Service1)
 
     val service2 = ServiceImplementation(Service2)
     val service2Registration = context.createService(service2, Name -> Service2)
     val names = context findServices withInterface[ServiceInterface] andApply {
       (service, properties) => service.name + nameProperty(properties)
     }
-    names should have size (2)
-    names should contain (Service1 + Service1)
-    names should contain (Service2 + Service2)
-    services should have size (1)
+    names must haveSize(2)
+    names mustContain Service1 + Service1
+    names mustContain Service2 + Service2
+    services must haveSize(1)
 
     val dummies = context findServices withInterface[ServiceInterface] withFilter "name" === "service1" andApply {
       (_, _) => "dummy"
     }
-    dummies should have size (1)
+    dummies must haveSize(1)
 
     service2Registration.unregister()
-    services should have size (1)
+    services must haveSize(1)
 
     service1Registration setProperties Map(Name -> "CHANGED", ForFilter -> "true")
-    services should have size (1)
-    services should contain key (Service1)
-    services should contain value ("CHANGED")
+    services must haveSize(1)
+    services must havePair (Service1 -> "CHANGED")
   }
 
   private val Name = "name"
