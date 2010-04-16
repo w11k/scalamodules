@@ -28,9 +28,9 @@ ScalaModules Examples - API
 
   <parent>
     <groupId>org.eclipse.scalamodules</groupId>
-    <artifactId>scalamodules-root</artifactId>
+    <artifactId>scalamodules-parent</artifactId>
     <version>2.0-Scala280RC1-SNAPSHOT</version>
-    <relativePath>../../resources/scalamodules-root/pom.xml</relativePath>
+    <relativePath>../../resources/scalamodules-parent/pom.xml</relativePath>
   </parent>
   <artifactId>scalamodules-examples-api</artifactId>
 
@@ -50,9 +50,8 @@ ScalaModules Examples - API
 
   <dependencies>
     <dependency>
-      <groupId>org.eclipse.scalamodules</groupId>
-      <artifactId>scalamodules-scala-library</artifactId>
-      <version>${scala.version}</version>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
     </dependency>
   </dependencies>
 

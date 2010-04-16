@@ -28,11 +28,11 @@ Aggregator for ScalaModules
 
   <parent>
     <groupId>org.eclipse.scalamodules</groupId>
-    <artifactId>scalamodules-root</artifactId>
+    <artifactId>scalamodules-parent</artifactId>
     <version>2.0-Scala280RC1-SNAPSHOT</version>
-    <relativePath>resources/scalamodules-root/pom.xml</relativePath>
+    <relativePath>resources/scalamodules-parent/pom.xml</relativePath>
   </parent>
-  <artifactId>scalamodules</artifactId>
+  <artifactId>aggregator</artifactId>
   <packaging>pom</packaging>
 
   <!--
@@ -50,8 +50,7 @@ Aggregator for ScalaModules
   -->
 
   <modules>
-    <module>resources/scalamodules-root</module>
-    <module>scalaosgi</module>
+    <module>resources/scalamodules-parent</module>
     <module>framework</module>
     <module>examples</module>
   </modules>
