@@ -90,7 +90,7 @@ Root POM for ScalaModules
     <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
 
     <!-- Specific settings for ScalaModules -->
-    <scala.version>2.8.0.Beta1</scala.version>
+    <scala.version>2.8.0.RC1</scala.version>
     <osgi.version>4.2.0</osgi.version>
     <pax-exam.version>1.2.0</pax-exam.version>
   </properties>
@@ -139,13 +139,13 @@ Root POM for ScalaModules
       <dependency>
         <groupId>org.scalatest</groupId>
         <artifactId>scalatest</artifactId>
-        <version>1.0.1-for-scala-2.8.0.Beta1-SNAPSHOT</version>
+        <version>1.0.1-for-scala-2.8.0.RC1-SNAPSHOT</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.scala-tools.testing</groupId>
-        <artifactId>specs_2.8.0.Beta1</artifactId>
-        <version>1.6.4</version>
+        <artifactId>specs_2.8.0.RC1</artifactId>
+        <version>1.6.5-SNAPSHOT</version>
         <scope>test</scope>
       </dependency>
       <dependency>
