@@ -29,7 +29,7 @@ ScalaModules Examples - Create Services
   <parent>
     <groupId>org.eclipse.scalamodules</groupId>
     <artifactId>scalamodules-parent</artifactId>
-    <version>2.0-Scala280RC1-SNAPSHOT</version>
+    <version>2.0-Scala280RC2-SNAPSHOT</version>
     <relativePath>../../resources/scalamodules-parent/pom.xml</relativePath>
   </parent>
   <artifactId>scalamodules-examples-create</artifactId>
