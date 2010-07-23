@@ -5,21 +5,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.eclipse.scalamodules.test
+package org.eclipse.scalamodules
+package test
 
-import org.eclipse.scalamodules._
-
-import java.lang.String
-import org.ops4j.pax.exam.Inject
-import org.ops4j.pax.exam.junit.MavenConfiguredJUnit4TestRunner
+import org.junit.runners.Suite.SuiteClasses
 import org.osgi.framework.BundleContext
-import org.specs._
+import org.specs.SpecsMatchers
 import scala.collection.mutable.Map
 
-@org.junit.runner.RunWith(classOf[MavenConfiguredJUnit4TestRunner])
-class BundleTest extends SpecsMatchers {
+@SuiteClasses(Array(classOf[BundleSpec]))
+class BundleSpec(context: BundleContext) extends SpecsMatchers {
 
-  @org.junit.Test
   def test() {
     val Service1 = "service1"
     val Service2 = "service2"
@@ -64,9 +60,6 @@ class BundleTest extends SpecsMatchers {
 
   private val Name = "name"
   private val ForFilter = "forfilter"
-
-  @Inject
-  private var context: BundleContext = _
 
   private def nameProperty(properties: Properties) = properties get Name getOrElse "" toString
 
