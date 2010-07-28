@@ -58,18 +58,18 @@ class ScalaModulesParentProject(info: ProjectInfo) extends ParentProject(info) {
 
   class ScalaModulesCoreProject(info: ProjectInfo) extends DefaultProject(info) with BNDPlugin {
     import Dependencies._
-    override lazy val libraryDependencies = Set.empty + osgiCore + osgiCompendium + specs + mockito
-    override lazy val bndExportPackage = "org.eclipse.scalamodules;version=%s".format(projectVersion.value) :: Nil
+    override lazy val libraryDependencies = Set(osgiCore, osgiCompendium, specs, mockito)
+    override lazy val bndExportPackage = "org.eclipse.scalamodules;version=\"%s\"".format(projectVersion.value) :: Nil
   }
 
   // ===================================================================================================================
   // scalamodules-core-it subproject
   // ===================================================================================================================
 
-  class ScalaModulesCoreITProject(info: ProjectInfo) extends DefaultProject(info) with BNDPlugin {
+  class ScalaModulesCoreITProject(info: ProjectInfo) extends DefaultProject(info) {
     import Dependencies._
     override lazy val testAction = super.testAction dependsOn coreProject.`package`
-    override lazy val libraryDependencies = Set.empty + specs + mockito + paxExam + paxExamJUnit + paxExamCD + junitIF
+    override lazy val libraryDependencies = Set(specs, mockito, paxExam, paxExamJUnit, paxExamCD, junitIF)
     override lazy val testFrameworks = super.testFrameworks ++ Seq(new TestFramework("com.novocode.junit.JUnitFrameworkNoMarker"))
   }
 
