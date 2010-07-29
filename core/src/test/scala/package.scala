@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.eclipse.scalamodules
+package com.weiglewilczek.scalamodules
 
 import java.util.Dictionary
 import org.osgi.framework.{ BundleContext, ServiceReference }

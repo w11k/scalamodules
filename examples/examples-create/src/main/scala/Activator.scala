@@ -5,12 +5,12 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.eclipse.scalamodules
+package com.weiglewilczek.scalamodules
 package examples
 package create
 
 import java.io.Serializable
-import org.eclipse.scalamodules._
+import com.weiglewilczek.scalamodules._
 import org.osgi.framework.{ BundleActivator, BundleContext }
 
 class Activator extends BundleActivator {

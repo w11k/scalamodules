@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.eclipse
+package com.weiglewilczek
 
 import java.util.Dictionary
 import org.osgi.framework.{ BundleContext, ServiceReference}
