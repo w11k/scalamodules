@@ -17,6 +17,9 @@ import scala.collection.JavaConversions._
  */
 package object scalamodules {
 
+  /** Type alias for service properties. */
+  type Properties = Map[String, Any]
+
   /** Implicitly converts a BundleContext into a RichBundleContext. Opens the door to the ScalaModules DSL. */
   implicit def toRichBundleContext(context: BundleContext) = new RichBundleContext(context)
 
@@ -37,8 +40,6 @@ package object scalamodules {
 
   /** Returns the given or inferred type. */
   def withInterface[I](implicit manifest: Manifest[I]) = manifest.erasure.asInstanceOf[Class[I]]
-
-  private[scalamodules] type Properties = Map[String, Any]
 
   private[scalamodules] implicit def scalaMapToJavaDictionary[K, V](map: Map[K, V]): Dictionary[K, V] = {
     if (map == null) null

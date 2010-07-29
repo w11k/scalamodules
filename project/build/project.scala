@@ -20,6 +20,9 @@ class ScalaModulesParentProject(info: ProjectInfo) extends ParentProject(info) {
     val osgiVersion = "4.2.0"
     val paxExamVersion = "1.2.0"
 
+    // Compile
+    val scalaModulesCore = "com.weiglewilczek.scalamodules" %% "scalamodules-core" % projectVersion.value.toString
+
     // Provided
     val osgiCore = "org.osgi" % "org.osgi.core" % osgiVersion % "provided"
     val osgiCompendium = "org.osgi" % "org.osgi.compendium" % osgiVersion % "provided"
@@ -59,63 +62,5 @@ class ScalaModulesParentProject(info: ProjectInfo) extends ParentProject(info) {
     override def libraryDependencies = Set(specs, mockito, paxExam, paxExamJUnit, paxExamCD, junitIF)
     override def testFrameworks =
       super.testFrameworks ++ Seq(new TestFramework("com.novocode.junit.JUnitFrameworkNoMarker"))
-  }
-
-  // ===================================================================================================================
-  // scalamodules-examples-api subproject
-  // ===================================================================================================================
-
-  val examplesAPIProject = project("examples" / "examples-api", "scalamodules-examples-api", new ExamplesAPIProject(_))
-
-  class ExamplesAPIProject(info: ProjectInfo) extends DefaultProject(info) with BNDPlugin {
-    override def bndExportPackage = "com.weiglewilczek.scalamodules.examples;version=%s".format(projectVersion.value) :: Nil
-  }
-
-  // ===================================================================================================================
-  // scalamodules-examples-create subproject
-  // ===================================================================================================================
-
-  val examplesCreateProject =
-    project(
-      "examples" / "examples-create",
-      "scalamodules-examples-create",
-      new ExamplesCreateProject(_),
-      coreProject,
-      examplesAPIProject)
-
-  class ExamplesCreateProject(info: ProjectInfo) extends DefaultProject(info) with BNDPlugin {
-    override def bndBundleActivator = Some("com.weiglewilczek.scalamodules.examples.create.Activator")
-  }
-
-  // ===================================================================================================================
-  // scalamodules-examples-find subproject
-  // ===================================================================================================================
-
-  val examplesFindProject =
-    project(
-      "examples" / "examples-find",
-      "scalamodules-examples-find",
-      new ExamplesFindProject(_),
-      coreProject,
-      examplesAPIProject)
-
-  class ExamplesFindProject(info: ProjectInfo) extends DefaultProject(info) with BNDPlugin {
-    override def bndBundleActivator = Some("com.weiglewilczek.scalamodules.examples.find.Activator")
-  }
-
-  // ===================================================================================================================
-  // scalamodules-examples-watch subproject
-  // ===================================================================================================================
-
-  val examplesWatchProject =
-    project(
-      "examples" / "examples-watch",
-      "scalamodules-examples-watch",
-      new ExamplesWatchProject(_),
-      coreProject,
-      examplesAPIProject)
-
-  class ExamplesWatchProject(info: ProjectInfo) extends DefaultProject(info) with BNDPlugin {
-    override def bndBundleActivator = Some("com.weiglewilczek.scalamodules.examples.watch.Activator")
   }
 }
