@@ -24,5 +24,8 @@ target
 *.ipr
 *.iws
 
+# TextMate
+*.tmproj
+
 # Pax Runner
 runner

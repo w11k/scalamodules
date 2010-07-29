@@ -1,6 +1,6 @@
-scan-bundle:mvn:com.weiglewilczek.scala-lang-osgi/scala-library/2.8.0.RC2@update
-scan-bundle:mvn:org.eclipse.scalamodules/scalamodules-core/2.0-Scala280RC2-SNAPSHOT@update
-scan-bundle:mvn:org.eclipse.scalamodules/scalamodules-examples-api/2.0-Scala280RC2-SNAPSHOT@update
-scan-bundle:mvn:org.eclipse.scalamodules/scalamodules-examples-create/2.0-Scala280RC2-SNAPSHOT@update
-scan-bundle:mvn:org.eclipse.scalamodules/scalamodules-examples-find/2.0-Scala280RC2-SNAPSHOT@update
-scan-bundle:mvn:org.eclipse.scalamodules/scalamodules-examples-watch/2.0-Scala280RC2-SNAPSHOT@update
+scan-bundle:mvn:com.weiglewilczek.scala-lang-osgi/scala-library/2.8.0
+scan-bundle:file:../core/target/scala_2.8.0/scalamodules-core_2.8.0-2.0.jar
+scan-bundle:file:examples-api/target/scala_2.8.0/scalamodules-examples-api_2.8.0-2.0.jar
+scan-bundle:file:examples-create/target/scala_2.8.0/scalamodules-examples-create_2.8.0-2.0.jar
+scan-bundle:file:examples-find/target/scala_2.8.0/scalamodules-examples-find_2.8.0-2.0.jar
+scan-bundle:file:examples-watch/target/scala_2.8.0/scalamodules-examples-watch_2.8.0-2.0.jar
