@@ -21,12 +21,12 @@ class ScalaModulesParentProject(info: ProjectInfo) extends ParentProject(info) {
     val paxExamVersion = "1.2.0"
 
     // Provided
-    val osgiCore = "org.osgi" % "org.osgi.core" % osgiVersion % "provided"
-    val osgiCompendium = "org.osgi" % "org.osgi.compendium" % osgiVersion % "provided"
+    val osgiCore = "org.osgi" % "org.osgi.core" % osgiVersion % "provided" withSources
+    val osgiCompendium = "org.osgi" % "org.osgi.compendium" % osgiVersion % "provided" withSources
 
     // Test
-    val specs = "org.scala-tools.testing" %% "specs" % "1.6.5" % "test"
-    val mockito = "org.mockito" % "mockito-all" % "1.8.4" % "test"
+    val specs = "org.scala-tools.testing" %% "specs" % "1.6.5" % "test" withSources
+    val mockito = "org.mockito" % "mockito-all" % "1.8.4" % "test" withSources
     val junitIF = "com.novocode" % "junit-interface" % "0.3" % "test"
 
     // Test (Pax Exam)
@@ -39,11 +39,12 @@ class ScalaModulesParentProject(info: ProjectInfo) extends ParentProject(info) {
   // scalamodules-core subproject
   // ===================================================================================================================
 
-  val coreProject = project("core", "scalamodules-core", new CoreProject(_))
+  lazy val coreProject = project("core", "scalamodules-core", new CoreProject(_))
 
   class CoreProject(info: ProjectInfo) extends DefaultProject(info) with BNDPlugin {
     import Dependencies._
     override def libraryDependencies = Set(osgiCore, osgiCompendium, specs, mockito)
+    override def defaultExcludes = super.defaultExcludes || "*-sources.jar"
     override def bndExportPackage = "com.weiglewilczek.scalamodules;version=\"%s\"".format(projectVersion.value) :: Nil
   }
 
@@ -51,12 +52,13 @@ class ScalaModulesParentProject(info: ProjectInfo) extends ParentProject(info) {
   // scalamodules-core-it subproject
   // ===================================================================================================================
 
-  val coreITProject = project("core-it", "scalamodules-core-it", new CoreITProject(_), coreProject)
+  lazy val coreITProject = project("core-it", "scalamodules-core-it", new CoreITProject(_), coreProject)
 
   class CoreITProject(info: ProjectInfo) extends DefaultProject(info) {
     import Dependencies._
-    override def testAction = super.testAction dependsOn coreProject.`package`
     override def libraryDependencies = Set(specs, mockito, paxExam, paxExamJUnit, paxExamCD, junitIF)
+    override def defaultExcludes = super.defaultExcludes || "*-sources.jar"
+    override def testAction = super.testAction dependsOn coreProject.`package`
     override def testFrameworks =
       super.testFrameworks ++ Seq(new TestFramework("com.novocode.junit.JUnitFrameworkNoMarker"))
   }
