@@ -50,7 +50,7 @@ private[scalamodules] class ServicesFinder[I <: AnyRef](
 
   def andApply[T](f: I => T): Seq[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
-    context.getServiceReferences(interface.getName, filter) match {
+    context.getServiceReferences(interface.getName, optionalFilterToString(filter)) match {
       case null => Nil
       case refs => refs.toList flatMap { invokeService(_, f, context) }
     }
@@ -58,7 +58,7 @@ private[scalamodules] class ServicesFinder[I <: AnyRef](
 
   def andApply[T](f: (I, Props) => T): Seq[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
-    context.getServiceReferences(interface.getName, filter) match {
+    context.getServiceReferences(interface.getName, optionalFilterToString(filter)) match {
       case null => Nil
       case refs => refs.toList flatMap { ref => invokeService(ref, f(_: I, ref.properties), context) }
     }

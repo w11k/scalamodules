@@ -53,16 +53,19 @@ private[scalamodules] class ServicesWatcher[I <: AnyRef](
     }
 
     val tracker = new ServiceTracker(context, context createFilter fullFilter.toString, null) {
+
       override def addingService(serviceReference: ServiceReference) = {
         val service = context getService serviceReference
         val serviceEvent = AddingService(service.asInstanceOf[I], serviceReference.properties)
         if (f.isDefinedAt(serviceEvent)) f(serviceEvent)
         service
       }
+
       override def modifiedService(serviceReference: ServiceReference, service: AnyRef) {
         val serviceEvent = ServiceModified(service.asInstanceOf[I], serviceReference.properties)
         if (f.isDefinedAt(serviceEvent)) f(serviceEvent)
       }
+
       override def removedService(serviceReference: ServiceReference, service: AnyRef) {
         val serviceEvent = ServiceRemoved(service.asInstanceOf[I], serviceReference.properties)
         if (f.isDefinedAt(serviceEvent)) f(serviceEvent)
