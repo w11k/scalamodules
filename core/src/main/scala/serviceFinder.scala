@@ -8,53 +8,60 @@
 package com.weiglewilczek.scalamodules
 
 import org.osgi.framework.BundleContext
+import scala.collection.Seq
 
-private[scalamodules] class ServiceFinder[I <: AnyRef](interface: Class[I])(context: BundleContext) {
+private[scalamodules] class ServiceFinder[I <: AnyRef](
+    interface: Class[I],
+    context: BundleContext) {
+
   require(interface != null, "The service interface must not be null!")
   require(context != null, "The BundleContext must not be null!")
 
   def andApply[T](f: I => T): Option[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
     context getServiceReference interface.getName match {
-      case null             => None
-      case serviceReference => invokeService(serviceReference, f)(context)
+      case null => None
+      case ref => invokeService(ref, f, context)
     }
   }
 
-  def andApply[T](f: (I, Properties) => T): Option[T] = {
+  def andApply[T](f: (I, Props) => T): Option[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
     context getServiceReference interface.getName match {
-      case null             => None
-      case serviceReference => invokeService(serviceReference, f(_: I, serviceReference.properties))(context)
+      case null => None
+      case ref => invokeService(ref, f(_: I, ref.properties), context)
     }
   }
 }
 
-private[scalamodules] class ServicesFinder[I <: AnyRef]
-                                          (interface: Class[I], filter: Option[Filter] = None)
-                                          (context: BundleContext) {
+private[scalamodules] class ServicesFinder[I <: AnyRef](
+    interface: Class[I],
+    context: BundleContext,
+    filter: Option[Filter] = None) {
+
   require(interface != null, "The service interface must not be null!")
-  require(filter != null, "The filter must not be null!")
   require(context != null, "The BundleContext must not be null!")
+  require(filter != null, "The filter must not be null!")
 
   def withFilter(filter: Filter) = {
     require(filter != null, "The filter must not be null!")
-    new ServicesFinder(interface, Some(filter))(context)
+    new ServicesFinder(interface, context, Some(filter))
   }
 
-  def andApply[T](f: I => T): List[T] = {
+  def andApply[T](f: I => T): Seq[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
     context.getServiceReferences(interface.getName, filter map { _.toString } orNull) match {
-      case null              => Nil
-      case serviceReferences => (serviceReferences flatMap { r => invokeService(r, f)(context) }).toList
+      case null => Nil
+      case refs => refs.toList flatMap { invokeService(_, f, context) }
     }
   }
 
-  def andApply[T](f: (I, Properties) => T): List[T] = {
+  def andApply[T](f: (I, Props) => T): Seq[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
     context.getServiceReferences(interface.getName, filter map { _.toString} orNull) match {
-      case null              => Nil
-      case serviceReferences => (serviceReferences flatMap { r => invokeService(r, f(_: I, r.properties))(context) }).toList
+      case null => Nil
+      case refs =>
+        refs.toList flatMap { ref => invokeService(ref, f(_: I, ref.properties), context) }
     }
   }
 }
