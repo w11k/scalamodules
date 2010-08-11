@@ -8,18 +8,20 @@
 package com.weiglewilczek.scalamodules
 
 import org.osgi.framework.ServiceReference
-import scala.collection.immutable.{Map => IMap}
 
 /**
- * Pimped ServiceReference that eases using service properties.
+ * Pimped ServiceReference offering easier handling of service properties.
  */
 class RichServiceReference(serviceReference: ServiceReference) {
+
   require(serviceReference != null, "The ServiceReference must not be null!")
 
-  /** Return the service properties as a Scala Map. */
-  lazy val properties: Properties = IMap(fromServiceReference(serviceReference): _*)
+  /**
+   * Gives access to service properties as Props (alias for Scala Map[String, Any]).
+   */
+  lazy val properties: Props = Map(propsFrom(serviceReference): _*)
 
-  private def fromServiceReference(serviceReference: ServiceReference): Array[(String, Any)] = {
+  private def propsFrom(serviceReference: ServiceReference): Array[(String, Any)] = {
     serviceReference.getPropertyKeys match {
       case null => Array[(String, Any)]()
       case keys => keys map { key => (key, serviceReference getProperty key) }

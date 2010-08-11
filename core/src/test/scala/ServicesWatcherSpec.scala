@@ -17,13 +17,13 @@ class ServicesWatcherSpec extends Specification with Mockito {
     val interface = classOf[TestInterface1]
     val context = mock[BundleContext]
     "throw an IllegalArgumentException given a null service interface" in {
-      new ServicesWatcher(null)(context) must throwA[IllegalArgumentException]
-    }
-    "throw an IllegalArgumentException given a null Filter" in {
-      new ServicesWatcher(interface, null)(context) must throwA[IllegalArgumentException]
+      new ServicesWatcher(null, context) must throwA[IllegalArgumentException]
     }
     "throw an IllegalArgumentException given a null BundleContext" in {
-      new ServicesWatcher(interface)(null) must throwA[IllegalArgumentException]
+      new ServicesWatcher(interface, null) must throwA[IllegalArgumentException]
+    }
+    "throw an IllegalArgumentException given a null Filter" in {
+      new ServicesWatcher(interface, context, null) must throwA[IllegalArgumentException]
     }
   }
 
@@ -31,13 +31,13 @@ class ServicesWatcherSpec extends Specification with Mockito {
     val interface = classOf[TestInterface1]
     val context = mock[BundleContext]
     "throw an IllegalArgumentException given a null Filter" in {
-      new ServicesWatcher(interface)(context) withFilter null must throwA[IllegalArgumentException]
+      new ServicesWatcher(interface, context) withFilter null must throwA[IllegalArgumentException]
     }
   }
 
   "Calling ServicesWatcher.andHandle" should {
     "throw an IllegalArgumentException given a null partial function to handle ServiceEvents" in {
-      new ServicesWatcher(classOf[TestInterface1])(mock[BundleContext]).andHandle(null) must throwA[IllegalArgumentException]
+      new ServicesWatcher(classOf[TestInterface1], mock[BundleContext]).andHandle(null) must throwA[IllegalArgumentException]
     }
   }
 }

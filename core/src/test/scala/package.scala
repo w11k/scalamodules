@@ -93,22 +93,22 @@ class scalamodulesSpec extends Specification with Mockito {
     val context = mock[BundleContext]
     val serviceReference = mock[ServiceReference]
     "throw an IllegalArgumentException given a null BundleContext" in {
-      invokeService(serviceReference, { s: String => "" })(null) must throwA[IllegalArgumentException]
+      invokeService(serviceReference, { s: String => "" }, null) must throwA[IllegalArgumentException]
     }
     "throw an IllegalArgumentException given a null ServiceReference" in {
-      invokeService(null, { s: String => "" })(context) must throwA[IllegalArgumentException]
+      invokeService(null, { s: String => "" }, context) must throwA[IllegalArgumentException]
     }
     "throw an IllegalArgumentException given a null ServiceReference" in {
-      invokeService(serviceReference, null)(context) must throwA[IllegalArgumentException]
+      invokeService(serviceReference, null, context) must throwA[IllegalArgumentException]
     }
     "result in appropriate calls to BundleContext and return None" in {
       context.getService(serviceReference) returns null
-      invokeService(serviceReference, { s: String => "" })(context) mustBe None
+      invokeService(serviceReference, { s: String => "" }, context) mustBe None
       there was one(context).ungetService(serviceReference)
     }
     "result in appropriate calls to BundleContext and return Some" in {
       context.getService(serviceReference) returns "Scala"
-      invokeService(serviceReference, { s: String => s + "Modules" })(context) mustEqual Some("ScalaModules")
+      invokeService(serviceReference, { s: String => s + "Modules" }, context) mustEqual Some("ScalaModules")
       there was one(context).ungetService(serviceReference)
     }
   }

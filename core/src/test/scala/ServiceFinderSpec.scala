@@ -17,10 +17,10 @@ class ServiceFinderSpec extends Specification with Mockito {
     val interface = classOf[TestInterface1]
     val context = mock[BundleContext]
     "throw an IllegalArgumentException given a null service interface" in {
-      new ServicesFinder(null)(context) must throwA[IllegalArgumentException]
+      new ServicesFinder(null, context) must throwA[IllegalArgumentException]
     }
     "throw an IllegalArgumentException given a null BundleContext" in {
-      new ServicesFinder(interface)(null) must throwA[IllegalArgumentException]
+      new ServicesFinder(interface, null) must throwA[IllegalArgumentException]
     }
   }
 
@@ -30,17 +30,17 @@ class ServiceFinderSpec extends Specification with Mockito {
     val interface = classOf[TestInterface1]
     val service = mock[TestInterface1]
     "throw an IllegalArgumentException given a null function go be applied to the service" in {
-      new ServiceFinder(interface)(context) andApply (null: (TestInterface1 => Any)) must throwA[IllegalArgumentException]
+      new ServiceFinder(interface, context) andApply (null: (TestInterface1 => Any)) must throwA[IllegalArgumentException]
     }
     "return None when there is no requested service reference available" in {
       context.getServiceReference(interface.getName) returns null
-      val serviceFinder = new ServiceFinder(interface)(context)
+      val serviceFinder = new ServiceFinder(interface, context)
       serviceFinder andApply { _.name } mustBe None
     }
     "return None when there is a requested service reference available but no service" in {
       context.getServiceReference(interface.getName) returns serviceReference
       context.getService(serviceReference) returns null
-      val serviceFinder = new ServiceFinder(interface)(context)
+      val serviceFinder = new ServiceFinder(interface, context)
       serviceFinder andApply { _.name } mustBe None
       there was one(context).ungetService(serviceReference)
     }
@@ -48,7 +48,7 @@ class ServiceFinderSpec extends Specification with Mockito {
       context.getServiceReference(interface.getName) returns serviceReference
       context.getService(serviceReference) returns service
       service.name returns "YES"
-      val serviceFinder = new ServiceFinder(interface)(context)
+      val serviceFinder = new ServiceFinder(interface, context)
       val names = serviceFinder andApply { _.name }
       names mustEqual Some("YES")
       there was one(context).ungetService(serviceReference)

@@ -61,7 +61,7 @@ class BundleSpec(context: BundleContext) extends SpecsMatchers {
   private val Name = "name"
   private val ForFilter = "forfilter"
 
-  private def nameProperty(properties: Properties) = properties get Name getOrElse "" toString
+  private def nameProperty(properties: Props) = properties get Name getOrElse "" toString
 
   private trait ServiceInterface {
     def name: String

@@ -17,13 +17,13 @@ class ServicesFinderSpec extends Specification with Mockito {
     val interface = classOf[TestInterface1]
     val context = mock[BundleContext]
     "throw an IllegalArgumentException given a null service interface" in {
-      new ServicesFinder(null)(context) must throwA[IllegalArgumentException]
-    }
-    "throw an IllegalArgumentException given a null Filter" in {
-      new ServicesFinder(interface, null)(context) must throwA[IllegalArgumentException]
+      new ServicesFinder(null, context) must throwA[IllegalArgumentException]
     }
     "throw an IllegalArgumentException given a null BundleContext" in {
-      new ServicesFinder(interface)(null) must throwA[IllegalArgumentException]
+      new ServicesFinder(interface, null) must throwA[IllegalArgumentException]
+    }
+    "throw an IllegalArgumentException given a null Filter" in {
+      new ServicesFinder(interface, context, null) must throwA[IllegalArgumentException]
     }
   }
 
@@ -31,7 +31,7 @@ class ServicesFinderSpec extends Specification with Mockito {
     val interface = classOf[TestInterface1]
     val context = mock[BundleContext]
     "throw an IllegalArgumentException given a null Filter" in {
-      new ServicesFinder(interface)(context) withFilter null must throwA[IllegalArgumentException]
+      new ServicesFinder(interface, context) withFilter null must throwA[IllegalArgumentException]
     }
   }
 
@@ -43,17 +43,17 @@ class ServicesFinderSpec extends Specification with Mockito {
     val service = mock[TestInterface1]
     val service2 = mock[TestInterface1]
     "throw an IllegalArgumentException given a null function go be applied to the service" in {
-      new ServicesFinder(interface)(context) andApply (null: (TestInterface1 => Any)) must throwA[IllegalArgumentException]
+      new ServicesFinder(interface, context) andApply (null: (TestInterface1 => Any)) must throwA[IllegalArgumentException]
     }
     "return Nil when there are no requested service references available" in {
       context.getServiceReferences(interface.getName, null) returns null
-      val servicesFinder = new ServicesFinder(interface)(context)
+      val servicesFinder = new ServicesFinder(interface, context)
       servicesFinder andApply { _.name } mustBe Nil
     }
     "return Nil when there is a requested service references available but no service" in {
       context.getServiceReferences(interface.getName, null) returns Array(serviceReference)
       context.getService(serviceReference) returns null
-      val servicesFinder = new ServicesFinder(interface)(context)
+      val servicesFinder = new ServicesFinder(interface, context)
       servicesFinder andApply { _.name } mustBe Nil
       there was one(context).ungetService(serviceReference)
     }
@@ -61,7 +61,7 @@ class ServicesFinderSpec extends Specification with Mockito {
       context.getServiceReferences(interface.getName, "(&(a=1)(b=*))") returns Array(serviceReference)
       context.getService(serviceReference) returns service
       service.name returns "YES"
-      val servicesFinder = new ServicesFinder(interface, Some(("a" === "1") && "b".present))(context)
+      val servicesFinder = new ServicesFinder(interface, context, Some(("a" === "1") && "b".present))
       val names = servicesFinder andApply { _.name }
       names mustEqual List("YES")
       there was one(context).ungetService(serviceReference)
@@ -72,7 +72,7 @@ class ServicesFinderSpec extends Specification with Mockito {
       context.getService(serviceReference2) returns service2
       service.name returns "YES"
       service2.name returns "NO"
-      val servicesFinder = new ServicesFinder(interface)(context)
+      val servicesFinder = new ServicesFinder(interface, context)
       val names = servicesFinder andApply { (service, _) => service.name }
       names mustEqual List("YES", "NO")
       there was one(context).ungetService(serviceReference)
