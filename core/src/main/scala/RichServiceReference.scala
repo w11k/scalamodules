@@ -17,7 +17,7 @@ class RichServiceReference(serviceReference: ServiceReference) {
   require(serviceReference != null, "The ServiceReference must not be null!")
 
   /**
-   * Gives access to service properties as Props (Scala Map).
+   * Gives access to service properties as Props (alias for Scala Map[String, Any]).
    */
   lazy val properties: Props = Map(propsFrom(serviceReference): _*)
 

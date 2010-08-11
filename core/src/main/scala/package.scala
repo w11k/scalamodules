@@ -61,6 +61,9 @@ package object scalamodules {
     }
   }
 
+  private[scalamodules] implicit def optionalFilterToString(filter: Option[Filter]) =
+    filter map { _.toString } orNull
+
   private[scalamodules] def invokeService[I, T](
       serviceReference: ServiceReference,
       f: I => T,

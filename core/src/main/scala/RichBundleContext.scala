@@ -41,7 +41,6 @@ private[scalamodules] class RichBundleContext(context: BundleContext) {
       if (!interfaces.isEmpty) interfaces.toArray else allInterfacesOrClass
     }
 
-    // Passing null for empty properties looks ugly, but that's the way the OSGi API works!
     context.registerService(interfaces, service, if (properties.isEmpty) null else properties)
   }
 

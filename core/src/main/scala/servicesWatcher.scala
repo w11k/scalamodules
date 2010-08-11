@@ -18,13 +18,16 @@ sealed abstract class ServiceEvent[I](service: I, properties: Props) {
 }
 
 /** A service is being added to the watched (tracked) services. */
-case class AddingService[I](service: I, properties: Props) extends ServiceEvent[I](service, properties)
+case class AddingService[I](service: I, properties: Props)
+  extends ServiceEvent[I](service, properties)
 
 /** A watched (tracked) service was modified. */
-case class ServiceModified[I](service: I, properties: Props) extends ServiceEvent[I](service, properties)
+case class ServiceModified[I](service: I, properties: Props)
+  extends ServiceEvent[I](service, properties)
 
 /** A service was removed from the watched (tracked) services. */
-case class ServiceRemoved[I](service: I, properties: Props) extends ServiceEvent[I](service, properties)
+case class ServiceRemoved[I](service: I, properties: Props)
+  extends ServiceEvent[I](service, properties)
 
 private[scalamodules] class ServicesWatcher[I <: AnyRef](
     interface: Class[I],
@@ -41,13 +44,15 @@ private[scalamodules] class ServicesWatcher[I <: AnyRef](
   }
 
   def andHandle(f: PartialFunction[ServiceEvent[I], Unit]) {
+
     require(f != null, "The partial function to handle ServiceEvents must not be null!")
 
-    val filterString = filter match {
-      case None    => Filter(OBJECTCLASS === interface.getName).toString
-      case Some(f) => Filter((OBJECTCLASS === interface.getName) && f.component).toString
+    val fullFilter = filter match {
+      case None => Filter(OBJECTCLASS === interface.getName)
+      case Some(f) => Filter(OBJECTCLASS === interface.getName && f.component)
     }
-    val tracker = new ServiceTracker(context, context createFilter filterString, null) {
+
+    val tracker = new ServiceTracker(context, context createFilter fullFilter.toString, null) {
       override def addingService(serviceReference: ServiceReference) = {
         val service = context getService serviceReference
         val serviceEvent = AddingService(service.asInstanceOf[I], serviceReference.properties)
@@ -64,6 +69,7 @@ private[scalamodules] class ServicesWatcher[I <: AnyRef](
         context ungetService serviceReference
       }
     }
+
     tracker.open()
   }
 }
