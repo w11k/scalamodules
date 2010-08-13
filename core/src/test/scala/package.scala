@@ -16,11 +16,23 @@ import scala.collection.immutable.{ Map => IMap }
 
 class scalamodulesSpec extends Specification with Mockito {
 
+  "Calling a toRichBundleContext" should {
+    "throw an IllegalArgumentException given a null BundleContext" in {
+      toRichBundleContext(null) must throwA[IllegalArgumentException]
+    }
+  }
+
   "A BundleContext" should {
     "be converted to a RichBundleContext implicitly" in {
       val context = mock[BundleContext]
       val richBundleContext: RichBundleContext = context
       richBundleContext mustNotBe null // A Matcher must be executed, else the example is regarded pending!
+    }
+  }
+
+  "Calling a toRichServiceReference" should {
+    "throw an IllegalArgumentException given a null ServiceReference" in {
+      toRichServiceReference(null) must throwA[IllegalArgumentException]
     }
   }
 
@@ -43,6 +55,32 @@ class scalamodulesSpec extends Specification with Mockito {
       val map: Map[String, String] = tuple2
       map must haveSize(1)
       map must havePair("Scala" -> "Modules")
+    }
+  }
+
+  "Calling a stringToSimpleOpBuilder" should {
+    "throw an IllegalArgumentException given a null String" in {
+      stringToSimpleOpBuilder(null) must throwA[IllegalArgumentException]
+    }
+  }
+
+  "A String" should {
+    "be converted to a SimpleOpBuilder implicitly" in {
+      val simpleOpBuilder: SimpleOpBuilder = ""
+      simpleOpBuilder mustNotBe null // A Matcher must be executed, else the example is regarded pending!
+    }
+  }
+
+  "Calling a stringToPresentBuilder" should {
+    "throw an IllegalArgumentException given a null String" in {
+      stringToPresentBuilder(null) must throwA[IllegalArgumentException]
+    }
+  }
+
+  "A String" should {
+    "be converted to a SimpleOpBuilder implicitly" in {
+      val presentBuilder: PresentBuilder = ""
+      presentBuilder mustNotBe null // A Matcher must be executed, else the example is regarded pending!
     }
   }
 
@@ -92,15 +130,6 @@ class scalamodulesSpec extends Specification with Mockito {
   "Calling invokeService" should {
     val context = mock[BundleContext]
     val serviceReference = mock[ServiceReference]
-    "throw an IllegalArgumentException given a null BundleContext" in {
-      invokeService(serviceReference, { s: String => "" }, null) must throwA[IllegalArgumentException]
-    }
-    "throw an IllegalArgumentException given a null ServiceReference" in {
-      invokeService(null, { s: String => "" }, context) must throwA[IllegalArgumentException]
-    }
-    "throw an IllegalArgumentException given a null ServiceReference" in {
-      invokeService(serviceReference, null, context) must throwA[IllegalArgumentException]
-    }
     "result in appropriate calls to BundleContext and return None" in {
       context.getService(serviceReference) returns null
       invokeService(serviceReference, { s: String => "" }, context) mustBe None

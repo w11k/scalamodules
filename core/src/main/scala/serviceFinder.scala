@@ -14,8 +14,8 @@ private[scalamodules] class ServiceFinder[I <: AnyRef](
     interface: Class[I],
     context: BundleContext) {
 
-  require(interface != null, "The service interface must not be null!")
-  require(context != null, "The BundleContext must not be null!")
+  assert(interface != null, "The service interface must not be null!")
+  assert(context != null, "The BundleContext must not be null!")
 
   def andApply[T](f: I => T): Option[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
@@ -39,9 +39,9 @@ private[scalamodules] class ServicesFinder[I <: AnyRef](
     context: BundleContext,
     filter: Option[Filter] = None) {
 
-  require(interface != null, "The service interface must not be null!")
-  require(context != null, "The BundleContext must not be null!")
-  require(filter != null, "The filter must not be null!")
+  assert(interface != null, "The service interface must not be null!")
+  assert(context != null, "The BundleContext must not be null!")
+  assert(filter != null, "The filter must not be null!")
 
   def withFilter(filter: Filter) = {
     require(filter != null, "The filter must not be null!")

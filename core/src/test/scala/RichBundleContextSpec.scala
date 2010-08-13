@@ -14,12 +14,6 @@ import org.specs.mock.Mockito
 
 class RichBundleContextSpec extends Specification with Mockito {
 
-  "Creating a RichBundleContext" should {
-    "throw an IllegalArgumentException given a null BundleContext" in {
-      new RichBundleContext(null) must throwA[IllegalArgumentException]
-    }
-  }
-
   "Calling RichBundleContext.createService" should {
     val context = mock[BundleContext]
     val service = new TestClass1

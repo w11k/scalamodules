@@ -13,12 +13,6 @@ import org.specs.mock.Mockito
 
 class RichServiceReferenceSpec extends Specification with Mockito {
 
-  "Creating a RichServiceReference" should {
-    "throw an IllegalArgumentException given a null ServiceReference" in {
-      new RichServiceReference(null) must throwA [IllegalArgumentException]
-    }
-  }
-
   "Calling RichServiceReference.properties" should {
     val serviceReference = mock[ServiceReference]
     "return the empty Map given there are no service properties" in {

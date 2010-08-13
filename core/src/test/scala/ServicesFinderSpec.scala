@@ -13,20 +13,6 @@ import org.specs.mock.Mockito
 
 class ServicesFinderSpec extends Specification with Mockito {
 
-  "Creating a ServicesFinder" should {
-    val interface = classOf[TestInterface1]
-    val context = mock[BundleContext]
-    "throw an IllegalArgumentException given a null service interface" in {
-      new ServicesFinder(null, context) must throwA[IllegalArgumentException]
-    }
-    "throw an IllegalArgumentException given a null BundleContext" in {
-      new ServicesFinder(interface, null) must throwA[IllegalArgumentException]
-    }
-    "throw an IllegalArgumentException given a null Filter" in {
-      new ServicesFinder(interface, context, null) must throwA[IllegalArgumentException]
-    }
-  }
-
   "Calling ServicesFinder.withFilter" should {
     val interface = classOf[TestInterface1]
     val context = mock[BundleContext]
