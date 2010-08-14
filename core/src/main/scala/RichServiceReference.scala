@@ -12,9 +12,9 @@ import org.osgi.framework.ServiceReference
 /**
  * Pimped ServiceReference offering easier handling of service properties.
  */
-class RichServiceReference(serviceReference: ServiceReference) {
+private[scalamodules] class RichServiceReference(serviceReference: ServiceReference) {
 
-  require(serviceReference != null, "The ServiceReference must not be null!")
+  assert(serviceReference != null, "The ServiceReference must not be null!")
 
   /**
    * Gives access to service properties as Props (alias for Scala Map[String, Any]).

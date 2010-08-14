@@ -34,9 +34,9 @@ private[scalamodules] class ServicesWatcher[I <: AnyRef](
     context: BundleContext,
     filter: Option[Filter] = None) {
 
-  require(interface != null, "The service interface must not be null!")
-  require(context != null, "The BundleContext must not be null!")
-  require(filter != null, "The filter must not be null!")
+  assert(interface != null, "The service interface must not be null!")
+  assert(context != null, "The BundleContext must not be null!")
+  assert(filter != null, "The filter must not be null!")
 
   def withFilter(filter: Filter) = {
     require(filter != null, "The filter must not be null!")

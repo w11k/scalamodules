@@ -12,7 +12,7 @@ import scala.collection.Set
 
 private[scalamodules] class RichBundleContext(context: BundleContext) {
 
-  require(context != null, "The BundleContext must not be null!")
+  assert(context != null, "The BundleContext must not be null!")
 
   def createService[S <: AnyRef, I1 >: S <: AnyRef, I2 >: S <: AnyRef, I3 >: S <: AnyRef](
       service: S,

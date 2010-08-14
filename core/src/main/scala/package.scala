@@ -27,13 +27,18 @@ package object scalamodules {
    * Implicitly converts a BundleContext into a RichBundleContext.
    * Entry point to the ScalaModules DSL.
    */
-  implicit def toRichBundleContext(context: BundleContext) = new RichBundleContext(context)
+  implicit def toRichBundleContext(context: BundleContext) = {
+    require(context != null, "The BundleContext must not be null!")
+    new RichBundleContext(context)
+  }
 
   /**
    * Implicitly converts a ServiceReference into a RichServiceReference.
    */
-  implicit def toRichServiceReference(serviceReference: ServiceReference) =
+  implicit def toRichServiceReference(serviceReference: ServiceReference) = {
+    require(serviceReference != null, "The ServiceReference must not be null!")
     new RichServiceReference(serviceReference)
+  }
 
   /**
    * Implicitly converts a Pair into a Map in order to allow for easy definition of
@@ -44,12 +49,18 @@ package object scalamodules {
   /**
    * Implicitly converts the given string into a builder for a "simple operation" filter component.
    */
-  implicit def stringToSimpleOpBuilder(attr: String) = new SimpleOpBuilder(attr)
+  implicit def stringToSimpleOpBuilder(attr: String) = {
+    require(attr != null, "The attr must not be null!")
+    new SimpleOpBuilder(attr)
+  }
 
   /**
    * Returns converts the given string into a builder for a "present" filter component.
    */
-  implicit def stringToPresentBuilder(attr: String) = new PresentBuilder(attr)
+  implicit def stringToPresentBuilder(attr: String) = {
+    require(attr != null, "The attr must not be null!")
+    new PresentBuilder(attr)
+  }
 
   /**
    * Returns the given or inferred type wrapped into a Some.
@@ -81,17 +92,19 @@ package object scalamodules {
     }
   }
 
-  private[scalamodules] def optionalFilterToString(filter: Option[Filter]) =
+  private[scalamodules] def optionalFilterToString(filter: Option[Filter]) = {
+    assert(filter != null, "The optional Filter must not be null!")
     filter map { _.toString } orNull
+  }
 
   private[scalamodules] def invokeService[I, T](
       serviceReference: ServiceReference,
       f: I => T,
       context: BundleContext): Option[T] = {
 
-    require(serviceReference != null, "The ServiceReference must not be null!")
-    require(f != null, "The function to be applied to the service must not be null!")
-    require(context != null, "The BundleContext must not be null!")
+    assert(serviceReference != null, "The ServiceReference must not be null!")
+    assert(f != null, "The function to be applied to the service must not be null!")
+    assert(context != null, "The BundleContext must not be null!")
 
     try {
       context getService serviceReference match {

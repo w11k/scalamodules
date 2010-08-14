@@ -13,31 +13,27 @@ import org.specs.mock.Mockito
 
 class ServicesWatcherSpec extends Specification with Mockito {
 
-  "Creating a ServicesWatcher" should {
-    val interface = classOf[TestInterface1]
-    val context = mock[BundleContext]
-    "throw an IllegalArgumentException given a null service interface" in {
-      new ServicesWatcher(null, context) must throwA[IllegalArgumentException]
-    }
-    "throw an IllegalArgumentException given a null BundleContext" in {
-      new ServicesWatcher(interface, null) must throwA[IllegalArgumentException]
-    }
-    "throw an IllegalArgumentException given a null Filter" in {
-      new ServicesWatcher(interface, context, null) must throwA[IllegalArgumentException]
-    }
-  }
-
   "Calling ServicesWatcher.withFilter" should {
-    val interface = classOf[TestInterface1]
-    val context = mock[BundleContext]
     "throw an IllegalArgumentException given a null Filter" in {
-      new ServicesWatcher(interface, context) withFilter null must throwA[IllegalArgumentException]
+      new ServicesWatcher(classOf[String], mock[BundleContext]) withFilter null must throwA[IllegalArgumentException]
     }
   }
 
   "Calling ServicesWatcher.andHandle" should {
     "throw an IllegalArgumentException given a null partial function to handle ServiceEvents" in {
-      new ServicesWatcher(classOf[TestInterface1], mock[BundleContext]).andHandle(null) must throwA[IllegalArgumentException]
+      new ServicesWatcher(classOf[String], mock[BundleContext]).andHandle(null) must throwA[IllegalArgumentException]
+    }
+  }
+}
+
+class ServiceEventSpec extends Specification with Mockito {
+
+  "Creating a ServiceEvent (subclass)" should {
+    "throw an IllegalArgumentException given a null service" in {
+      new AddingService(null, Map[String, Any]()) must throwA [IllegalArgumentException]
+    }
+    "throw an IllegalArgumentException given null service properties" in {
+      new AddingService("", null) must throwA [IllegalArgumentException]
     }
   }
 }

@@ -12,6 +12,7 @@ private[scalamodules] object Filter {
 }
 
 private[scalamodules] case class Filter(component: FilterComponent) {
+  assert(component != null, "The FilterComponent must not be null!")
   override def toString = "(%s)" format component
 }
 
@@ -26,23 +27,32 @@ private[scalamodules] object FilterComponent {
 private[scalamodules] sealed abstract class FilterComponent
 
 private[scalamodules] case class And(filters: List[Filter]) extends FilterComponent {
+  assert(filters != null, "The filters must not be null!")
   override def toString = "&" + filters.mkString
 }
 
 private[scalamodules] case class Or(filters: List[Filter]) extends FilterComponent {
+  assert(filters != null, "The filters must not be null!")
   override def toString = "|" + filters.mkString
 }
 
 private[scalamodules] case class Not(filter: Filter) extends FilterComponent {
+  assert(filter != null, "The Filter must not be null!")
   override def toString = "!" + filter
 }
 
 private[scalamodules] case class SimpleOp(attr: String, filterType: FilterType, value: String)
   extends FilterComponent {
+
+  assert(attr != null, "The attr must not be null!")
+  assert(filterType != null, "The FilterType must not be null!")
+  assert(value != null, "The value must not be null!")
+
   override def toString = attr + filterType + value
 }
 
 private[scalamodules] case class Present(attr: String) extends FilterComponent {
+  assert(attr != null, "The attr must not be null!")
   override def toString = attr + "=*"
 }
 
@@ -70,6 +80,8 @@ private[scalamodules] case object LessEqual extends FilterType {
 
 private[scalamodules] class AndBuilder(component: FilterComponent) {
 
+  assert(component != null, "The FilterComponent must not be null!")
+
   /**
    *
    */
@@ -78,13 +90,18 @@ private[scalamodules] class AndBuilder(component: FilterComponent) {
   /**
    *
    */
-  def and(nextComponent: FilterComponent) = component match {
-    case And(filters) => And(filters :+ Filter(nextComponent))
-    case _ => And(Filter(component) :: Filter(nextComponent) :: Nil)
+  def and(nextComponent: FilterComponent) = {
+    require(nextComponent != null, "The FilterComponent must not be null!")
+    component match {
+      case And(filters) => And(filters :+ Filter(nextComponent))
+      case _ => And(Filter(component) :: Filter(nextComponent) :: Nil)
+    }
   }
 }
 
 private[scalamodules] class OrBuilder(component: FilterComponent) {
+
+  assert(component != null, "The FilterComponent must not be null!")
 
   /**
    *
@@ -94,13 +111,18 @@ private[scalamodules] class OrBuilder(component: FilterComponent) {
   /**
    *
    */
-  def or(nextComponent: FilterComponent) = component match {
-    case Or(filters) => Or(filters :+ Filter(nextComponent))
-    case _ => Or(Filter(component) :: Filter(nextComponent) :: Nil)
+  def or(nextComponent: FilterComponent) = {
+    require(nextComponent != null, "The FilterComponent must not be null!")
+    component match {
+      case Or(filters) => Or(filters :+ Filter(nextComponent))
+      case _ => Or(Filter(component) :: Filter(nextComponent) :: Nil)
+    }
   }
 }
 
 private[scalamodules] class NotBuilder(component: FilterComponent) {
+
+  assert(component != null, "The FilterComponent must not be null!")
 
   /**
    *
@@ -115,6 +137,8 @@ private[scalamodules] class NotBuilder(component: FilterComponent) {
 
 private[scalamodules] class SimpleOpBuilder(attr: String) {
 
+  assert(attr != null, "The attr must not be null!")
+
   /**
    *
    */
@@ -123,7 +147,10 @@ private[scalamodules] class SimpleOpBuilder(attr: String) {
   /**
    *
    */
-  def equal(value: String) = SimpleOp(attr, Equal, value.toString)
+  def equal(value: String) = {
+    require(value != null, "The value must not be null!")
+    SimpleOp(attr, Equal, value.toString)
+  }
 
   /**
    *
@@ -133,7 +160,10 @@ private[scalamodules] class SimpleOpBuilder(attr: String) {
   /**
    *
    */
-  def approx(value: String) = SimpleOp(attr, Approx, value.toString)
+  def approx(value: String) = {
+    require(value != null, "The value must not be null!")
+    SimpleOp(attr, Approx, value.toString)
+  }
 
   /**
    *
@@ -148,7 +178,10 @@ private[scalamodules] class SimpleOpBuilder(attr: String) {
   /**
    *
    */
-  def greaterEqual(value: String) = SimpleOp(attr, GreaterEqual, value.toString)
+  def greaterEqual(value: String) = {
+    require(value != null, "The value must not be null!")
+    SimpleOp(attr, GreaterEqual, value.toString)
+  }
 
   /**
    *
@@ -163,10 +196,15 @@ private[scalamodules] class SimpleOpBuilder(attr: String) {
   /**
    *
    */
-  def lessEqual(value: String) = SimpleOp(attr, LessEqual, value.toString)
+  def lessEqual(value: String) = {
+    require(value != null, "The value must not be null!")
+    SimpleOp(attr, LessEqual, value.toString)
+  }
 }
 
 private[scalamodules] class PresentBuilder(attr: String) {
+
+  assert(attr != null, "The attr must not be null!")
 
   /**
    *
