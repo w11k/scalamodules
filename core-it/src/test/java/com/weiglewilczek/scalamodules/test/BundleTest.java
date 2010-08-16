@@ -25,9 +25,10 @@ public class BundleTest {
 
     @Configuration
     public static Option[] configuration() {
+        String version = System.getProperty("scalamodules.version");
         return options(
             provision(
-                bundle("file:core/target/scala_2.8.0/scalamodules-core_2.8.0-2.0.jar"),
+                bundle("file:core/target/scala_2.8.0/scalamodules-core_2.8.0-" + version + ".jar"),
                 bundle("mvn:com.weiglewilczek.scala-lang-osgi/scala-library/2.8.0"),
                 wrappedBundle(bundle("file:core-it/lib_managed/scala_2.8.0/test/specs_2.8.0-1.6.5.jar"))
             )
