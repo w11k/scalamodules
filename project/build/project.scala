@@ -36,6 +36,22 @@ class ScalaModulesParentProject(info: ProjectInfo) extends ParentProject(info) {
   }
 
   // ===================================================================================================================
+  // Publishing
+  // ===================================================================================================================
+
+  override def managedStyle = ManagedStyle.Maven
+  override def deliverAction = super.deliverAction dependsOn(publishLocal) // Fix for issue 99!
+  Credentials(Path.userHome / ".ivy2" / ".credentials" / ".scala-tools.org", log)
+  lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
+//  lazy val publishTo = Resolver.file("Local Test Repository", Path fileProperty "java.io.tmpdir" asFile)
+
+  // ===================================================================================================================
+  // System properties
+  // ===================================================================================================================
+
+  System.setProperty("scalamodules.version", projectVersion.value.toString)
+
+  // ===================================================================================================================
   // scalamodules-core subproject
   // ===================================================================================================================
 
@@ -43,8 +59,14 @@ class ScalaModulesParentProject(info: ProjectInfo) extends ParentProject(info) {
 
   class CoreProject(info: ProjectInfo) extends DefaultProject(info) with BNDPlugin {
     import Dependencies._
+
     override def libraryDependencies = Set(osgiCore, osgiCompendium, specs, mockito)
     override def defaultExcludes = super.defaultExcludes || "*-sources.jar"
+
+    override def packageSrcJar = defaultJarPath("-sources.jar")
+    lazy val sourceArtifact = Artifact.sources(artifactID)
+    override def packageToPublishActions = super.packageToPublishActions ++ Seq(packageSrc)
+
     override def bndExportPackage = "com.weiglewilczek.scalamodules;version=\"%s\"".format(projectVersion.value) :: Nil
   }
 
@@ -56,8 +78,10 @@ class ScalaModulesParentProject(info: ProjectInfo) extends ParentProject(info) {
 
   class CoreITProject(info: ProjectInfo) extends DefaultProject(info) {
     import Dependencies._
+
     override def libraryDependencies = Set(specs, mockito, paxExam, paxExamJUnit, paxExamCD, junitIF)
     override def defaultExcludes = super.defaultExcludes || "*-sources.jar"
+
     override def testAction = super.testAction dependsOn coreProject.`package`
     override def testFrameworks =
       super.testFrameworks ++ Seq(new TestFramework("com.novocode.junit.JUnitFrameworkNoMarker"))
