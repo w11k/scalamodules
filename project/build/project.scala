@@ -8,7 +8,7 @@
 import com.weiglewilczek.bnd4sbt.BNDPlugin
 import sbt._
 
-class ScalaModulesParentProject(info: ProjectInfo) extends ParentProject(info) {
+class ScalaModulesParentProject(info: ProjectInfo) extends ParentProject(info) with UnpublishedProject {
 
   // ===================================================================================================================
   // Dependencies
@@ -76,7 +76,7 @@ class ScalaModulesParentProject(info: ProjectInfo) extends ParentProject(info) {
 
   lazy val coreITProject = project("core-it", "scalamodules-core-it", new CoreITProject(_), coreProject)
 
-  class CoreITProject(info: ProjectInfo) extends DefaultProject(info) {
+  class CoreITProject(info: ProjectInfo) extends DefaultProject(info) with UnpublishedProject {
     import Dependencies._
 
     override def libraryDependencies = Set(specs, mockito, paxExam, paxExamJUnit, paxExamCD, junitIF)
@@ -86,4 +86,12 @@ class ScalaModulesParentProject(info: ProjectInfo) extends ParentProject(info) {
     override def testFrameworks =
       super.testFrameworks ++ Seq(new TestFramework("com.novocode.junit.JUnitFrameworkNoMarker"))
   }
+}
+
+trait UnpublishedProject extends BasicManagedProject {
+   override def publishLocalAction = task { None }
+   override def deliverLocalAction = task { None }
+   override def publishAction = task { None }
+   override def deliverAction = task { None }
+   override def artifacts = Set.empty
 }
