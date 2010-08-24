@@ -8,7 +8,6 @@
 package com.weiglewilczek.scalamodules
 
 import org.osgi.framework.BundleContext
-import scala.collection.Seq
 
 private[scalamodules] class ServiceFinder[I <: AnyRef](
     interface: Class[I],
