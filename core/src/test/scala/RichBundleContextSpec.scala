@@ -43,10 +43,22 @@ class RichBundleContextSpec extends Specification with Mockito {
       new RichBundleContext(context).createService(service)
       there was one(context).registerService(Array(classOf[TestInterface2].getName), service, null)
     }
-    "call BundleContext.registerService with the two interfaces implemented by the given service object" in {
+    "call BundleContext.registerService with the interfaces implemented by the given service object" in {
       val service = new TestClass3
       new RichBundleContext(context).createService(service)
       there was one(context).registerService(Array(classOf[TestInterface2].getName, classOf[TestInterface3].getName), service, null)
+    }
+    "call BundleContext.registerService with the interfaces implemented by the given service object" in {
+      val service = new TestClass4
+      new RichBundleContext(context).createService(service)
+      there was one(context).registerService(
+        Array(
+          classOf[TestInterface4c].getName,
+          classOf[TestInterface4b].getName,
+          classOf[TestInterface4a].getName,
+          classOf[TestInterface4].getName),
+        service,
+        null)
     }
     "call BundleContext.registerService with the explicitly given service interface" in {
       val service = new TestClass3

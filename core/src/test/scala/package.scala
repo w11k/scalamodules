@@ -146,9 +146,14 @@ class scalamodulesSpec extends Specification with Mockito {
 class TestClass1
 class TestClass2 extends TestInterface2
 class TestClass3 extends TestInterface2 with TestInterface3
+class TestClass4 extends TestInterface4
 
 trait TestInterface1 {
   def name = getClass.getName
 }
 trait TestInterface2
 trait TestInterface3
+trait TestInterface4 extends TestInterface4a
+trait TestInterface4a extends TestInterface4b
+trait TestInterface4b extends TestInterface4c
+trait TestInterface4c
