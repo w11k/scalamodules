@@ -8,6 +8,7 @@
 package com.weiglewilczek.scalamodules
 
 import org.osgi.framework.{ BundleContext, ServiceRegistration }
+import scala.annotation.tailrec
 
 private[scalamodules] class RichBundleContext(context: BundleContext) {
 
@@ -27,12 +28,21 @@ private[scalamodules] class RichBundleContext(context: BundleContext) {
     require(interface3 != null, "The third service interface must not be null!")
 
     val interfaces = {
-      // TODO Can we make this tail recursive?
-      def allInterfaces(clazz: Class[_]): Set[Class[_]] = {
-        val interfaces = clazz.getInterfaces.toSet filter { _ != classOf[ScalaObject] }
-        interfaces ++ (interfaces flatMap allInterfaces)
-      }
-      val allInterfacesOrClass = {
+      lazy val allInterfacesOrClass = {
+        def allInterfaces(clazz: Class[_]) = {
+          def interfacesWithoutScalaObject(clazz: Class[_]) =
+            clazz.getInterfaces.toList filter { _ != classOf[ScalaObject] }
+          @tailrec
+          def allInterfacesTR(interfaces: List[Class[_]], result: List[Class[_]]): List[Class[_]] =
+            interfaces match {
+              case Nil => result
+              case _ => {
+                val nextInterfaces = interfaces flatMap interfacesWithoutScalaObject
+                allInterfacesTR(nextInterfaces, interfaces ::: result)
+              }
+            }
+          allInterfacesTR(interfacesWithoutScalaObject(clazz), Nil).distinct
+        }
         val interfaces = allInterfaces(service.getClass).toArray
         if (!interfaces.isEmpty) interfaces map { _.getName } else Array(service.getClass.getName)
       }
