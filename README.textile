@@ -1,0 +1,7 @@
+p=. !http://github.com/downloads/weiglewilczek/scalamodules/scalamodules-logo-100x100.png!
+
+ScalaModules is an elegant and intuitive domain specific language for "OSGi":http://www.osgi.org/ development written in the "Scala":http://www.scala-lang.org/ programming language.
+
+Why would you need such a DSL? Because the OSGi API is rather low-level so that programming simple tasks, e.g. consuming an OSGi service, can be quite cumbersome. ScalaModules offers high-level abstractions for the most important OSGi concepts so that you can focus on what is to be done instead of how it should be done.
+
+For further information please visit our "Wiki":http://wiki.github.com/weiglewilczek/scalamodules.
