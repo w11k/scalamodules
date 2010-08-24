@@ -8,7 +8,6 @@
 package com.weiglewilczek.scalamodules
 
 import org.osgi.framework.{ BundleContext, ServiceRegistration }
-import scala.collection.Set
 
 private[scalamodules] class RichBundleContext(context: BundleContext) {
 

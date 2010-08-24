@@ -11,7 +11,7 @@ package test
 import org.junit.runners.Suite.SuiteClasses
 import org.osgi.framework.BundleContext
 import org.specs.SpecsMatchers
-import scala.collection.mutable.Map
+import scala.collection.mutable
 
 @SuiteClasses(Array(classOf[BundleSpec]))
 class BundleSpec(context: BundleContext) extends SpecsMatchers {
@@ -19,7 +19,7 @@ class BundleSpec(context: BundleContext) extends SpecsMatchers {
   def test() {
     val Service1 = "service1"
     val Service2 = "service2"
-    val services = Map[String, String]()
+    val services = mutable.Map[String, String]()
 
     context watchServices withInterface[ServiceInterface] withFilter ForFilter.present andHandle {
       case AddingService(service, properties)   => services += (service.name -> nameProperty(properties))

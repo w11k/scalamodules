@@ -7,11 +7,8 @@
  */
 package com.weiglewilczek
 
-import scalamodules.RichServiceReference
-
 import java.util.Dictionary
 import org.osgi.framework.{ BundleContext, ServiceReference }
-import scala.collection.Map
 
 /**
  * Some implicit conversions and other stuff essential for the ScalaModules DSL.
