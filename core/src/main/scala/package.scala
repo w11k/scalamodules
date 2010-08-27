@@ -22,7 +22,7 @@ package object scalamodules {
 
   /**
    * Implicitly converts a BundleContext into a RichBundleContext.
-   * @param context The BundleContext to be converted
+   * @param context The BundleContext to be converted; must not be null!
    * @return The RichBundleContext initialized with the given BundleContext
    */
   implicit def toRichBundleContext(context: BundleContext): RichBundleContext = {
@@ -32,7 +32,7 @@ package object scalamodules {
 
   /**
    * Implicitly converts a ServiceReference into a RichServiceReference.
-   * @param serviceReference The ServiceReference to be converted
+   * @param serviceReference The ServiceReference to be converted; must not be null!
    * @return The RichServiceReference initialized with the given ServiceReference
    */
   implicit def toRichServiceReference(serviceReference: ServiceReference): RichServiceReference = {
@@ -50,7 +50,7 @@ package object scalamodules {
 
   /**
    * Implicitly converts a String attribute into a SimpleOpBuilder FilterComponent.
-   * @param attr The attribute to be converted
+   * @param attr The attribute to be converted; must not be null!
    * @return A SimpleOpBuilder initialized with the given String attribute
    */
   implicit def toSimpleOpBuilder(attr: String): SimpleOpBuilder = {
@@ -60,7 +60,7 @@ package object scalamodules {
 
   /**
    * Implicitly converts a String attribute into a PresentBuilder FilterComponent.
-   * @param attr The attribute to be converted
+   * @param attr The attribute to be converted; must not be null!
    * @return A PresentBuilder initialized with the given String attribute
    */
   implicit def toPresentBuilder(attr: String): PresentBuilder = {

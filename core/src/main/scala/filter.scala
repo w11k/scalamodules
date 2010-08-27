@@ -35,27 +35,33 @@ private[scalamodules] object FilterComponent {
 
   /**
    * Implicitly converts a FilterComponent into an AndBuilder.
-   * @param filterComponent The FilterComponent to be converted
+   * @param filterComponent The FilterComponent to be converted; must not be null!
    * @return The AndBuilder initialized with the given FilterComponent
    */
-  implicit def filterComponentToAndBuilder(filterComponent: FilterComponent) =
+  implicit def filterComponentToAndBuilder(filterComponent: FilterComponent) = {
+    require(filterComponent != null, "The FilterComponent must not be null!")
     new AndBuilder(filterComponent)
+  }
 
   /**
    * Implicitly converts a FilterComponent into an OrBuilder.
-   * @param filterComponent The FilterComponent to be converted
+   * @param filterComponent The FilterComponent to be converted; must not be null!
    * @return The OrBuilder initialized with the given FilterComponent
    */
-  implicit def filterComponentToOrBuilder(filterComponent: FilterComponent) =
+  implicit def filterComponentToOrBuilder(filterComponent: FilterComponent) = {
+    require(filterComponent != null, "The FilterComponent must not be null!")
     new OrBuilder(filterComponent)
+  }
 
   /**
    * Implicitly converts a FilterComponent into a NotBuilder.
-   * @param filterComponent The FilterComponent to be converted
+   * @param filterComponent The FilterComponent to be converted; must not be null!
    * @return The NotBuilder initialized with the given FilterComponent
    */
-  implicit def filterComponentToNotBuilder(filterComponent: FilterComponent) =
+  implicit def filterComponentToNotBuilder(filterComponent: FilterComponent) = {
+    require(filterComponent != null, "The FilterComponent must not be null!")
     new NotBuilder(filterComponent)
+  }
 }
 
 private[scalamodules] sealed abstract class FilterComponent
@@ -166,15 +172,15 @@ private[scalamodules] class AndBuilder(component: FilterComponent) {
 
   /**
    * Creates an And FilterComponent.
-   * @param The next FilterComponent to be "anded" with the FilterComponent of this AndBuilder.
-   * @return And FilterComponent "anding" the FilterComponent of this AndBuilder and the given one.
+   * @param The next FilterComponent to be "anded" with the FilterComponent of this AndBuilder; must not be null!
+   * @return And FilterComponent "anding" the FilterComponent of this AndBuilder and the given one
    */
   def &&(nextComponent: FilterComponent) = and(nextComponent)
 
   /**
    * Creates an And FilterComponent.
-   * @param The next FilterComponent to be "anded" with the FilterComponent of this AndBuilder.
-   * @return And FilterComponent "anding" the FilterComponent of this AndBuilder and the given one.
+   * @param The next FilterComponent to be "anded" with the FilterComponent of this AndBuilder; must not be null!
+   * @return And FilterComponent "anding" the FilterComponent of this AndBuilder and the given one
    */
   def and(nextComponent: FilterComponent) = {
     require(nextComponent != null, "The FilterComponent must not be null!")
@@ -191,15 +197,15 @@ private[scalamodules] class OrBuilder(component: FilterComponent) {
 
   /**
    * Creates an Or FilterComponent.
-   * @param The next FilterComponent to be "ored" with the FilterComponent of this OrBuilder.
-   * @return Or FilterComponent "oring" the FilterComponent of this OrBuilder and the given one.
+   * @param The next FilterComponent to be "ored" with the FilterComponent of this OrBuilder; must not be null!
+   * @return Or FilterComponent "oring" the FilterComponent of this OrBuilder and the given one
    */
   def ||(nextComponent: FilterComponent) = or(nextComponent)
 
   /**
    * Creates an Or FilterComponent.
-   * @param The next FilterComponent to be "ored" with the FilterComponent of this OrBuilder.
-   * @return Or FilterComponent "oring" the FilterComponent of this OrBuilder and the given one.
+   * @param The next FilterComponent to be "ored" with the FilterComponent of this OrBuilder; must not be null!
+   * @return Or FilterComponent "oring" the FilterComponent of this OrBuilder and the given one
    */
   def or(nextComponent: FilterComponent) = {
     require(nextComponent != null, "The FilterComponent must not be null!")
@@ -216,13 +222,13 @@ private[scalamodules] class NotBuilder(component: FilterComponent) {
 
   /**
    * Creates a Not FilterComponent.
-   * @return Not FilterComponent "negating" the FilterComponent of this NotBuilder.
+   * @return Not FilterComponent "negating" the FilterComponent of this NotBuilder
    */
   def unary_! = not
 
   /**
    * Creates a Not FilterComponent.
-   * @return Not FilterComponent "negating" the FilterComponent of this NotBuilder.
+   * @return Not FilterComponent "negating" the FilterComponent of this NotBuilder
    */
   def not = Not(Filter(component))
 }
@@ -233,17 +239,17 @@ private[scalamodules] class SimpleOpBuilder(attr: String) {
 
   /**
    * Creates a SimpleOp FilterComponent for FilterType Equal.
-   * @param The value for the SimpleOp.
+   * @param The value for the SimpleOp; must not be null!
    * @return SimpleOp inialized with the attr of this SimpleOpBuilder, a FilterType of Equal and
-   * the given value.
+   * the given value
    */
   def ===(value: String) = equal(value)
 
   /**
    * Creates a SimpleOp FilterComponent for FilterType Equal.
-   * @param The value for the SimpleOp.
+   * @param The value for the SimpleOp; must not be null!
    * @return SimpleOp inialized with the attr of this SimpleOpBuilder, a FilterType of Equal and
-   * the given value.
+   * the given value
    */
   def equal(value: String) = {
     require(value != null, "The value must not be null!")
@@ -252,17 +258,17 @@ private[scalamodules] class SimpleOpBuilder(attr: String) {
 
   /**
    * Creates a SimpleOp FilterComponent for FilterType Approx.
-   * @param The value for the SimpleOp.
+   * @param The value for the SimpleOp; must not be null!
    * @return SimpleOp inialized with the attr of this SimpleOpBuilder, a FilterType of Approx and
-   * the given value.
+   * the given value
    */
   def ~==(value: String) = approx(value)
 
   /**
    * Creates a SimpleOp FilterComponent for FilterType Approx.
-   * @param The value for the SimpleOp.
+   * @param The value for the SimpleOp; must not be null!
    * @return SimpleOp inialized with the attr of this SimpleOpBuilder, a FilterType of Approx and
-   * the given value.
+   * the given value
    */
   def approx(value: String) = {
     require(value != null, "The value must not be null!")
@@ -271,25 +277,25 @@ private[scalamodules] class SimpleOpBuilder(attr: String) {
 
   /**
    * Creates a SimpleOp FilterComponent for FilterType GreaterEqual.
-   * @param The value for the SimpleOp.
+   * @param The value for the SimpleOp; must not be null!
    * @return SimpleOp inialized with the attr of this SimpleOpBuilder, a FilterType of GreaterEqual and
-   * the given value.
+   * the given value
    */
   def >==(value: String) = greaterEqual(value)
 
   /**
    * Creates a SimpleOp FilterComponent for FilterType GreaterEqual.
-   * @param The value for the SimpleOp.
+   * @param The value for the SimpleOp; must not be null!
    * @return SimpleOp inialized with the attr of this SimpleOpBuilder, a FilterType of GreaterEqual and
-   * the given value.
+   * the given value
    */
   def ge(value: String) = greaterEqual(value)
 
   /**
    * Creates a SimpleOp FilterComponent for FilterType GreaterEqual.
-   * @param The value for the SimpleOp.
+   * @param The value for the SimpleOp; must not be null!
    * @return SimpleOp inialized with the attr of this SimpleOpBuilder, a FilterType of GreaterEqual and
-   * the given value.
+   * the given value
    */
   def greaterEqual(value: String) = {
     require(value != null, "The value must not be null!")
@@ -298,25 +304,25 @@ private[scalamodules] class SimpleOpBuilder(attr: String) {
 
   /**
    * Creates a SimpleOp FilterComponent for FilterType LessEqual.
-   * @param The value for the SimpleOp.
+   * @param The value for the SimpleOp; must not be null!
    * @return SimpleOp inialized with the attr of this SimpleOpBuilder, a FilterType of LessEqual and
-   * the given value.
+   * the given value
    */
   def <==(value: String) = lessEqual(value)
 
   /**
    * Creates a SimpleOp FilterComponent for FilterType LessEqual.
-   * @param The value for the SimpleOp.
+   * @param The value for the SimpleOp; must not be null!
    * @return SimpleOp inialized with the attr of this SimpleOpBuilder, a FilterType of LessEqual and
-   * the given value.
+   * the given value
    */
   def le(value: String) = lessEqual(value)
 
   /**
    * Creates a SimpleOp FilterComponent for FilterType LessEqual.
-   * @param The value for the SimpleOp.
+   * @param The value for the SimpleOp; must not be null!
    * @return SimpleOp inialized with the attr of this SimpleOpBuilder, a FilterType of LessEqual and
-   * the given value.
+   * the given value
    */
   def lessEqual(value: String) = {
     require(value != null, "The value must not be null!")
