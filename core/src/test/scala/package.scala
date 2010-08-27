@@ -60,7 +60,7 @@ class scalamodulesSpec extends Specification with Mockito {
 
   "Calling a stringToSimpleOpBuilder" should {
     "throw an IllegalArgumentException given a null String" in {
-      stringToSimpleOpBuilder(null) must throwA[IllegalArgumentException]
+      toSimpleOpBuilder(null) must throwA[IllegalArgumentException]
     }
   }
 
@@ -73,7 +73,7 @@ class scalamodulesSpec extends Specification with Mockito {
 
   "Calling a stringToPresentBuilder" should {
     "throw an IllegalArgumentException given a null String" in {
-      stringToPresentBuilder(null) must throwA[IllegalArgumentException]
+      toPresentBuilder(null) must throwA[IllegalArgumentException]
     }
   }
 
