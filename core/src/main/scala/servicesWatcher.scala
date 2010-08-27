@@ -49,7 +49,7 @@ private[scalamodules] class ServicesWatcher[I <: AnyRef](
 
     val fullFilter = filter match {
       case None => Filter(OBJECTCLASS === interface.getName)
-      case Some(f) => Filter(OBJECTCLASS === interface.getName && f.component)
+      case Some(f) => Filter(OBJECTCLASS === interface.getName && f.filterComponent)
     }
 
     val tracker = new ServiceTracker(context, context createFilter fullFilter.toString, null) {
