@@ -9,15 +9,13 @@ package com.weiglewilczek.scalamodules
 
 import org.osgi.framework.ServiceReference
 
-/**
- * Pimped ServiceReference offering easier handling of service properties.
- */
 private[scalamodules] class RichServiceReference(serviceReference: ServiceReference) {
 
   assert(serviceReference != null, "The ServiceReference must not be null!")
 
   /**
    * Gives access to service properties as Props (alias for Scala Map[String, Any]).
+   * @return The service properties
    */
   lazy val properties: Props = Map(propsFrom(serviceReference): _*)
 

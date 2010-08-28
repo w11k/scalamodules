@@ -16,6 +16,11 @@ private[scalamodules] class ServiceFinder[I <: AnyRef](
   assert(interface != null, "The service interface must not be null!")
   assert(context != null, "The BundleContext must not be null!")
 
+  /**
+   * Applies the given function to a service. The service is found by its service interface.
+   * @param f The function to be applied to a service; must not be null!
+   * @return The optional result of applying the given function; None if no service available
+   */
   def andApply[T](f: I => T): Option[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
     context getServiceReference interface.getName match {
@@ -24,6 +29,11 @@ private[scalamodules] class ServiceFinder[I <: AnyRef](
     }
   }
 
+  /**
+   * Applies the given function to a service and its properties. The service is found by its service interface.
+   * @param f The function to be applied to a service and its properties; must not be null!
+   * @return The optional result of applying the given function; None if no service available
+   */
   def andApply[T](f: (I, Props) => T): Option[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
     context getServiceReference interface.getName match {
@@ -42,11 +52,21 @@ private[scalamodules] class ServicesFinder[I <: AnyRef](
   assert(context != null, "The BundleContext must not be null!")
   assert(filter != null, "The filter must not be null!")
 
+  /**
+   * Additionally use the given Filter for finding services.
+   * @param filter The Filter to be added to this ServiceFinders; must not be null!
+   * @return A ServiceFinders for a service interface and the given Filter
+   */
   def withFilter(filter: Filter) = {
     require(filter != null, "The filter must not be null!")
     new ServicesFinder(interface, context, Some(filter))
   }
 
+  /**
+   * Applies the given function to all services. The services are found by service interface and an optional filter.
+   * @param f The function to be applied to all services; must not be null!
+   * @return A Seq with the results of applying the given function to all services
+   */
   def andApply[T](f: I => T): Seq[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
     context.getServiceReferences(interface.getName, optionalFilterToString(filter)) match {
@@ -55,6 +75,11 @@ private[scalamodules] class ServicesFinder[I <: AnyRef](
     }
   }
 
+  /**
+   * Applies the given function to all services and their properties. The services are found by service interface and an optional filter.
+   * @param f The function to be applied to all services and their properties; must not be null!
+   * @return A Seq with the results of applying the given function to all services
+   */
   def andApply[T](f: (I, Props) => T): Seq[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
     context.getServiceReferences(interface.getName, optionalFilterToString(filter)) match {

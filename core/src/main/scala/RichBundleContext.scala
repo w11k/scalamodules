@@ -14,6 +14,14 @@ private[scalamodules] class RichBundleContext(context: BundleContext) {
 
   assert(context != null, "The BundleContext must not be null!")
 
+  /**
+   * Creates a service, i.e. registers one with the OSGi service registry.
+   * @param service The service to be registered; must not be null!
+   * @param properties The service properties; must not be null!
+   * @param interface1 The optional first service interface; must not be null!
+   * @param interface2 The optional second service interface; must not be null!
+   * @param interface3 The optional thirs service interface; must not be null!
+   */
   def createService[S <: AnyRef, I1 >: S <: AnyRef, I2 >: S <: AnyRef, I3 >: S <: AnyRef](
       service: S,
       properties: Props = Map.empty,
@@ -53,16 +61,31 @@ private[scalamodules] class RichBundleContext(context: BundleContext) {
     context.registerService(interfaces, service, if (properties.isEmpty) null else properties)
   }
 
+  /**
+   * Starting point for finding a service with the given servivce interface.
+   * @param interface The service interface for which a ServiceFinder is to be created; must not be null!
+   * @return A ServiceFinder for the given service interface
+   */
   def findService[I <: AnyRef](interface: Class[I]): ServiceFinder[I] = {
     require(interface != null, "The service interface must not be null!")
     new ServiceFinder(interface, context)
   }
 
+  /**
+   * Starting point for finding all services with the given servivce interface.
+   * @param interface The service interface for which a ServicesFinder is to be created; must not be null!
+   * @return A ServiceFinders for the given service interface
+   */
   def findServices[I <: AnyRef](interface: Class[I]): ServicesFinder[I] = {
     require(interface != null, "The service interface must not be null!")
     new ServicesFinder(interface, context)
   }
 
+  /**
+   * Starting point for watching services with the given service interface.
+   * @param interface The service interface for which a ServicesWatcher is to be created; must not be null!
+   * @return A ServicesWatcher for the given service interface
+   */
   def watchServices[I <: AnyRef](interface: Class[I]): ServicesWatcher[I] = {
     require(interface != null, "The service interface must not be null!")
     new ServicesWatcher(interface, context)

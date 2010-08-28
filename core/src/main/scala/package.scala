@@ -22,39 +22,48 @@ package object scalamodules {
 
   /**
    * Implicitly converts a BundleContext into a RichBundleContext.
-   * Entry point to the ScalaModules DSL.
+   * @param context The BundleContext to be converted; must not be null!
+   * @return The RichBundleContext initialized with the given BundleContext
    */
-  implicit def toRichBundleContext(context: BundleContext) = {
+  implicit def toRichBundleContext(context: BundleContext): RichBundleContext = {
     require(context != null, "The BundleContext must not be null!")
     new RichBundleContext(context)
   }
 
   /**
    * Implicitly converts a ServiceReference into a RichServiceReference.
+   * @param serviceReference The ServiceReference to be converted; must not be null!
+   * @return The RichServiceReference initialized with the given ServiceReference
    */
-  implicit def toRichServiceReference(serviceReference: ServiceReference) = {
+  implicit def toRichServiceReference(serviceReference: ServiceReference): RichServiceReference = {
     require(serviceReference != null, "The ServiceReference must not be null!")
     new RichServiceReference(serviceReference)
   }
 
   /**
-   * Implicitly converts a Pair into a Map in order to allow for easy definition of
-   * single entry service properties.
+   * Implicitly converts a Pair into a Map in order to easily define single entry service properties.
+   * @param pair The pair to be converted
+   * @return A Map initialized with the given pair or null, if the given pair is null
    */
-  implicit def pairToMap[A, B](pair: (A, B)) = if (pair == null) null else Map(pair)
+  implicit def pairToMap[A, B](pair: (A, B)): Map[A, B] =
+    if (pair == null) null else Map(pair)
 
   /**
-   * Implicitly converts the given string into a builder for a "simple operation" filter component.
+   * Implicitly converts a String attribute into a SimpleOpBuilder FilterComponent.
+   * @param attr The attribute to be converted; must not be null!
+   * @return A SimpleOpBuilder initialized with the given String attribute
    */
-  implicit def stringToSimpleOpBuilder(attr: String) = {
+  implicit def toSimpleOpBuilder(attr: String): SimpleOpBuilder = {
     require(attr != null, "The attr must not be null!")
     new SimpleOpBuilder(attr)
   }
 
   /**
-   * Returns converts the given string into a builder for a "present" filter component.
+   * Implicitly converts a String attribute into a PresentBuilder FilterComponent.
+   * @param attr The attribute to be converted; must not be null!
+   * @return A PresentBuilder initialized with the given String attribute
    */
-  implicit def stringToPresentBuilder(attr: String) = {
+  implicit def toPresentBuilder(attr: String): PresentBuilder = {
     require(attr != null, "The attr must not be null!")
     new PresentBuilder(attr)
   }
@@ -62,16 +71,17 @@ package object scalamodules {
   /**
    * Returns the given or inferred type wrapped into a Some.
    */
-  def interface[I](implicit manifest: Manifest[I]) = Some(manifest.erasure.asInstanceOf[Class[I]])
+  def interface[I](implicit manifest: Manifest[I]): Option[Class[I]] =
+    Some(manifest.erasure.asInstanceOf[Class[I]])
 
   /**
    * Returns the given or inferred type.
    */
-  def withInterface[I](implicit manifest: Manifest[I]) = manifest.erasure.asInstanceOf[Class[I]]
+  def withInterface[I](implicit manifest: Manifest[I]): Class[I] =
+    manifest.erasure.asInstanceOf[Class[I]]
 
   private[scalamodules] implicit def scalaMapToJavaDictionary[K, V](map: Map[K, V]) = {
     import scala.collection.JavaConversions._
-
     if (map == null) null: Dictionary[K, V]
     else new Dictionary[K, V] {
       override def size = map.size

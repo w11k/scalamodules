@@ -11,21 +11,37 @@ import org.osgi.framework.{ BundleContext, ServiceReference }
 import org.osgi.framework.Constants._
 import org.osgi.util.tracker.ServiceTracker
 
-/** Super class for service events. */
+/**
+ * Base class for service events.
+ * @param service The service for this event; must not be null!
+ * @param properties The service properties for this event; must not be null!
+ */
 sealed abstract class ServiceEvent[I](service: I, properties: Props) {
   require(service != null, "The service must not be null!")
   require(properties != null, "The service properties must not be null!")
 }
 
-/** A service is being added to the watched (tracked) services. */
+/**
+ * Service event for a service being added to the watched (tracked) services.
+ * @param service The service for this event
+ * @param properties The service properties for this event; must not be null!
+ */
 case class AddingService[I](service: I, properties: Props)
   extends ServiceEvent[I](service, properties)
 
-/** A watched (tracked) service was modified. */
+/**
+ * Service event for a watched (tracked) service having been modified.
+ * @param service The service for this event
+ * @param properties The service properties for this event; must not be null!
+ */
 case class ServiceModified[I](service: I, properties: Props)
   extends ServiceEvent[I](service, properties)
 
-/** A service was removed from the watched (tracked) services. */
+/**
+ * Service event for a watched (tracked) service having been removed from the watched ones.
+ * @param service The service for this event
+ * @param properties The service properties for this event; must not be null!
+ */
 case class ServiceRemoved[I](service: I, properties: Props)
   extends ServiceEvent[I](service, properties)
 
@@ -38,18 +54,27 @@ private[scalamodules] class ServicesWatcher[I <: AnyRef](
   assert(context != null, "The BundleContext must not be null!")
   assert(filter != null, "The filter must not be null!")
 
+  /**
+   * Additionally use the given Filter for finding services.
+   * @param filter The Filter to be added to this ServiceWatcher; must not be null!
+   * @return A ServiceWatcher for a service interface and the given Filter
+   */
   def withFilter(filter: Filter) = {
     require(filter != null, "The filter must not be null!")
     new ServicesWatcher(interface, context, Some(filter))
   }
 
-  def andHandle(f: PartialFunction[ServiceEvent[I], Unit]) {
+  /**
+   * Handles ServiceEvents by applying the given handler function.
+   * @param handler The handler to be used for ServiceEvents; must not be null!
+   */
+  def andHandle(handler: PartialFunction[ServiceEvent[I], Unit]) {
 
-    require(f != null, "The partial function to handle ServiceEvents must not be null!")
+    require(handler != null, "The handler for ServiceEvents must not be null!")
 
     val fullFilter = filter match {
       case None => Filter(OBJECTCLASS === interface.getName)
-      case Some(f) => Filter(OBJECTCLASS === interface.getName && f.component)
+      case Some(f) => Filter(OBJECTCLASS === interface.getName && f.filterComponent)
     }
 
     val tracker = new ServiceTracker(context, context createFilter fullFilter.toString, null) {
@@ -57,18 +82,18 @@ private[scalamodules] class ServicesWatcher[I <: AnyRef](
       override def addingService(serviceReference: ServiceReference) = {
         val service = context getService serviceReference
         val serviceEvent = AddingService(service.asInstanceOf[I], serviceReference.properties)
-        if (f.isDefinedAt(serviceEvent)) f(serviceEvent)
+        if (handler.isDefinedAt(serviceEvent)) handler(serviceEvent)
         service
       }
 
       override def modifiedService(serviceReference: ServiceReference, service: AnyRef) {
         val serviceEvent = ServiceModified(service.asInstanceOf[I], serviceReference.properties)
-        if (f.isDefinedAt(serviceEvent)) f(serviceEvent)
+        if (handler.isDefinedAt(serviceEvent)) handler(serviceEvent)
       }
 
       override def removedService(serviceReference: ServiceReference, service: AnyRef) {
         val serviceEvent = ServiceRemoved(service.asInstanceOf[I], serviceReference.properties)
-        if (f.isDefinedAt(serviceEvent)) f(serviceEvent)
+        if (handler.isDefinedAt(serviceEvent)) handler(serviceEvent)
         context ungetService serviceReference
       }
     }
