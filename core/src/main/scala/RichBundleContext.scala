@@ -62,7 +62,7 @@ private[scalamodules] class RichBundleContext(context: BundleContext) {
   }
 
   /**
-   * Creates a ServiceFinder.
+   * Starting point for finding a service with the given servivce interface.
    * @param interface The service interface for which a ServiceFinder is to be created; must not be null!
    * @return A ServiceFinder for the given service interface
    */
@@ -72,7 +72,7 @@ private[scalamodules] class RichBundleContext(context: BundleContext) {
   }
 
   /**
-   * Creates a ServicesFinder.
+   * Starting point for finding all services with the given servivce interface.
    * @param interface The service interface for which a ServicesFinder is to be created; must not be null!
    * @return A ServiceFinders for the given service interface
    */
@@ -82,7 +82,7 @@ private[scalamodules] class RichBundleContext(context: BundleContext) {
   }
 
   /**
-   * Creates a ServicesWatcher.
+   * Starting point for watching services with the given service interface.
    * @param interface The service interface for which a ServicesWatcher is to be created; must not be null!
    * @return A ServicesWatcher for the given service interface
    */
