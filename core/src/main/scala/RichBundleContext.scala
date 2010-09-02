@@ -58,7 +58,10 @@ private[scalamodules] class RichBundleContext(context: BundleContext) {
       if (!interfaces.isEmpty) interfaces.toArray else allInterfacesOrClass
     }
 
-    context.registerService(interfaces, service, if (properties.isEmpty) null else properties)
+    val serviceRegistration =
+      context.registerService(interfaces, service, if (properties.isEmpty) null else properties)
+    logger info "Created service %s with interfaces %s and properties %s.".format(service, interfaces, properties)
+    serviceRegistration
   }
 
   /**

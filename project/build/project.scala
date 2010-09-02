@@ -8,7 +8,7 @@
 import com.weiglewilczek.bnd4sbt.BNDPlugin
 import sbt._
 
-class ScalaModulesParentProject(info: ProjectInfo) extends ParentProject(info) with UnpublishedProject {
+class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with UnpublishedProject {
 
   // ===================================================================================================================
   // Dependencies
@@ -17,22 +17,27 @@ class ScalaModulesParentProject(info: ProjectInfo) extends ParentProject(info) w
   object Dependencies {
 
     // Versions
-    val osgiVersion = "4.2.0"
-    val paxExamVersion = "1.2.0"
+    val Slf4sVersion = "1.0.0"
+    val OsgiVersion = "4.2.0"
+    val PaxExamVersion = "1.2.0"
+
+    // Compile
+    val slf4s = "com.weiglewilczek.slf4s" %% "slf4s" % Slf4sVersion withSources
 
     // Provided
-    val osgiCore = "org.osgi" % "org.osgi.core" % osgiVersion % "provided" withSources
-    val osgiCompendium = "org.osgi" % "org.osgi.compendium" % osgiVersion % "provided" withSources
+    val osgiCore = "org.osgi" % "org.osgi.core" % OsgiVersion % "provided" withSources
+    val osgiCompendium = "org.osgi" % "org.osgi.compendium" % OsgiVersion % "provided" withSources
 
     // Test
     val specs = "org.scala-tools.testing" %% "specs" % "1.6.5" % "test" withSources
     val mockito = "org.mockito" % "mockito-all" % "1.8.4" % "test" withSources
     val junitIF = "com.novocode" % "junit-interface" % "0.3" % "test"
+    val slf4jSimple = "org.slf4j" % "slf4j-simple" % "1.6.1" % "test"
 
     // Test (Pax Exam)
-    val paxExam = "org.ops4j.pax.exam" % "pax-exam" % paxExamVersion % "test"
-    val paxExamJUnit = "org.ops4j.pax.exam" % "pax-exam-junit" % paxExamVersion % "test"
-    val paxExamCD = "org.ops4j.pax.exam" % "pax-exam-container-default" % paxExamVersion % "test"
+    val paxExam = "org.ops4j.pax.exam" % "pax-exam" % PaxExamVersion % "test"
+    val paxExamJUnit = "org.ops4j.pax.exam" % "pax-exam-junit" % PaxExamVersion % "test"
+    val paxExamCD = "org.ops4j.pax.exam" % "pax-exam-container-default" % PaxExamVersion % "test"
   }
 
   // ===================================================================================================================
@@ -60,7 +65,7 @@ class ScalaModulesParentProject(info: ProjectInfo) extends ParentProject(info) w
   class CoreProject(info: ProjectInfo) extends DefaultProject(info) with BNDPlugin {
     import Dependencies._
 
-    override def libraryDependencies = Set(osgiCore, osgiCompendium, specs, mockito)
+    override def libraryDependencies = Set(slf4s, osgiCore, osgiCompendium, specs, mockito, slf4jSimple)
     override def defaultExcludes = super.defaultExcludes || "*-sources.jar"
 
     override def packageSrcJar = defaultJarPath("-sources.jar")

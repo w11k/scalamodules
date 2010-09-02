@@ -82,18 +82,27 @@ private[scalamodules] class ServicesWatcher[I <: AnyRef](
       override def addingService(serviceReference: ServiceReference) = {
         val service = context getService serviceReference
         val serviceEvent = AddingService(service.asInstanceOf[I], serviceReference.properties)
-        if (handler.isDefinedAt(serviceEvent)) handler(serviceEvent)
+        if (handler.isDefinedAt(serviceEvent)) {
+          handler(serviceEvent)
+          logger info "Handled AddingService event."
+        }
         service
       }
 
       override def modifiedService(serviceReference: ServiceReference, service: AnyRef) {
         val serviceEvent = ServiceModified(service.asInstanceOf[I], serviceReference.properties)
-        if (handler.isDefinedAt(serviceEvent)) handler(serviceEvent)
+        if (handler.isDefinedAt(serviceEvent)) {
+          handler(serviceEvent)
+          logger info "Handled ServiceModified event."
+        }
       }
 
       override def removedService(serviceReference: ServiceReference, service: AnyRef) {
         val serviceEvent = ServiceRemoved(service.asInstanceOf[I], serviceReference.properties)
-        if (handler.isDefinedAt(serviceEvent)) handler(serviceEvent)
+        if (handler.isDefinedAt(serviceEvent)) {
+          handler(serviceEvent)
+          logger info "Handled ServiceRemoved event."
+        }
         context ungetService serviceReference
       }
     }

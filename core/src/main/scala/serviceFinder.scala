@@ -24,8 +24,14 @@ private[scalamodules] class ServiceFinder[I <: AnyRef](
   def andApply[T](f: I => T): Option[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
     context getServiceReference interface.getName match {
-      case null => None
-      case ref => invokeService(ref, f, context)
+      case null => {
+        logger info "Could not find a ServiceReference for interface %s.".format(interface.getName)
+        None
+      }
+      case ref => {
+        logger info "Found a ServiceReference for interface %s.".format(interface.getName)
+        invokeService(ref, f, context)
+      }
     }
   }
 
@@ -37,8 +43,14 @@ private[scalamodules] class ServiceFinder[I <: AnyRef](
   def andApply[T](f: (I, Props) => T): Option[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
     context getServiceReference interface.getName match {
-      case null => None
-      case ref => invokeService(ref, f(_: I, ref.properties), context)
+      case null => {
+        logger info "Could not find a ServiceReference for interface %s.".format(interface.getName)
+        None
+      }
+      case ref => {
+        logger info "Found a ServiceReference for interface %s.".format(interface.getName)
+        invokeService(ref, f(_: I, ref.properties), context)
+      }
     }
   }
 }
@@ -69,9 +81,15 @@ private[scalamodules] class ServicesFinder[I <: AnyRef](
    */
   def andApply[T](f: I => T): Seq[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
-    context.getServiceReferences(interface.getName, optionalFilterToString(filter)) match {
-      case null => Nil
-      case refs => refs.toList flatMap { invokeService(_, f, context) }
+    context.getServiceReferences(interface.getName, filter map { _.toString } orNull) match {
+      case null => {
+        logger info "Could not find any ServiceReferences for interface %s and optional filter %s.".format(interface.getName, filter)
+        Nil
+      }
+      case refs => {
+        logger info "Found %s ServiceReferences for interface %s and optional filter %s.".format(refs.size, interface.getName, filter)
+        refs.toList flatMap { invokeService(_, f, context) }
+      }
     }
   }
 
@@ -82,9 +100,15 @@ private[scalamodules] class ServicesFinder[I <: AnyRef](
    */
   def andApply[T](f: (I, Props) => T): Seq[T] = {
     require(f != null, "The function to be applied to the service must not be null!")
-    context.getServiceReferences(interface.getName, optionalFilterToString(filter)) match {
-      case null => Nil
-      case refs => refs.toList flatMap { ref => invokeService(ref, f(_: I, ref.properties), context) }
+    context.getServiceReferences(interface.getName, filter map { _.toString } orNull) match {
+      case null => {
+        logger info "Could not find any ServiceReferences for interface %s and optional filter %s.".format(interface.getName, filter)
+        Nil
+      }
+      case refs => {
+        logger info "Found %s ServiceReferences for interface %s and optional filter %s.".format(refs.size, interface.getName, filter)
+        refs.toList flatMap { ref => invokeService(ref, f(_: I, ref.properties), context) }
+      }
     }
   }
 }

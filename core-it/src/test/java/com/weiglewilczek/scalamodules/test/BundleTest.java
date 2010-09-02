@@ -30,6 +30,9 @@ public class BundleTest {
             provision(
                 bundle("file:core/target/scala_2.8.0/scalamodules-core_2.8.0-" + version + ".jar"),
                 bundle("mvn:com.weiglewilczek.scala-lang-osgi/scala-library/2.8.0"),
+                bundle("file:core/lib_managed/scala_2.8.0/compile/slf4s_2.8.0-1.0.0.jar"),
+                bundle("file:core/lib_managed/scala_2.8.0/compile/slf4j-api-1.6.1.jar"),
+                bundle("file:core/lib_managed/scala_2.8.0/test/slf4j-simple-1.6.1.jar"),
                 wrappedBundle(bundle("file:core-it/lib_managed/scala_2.8.0/test/specs_2.8.0-1.6.5.jar"))
             )
         );

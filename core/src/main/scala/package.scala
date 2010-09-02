@@ -7,6 +7,7 @@
  */
 package com.weiglewilczek
 
+import com.weiglewilczek.slf4s.Logger
 import java.util.Dictionary
 import org.osgi.framework.{ BundleContext, ServiceReference }
 
@@ -80,6 +81,8 @@ package object scalamodules {
   def withInterface[I](implicit manifest: Manifest[I]): Class[I] =
     manifest.erasure.asInstanceOf[Class[I]]
 
+  private[scalamodules] val logger = Logger("com.weiglewilczek.scalamodules")
+
   private[scalamodules] implicit def scalaMapToJavaDictionary[K, V](map: Map[K, V]) = {
     import scala.collection.JavaConversions._
     if (map == null) null: Dictionary[K, V]
@@ -99,11 +102,6 @@ package object scalamodules {
     }
   }
 
-  private[scalamodules] def optionalFilterToString(filter: Option[Filter]) = {
-    assert(filter != null, "The optional Filter must not be null!")
-    filter map { _.toString } orNull
-  }
-
   private[scalamodules] def invokeService[I, T](
       serviceReference: ServiceReference,
       f: I => T,
@@ -115,8 +113,15 @@ package object scalamodules {
 
     try {
       context getService serviceReference match {
-        case null => None
-        case service => Some(f(service.asInstanceOf[I]))
+        case null => {
+          logger warn "Could not get service for ServiceReference %s!".format(serviceReference)
+          None
+        }
+        case service => {
+          val result = Some(f(service.asInstanceOf[I]))
+          logger info "Invoked service for  ServiceReference %s!".format(serviceReference)
+          result
+        }
       }
     } finally context ungetService serviceReference
   }
