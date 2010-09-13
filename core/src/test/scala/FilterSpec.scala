@@ -12,9 +12,9 @@ import org.specs.mock.Mockito
 
 class FilterSpec extends Specification {
 
-  """"x" === "1" (equal)""" should {
+  """"x" === 1 (equal)""" should {
     """be converted into the filter string "(x=1)" """ in {
-      val filter: Filter = "x" === "1"
+      val filter: Filter = "x" === 1
       filter.toString mustEqual "(x=1)"
     }
   }
@@ -26,10 +26,10 @@ class FilterSpec extends Specification {
     }
   }
 
-  """!(("x" === "1") && ("y" <== "2") || (("z" >== "3") and ("a" ~== "9")) or "z".present)""" should {
+  """!(("x" === 1) && ("y" <== 2) || (("z" >== "3") and ("a" ~== 9)) or "z".present)""" should {
     """be converted into the filter string "(!(|(&(x=1)(y<=2))(&(z>=3)(a~=9))(z=*)))" """ in {
       val filter: Filter =
-        !(("x" === "1") && ("y" <== "2") || (("z" >== "3") and ("a" ~== "9")) or "z".present)
+        !(("x" === 1) && ("y" <== 2) || (("z" >== "3") and ("a" ~== 9)) or "z".present)
       filter.toString mustEqual "(!(|(&(x=1)(y<=2))(&(z>=3)(a~=9))(z=*)))"
     }
   }

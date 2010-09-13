@@ -17,7 +17,7 @@ import scala.collection.mutable
 class BundleSpec(context: BundleContext) extends SpecsMatchers {
 
   def test() {
-    val Service1 = "service1"
+    val Service1 = "1"
     val Service2 = "service2"
     val services = mutable.Map[String, String]()
 
@@ -30,7 +30,7 @@ class BundleSpec(context: BundleContext) extends SpecsMatchers {
     context findService withInterface[ServiceInterface] andApply { s => s } mustBe None
 
     val service1 = ServiceImplementation(Service1)
-    val service1Registration = context.createService(service1, Map(Name -> Service1, ForFilter -> "true"))
+    val service1Registration = context.createService(service1, Map(Name -> 1, ForFilter -> "true"))
     context findService withInterface[ServiceInterface] andApply { _.name } mustEqual Some(Service1)
     services must haveSize(1)
     services must havePair(Service1 -> Service1)
@@ -45,7 +45,7 @@ class BundleSpec(context: BundleContext) extends SpecsMatchers {
     names mustContain Service2 + Service2
     services must haveSize(1)
 
-    val dummies = context findServices withInterface[ServiceInterface] withFilter "name" === "service1" andApply {
+    val dummies = context findServices withInterface[ServiceInterface] withFilter "name" === Service1 andApply {
       (_, _) => "dummy"
     }
     dummies must haveSize(1)
