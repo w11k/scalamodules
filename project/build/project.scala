@@ -17,9 +17,11 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
   object Dependencies {
 
     // Versions
-    val Slf4sVersion = "1.0.0"
     val OsgiVersion = "4.2.0"
     val PaxExamVersion = "1.2.0"
+    val Slf4jVersion = "1.6.1"
+    val Slf4sVersion = "1.0.2"
+    val SpecsVersion = "1.6.5"
 
     // Compile
     val slf4s = "com.weiglewilczek.slf4s" %% "slf4s" % Slf4sVersion withSources
@@ -29,10 +31,10 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
     val osgiCompendium = "org.osgi" % "org.osgi.compendium" % OsgiVersion % "provided" withSources
 
     // Test
-    val specs = "org.scala-tools.testing" %% "specs" % "1.6.5" % "test" withSources
+    val specs = "org.scala-tools.testing" %% "specs" % SpecsVersion % "test" withSources
     val mockito = "org.mockito" % "mockito-all" % "1.8.4" % "test" withSources
     val junitIF = "com.novocode" % "junit-interface" % "0.3" % "test"
-    val slf4jSimple = "org.slf4j" % "slf4j-simple" % "1.6.1" % "test"
+    val slf4jSimple = "org.slf4j" % "slf4j-simple" % Slf4jVersion % "test" intransitive
 
     // Test (Pax Exam)
     val paxExam = "org.ops4j.pax.exam" % "pax-exam" % PaxExamVersion % "test"
@@ -50,12 +52,6 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
 //  lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
   lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
 //  lazy val publishTo = Resolver.file("Local Test Repository", Path fileProperty "java.io.tmpdir" asFile)
-
-  // ===================================================================================================================
-  // System properties
-  // ===================================================================================================================
-
-  System.setProperty("scalamodules.version", projectVersion.value.toString)
 
   // ===================================================================================================================
   // scalamodules-core subproject
@@ -85,6 +81,12 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
 
   class CoreITProject(info: ProjectInfo) extends DefaultProject(info) with UnpublishedProject {
     import Dependencies._
+
+    System.setProperty("scalaModules.version", projectVersion.value.toString)
+    System.setProperty("scala.version", buildScalaVersion)
+    System.setProperty("slf4j.version", Slf4jVersion)
+    System.setProperty("slf4s.version", Slf4sVersion)
+    System.setProperty("specs.version", SpecsVersion)
 
     override def libraryDependencies = Set(specs, mockito, paxExam, paxExamJUnit, paxExamCD, junitIF)
     override def defaultExcludes = super.defaultExcludes || "*-sources.jar"

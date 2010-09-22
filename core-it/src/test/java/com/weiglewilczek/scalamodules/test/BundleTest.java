@@ -25,15 +25,21 @@ public class BundleTest {
 
     @Configuration
     public static Option[] configuration() {
-        String version = System.getProperty("scalamodules.version");
+
+        String scalaModulesVersion = System.getProperty("scalaModules.version");
+        String scalaVersion = System.getProperty("scala.version");
+        String slf4jVersion = System.getProperty("slf4j.version");
+        String slf4sVersion = System.getProperty("slf4s.version");
+        String specsVersion = System.getProperty("specs.version");
+
         return options(
             provision(
-                bundle("file:core/target/scala_2.8.0/scalamodules-core_2.8.0-" + version + ".jar"),
-                bundle("mvn:com.weiglewilczek.scala-lang-osgi/scala-library/2.8.0"),
-                bundle("file:core/lib_managed/scala_2.8.0/compile/slf4s_2.8.0-1.0.0.jar"),
-                bundle("file:core/lib_managed/scala_2.8.0/compile/slf4j-api-1.6.1.jar"),
-                bundle("file:core/lib_managed/scala_2.8.0/test/slf4j-simple-1.6.1.jar"),
-                wrappedBundle(bundle("file:core-it/lib_managed/scala_2.8.0/test/specs_2.8.0-1.6.5.jar"))
+                bundle(String.format("file:core/target/scala_%s/scalamodules-core_%s-%s.jar", scalaVersion, scalaVersion, scalaModulesVersion)),
+                bundle(String.format("mvn:http://scala-tools.org/repo-releases!com.weiglewilczek.scala-lang-osgi/scala-library/%s", scalaVersion)),
+                bundle(String.format("file:core/lib_managed/scala_%s/compile/slf4j-api-%s.jar", scalaVersion, slf4jVersion)),
+                bundle(String.format("file:core/lib_managed/scala_%s/test/slf4j-simple-%s.jar", scalaVersion, slf4jVersion)),
+                bundle(String.format("file:core/lib_managed/scala_%s/compile/slf4s_%s-%s.jar", scalaVersion, scalaVersion, slf4sVersion)),
+                wrappedBundle(bundle(String.format("file:core-it/lib_managed/scala_%s/test/specs_%s-%s.jar", scalaVersion, scalaVersion, specsVersion)))
             )
         );
     }
