@@ -15,4 +15,4 @@ Why would you need such a DSL? Because the OSGi API is rather low-level so that 
 
 For further information please visit our "Wiki":http://wiki.github.com/weiglewilczek/scalamodules or take a look at the "examples":http://github.com/weiglewilczek/scalamodulesexamples.
 
-ScalaModules is open source software licensed under the "Eclipse Public License v1.0":http://www.eclipse.org/legal/epl-v10.html. Just use it!
+ScalaModules is open source software licensed under the "Apache 2.0 License":http://www.apache.org/licenses/LICENSE-2.0.html. Just use it!

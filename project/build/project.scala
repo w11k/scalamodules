@@ -1,10 +1,3 @@
-/**
- * Copyright (c) 2009-2010 WeigleWilczek and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- */
 import com.weiglewilczek.bnd4sbt.BNDPlugin
 import sbt._
 
@@ -18,10 +11,19 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
 
     // Versions
     val OsgiVersion = "4.2.0"
-    val PaxExamVersion = "1.2.0"
+    val PaxExamVersion = "1.2.3"
     val Slf4jVersion = "1.6.1"
     val Slf4sVersion = "1.0.2"
-    val SpecsVersion = "1.6.5"
+    def specsVersion = buildScalaVersion match {
+      case "2.8.0" => "1.6.5"
+      case "2.8.1" => "1.6.7"
+      case _ => error("No clue what specs version to use!")
+    }
+    def mockitoVersion = buildScalaVersion match {
+      case "2.8.0" => "1.8.4"
+      case "2.8.1" => "1.8.5"
+      case _ => error("No clue what mockito version to use!")
+    }
 
     // Compile
     val slf4s = "com.weiglewilczek.slf4s" %% "slf4s" % Slf4sVersion withSources
@@ -31,9 +33,9 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
     val osgiCompendium = "org.osgi" % "org.osgi.compendium" % OsgiVersion % "provided" withSources
 
     // Test
-    val specs = "org.scala-tools.testing" %% "specs" % SpecsVersion % "test" withSources
-    val mockito = "org.mockito" % "mockito-all" % "1.8.4" % "test" withSources
-    val junitIF = "com.novocode" % "junit-interface" % "0.3" % "test"
+    val specs = "org.scala-tools.testing" %% "specs" % specsVersion % "test" withSources
+    val mockito = "org.mockito" % "mockito-all" % mockitoVersion % "test" withSources
+    val junitIF = "com.novocode" % "junit-interface" % "0.5" % "test"
     val slf4jSimple = "org.slf4j" % "slf4j-simple" % Slf4jVersion % "test" intransitive
 
     // Test (Pax Exam)
@@ -50,8 +52,8 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
   override def deliverAction = super.deliverAction dependsOn(publishLocal) // Fix for issue 99!
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
 //  lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
-  lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
-//  lazy val publishTo = Resolver.file("Local Test Repository", Path fileProperty "java.io.tmpdir" asFile)
+//  lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
+  lazy val publishTo = Resolver.file("Local Test Repository", Path fileProperty "java.io.tmpdir" asFile)
 
   // ===================================================================================================================
   // scalamodules-core subproject
@@ -86,7 +88,7 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
     System.setProperty("scala.version", buildScalaVersion)
     System.setProperty("slf4j.version", Slf4jVersion)
     System.setProperty("slf4s.version", Slf4sVersion)
-    System.setProperty("specs.version", SpecsVersion)
+    System.setProperty("specs.version", specsVersion)
 
     override def libraryDependencies = Set(specs, mockito, paxExam, paxExamJUnit, paxExamCD, junitIF)
     override def defaultExcludes = super.defaultExcludes || "*-sources.jar"
