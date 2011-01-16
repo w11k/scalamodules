@@ -1,6 +1,19 @@
 import com.weiglewilczek.bnd4sbt.BNDPlugin
 import sbt._
 
+object ScalaModulesProject {
+
+  trait UnpublishedProject extends BasicManagedProject {
+     override def publishLocalAction = task { None }
+     override def deliverLocalAction = task { None }
+     override def publishAction = task { None }
+     override def deliverAction = task { None }
+     override def artifacts = Set.empty
+  }
+}
+
+import ScalaModulesProject._
+
 class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with UnpublishedProject {
 
   // ===================================================================================================================
@@ -13,16 +26,12 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
     val OsgiVersion = "4.2.0"
     val PaxExamVersion = "1.2.3"
     val Slf4jVersion = "1.6.1"
-    val Slf4sVersion = "1.0.2"
-    def specsVersion = buildScalaVersion match {
-      case "2.8.0" => "1.6.5"
-      case "2.8.1" => "1.6.7"
-      case _ => error("No clue what specs version to use!")
-    }
-    def mockitoVersion = buildScalaVersion match {
-      case "2.8.0" => "1.8.4"
-      case "2.8.1" => "1.8.5"
-      case _ => error("No clue what mockito version to use!")
+    val Sts = ScalaToolsSnapshots
+    val Slf4sVersion = "1.0.3-SNAPSHOT"
+    val (specsVersion, mockitoVersion) = buildScalaVersion match {
+      case "2.8.0" => "1.6.5" -> "1.8.4"
+      case "2.8.1" => "1.6.7" -> "1.8.5"
+      case _ => error("No clue what versions for specs and mockito to use!")
     }
 
     // Compile
@@ -52,8 +61,8 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
   override def deliverAction = super.deliverAction dependsOn(publishLocal) // Fix for issue 99!
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
 //  lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
-//  lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
-  lazy val publishTo = Resolver.file("Local Test Repository", Path fileProperty "java.io.tmpdir" asFile)
+  lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
+//  lazy val publishTo = Resolver.file("Local Test Repository", Path fileProperty "java.io.tmpdir" asFile)
 
   // ===================================================================================================================
   // scalamodules-core subproject
@@ -97,12 +106,4 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
     override def testFrameworks =
       super.testFrameworks ++ Seq(new TestFramework("com.novocode.junit.JUnitFrameworkNoMarker"))
   }
-}
-
-trait UnpublishedProject extends BasicManagedProject {
-   override def publishLocalAction = task { None }
-   override def deliverLocalAction = task { None }
-   override def publishAction = task { None }
-   override def deliverAction = task { None }
-   override def artifacts = Set.empty
 }
