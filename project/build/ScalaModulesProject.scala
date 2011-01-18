@@ -1,4 +1,4 @@
-import com.weiglewilczek.bnd4sbt.BNDPlugin
+import com.weiglewilczek.bnd4sbt._
 import sbt._
 
 object ScalaModulesProject {
@@ -60,8 +60,8 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
   override def managedStyle = ManagedStyle.Maven
   override def deliverAction = super.deliverAction dependsOn(publishLocal) // Fix for issue 99!
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
-//  lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
-  lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
+  lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
+//  lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
 //  lazy val publishTo = Resolver.file("Local Test Repository", Path fileProperty "java.io.tmpdir" asFile)
 
   // ===================================================================================================================
@@ -80,6 +80,11 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
     lazy val sourceArtifact = Artifact.sources(artifactID)
     override def packageToPublishActions = super.packageToPublishActions ++ Seq(packageSrc)
 
+    import ExecutionEnvironment._
+    override def bndBundleVendor = Some("WeigleWilczek")
+    override def bndBundleLicense =
+      Some("Apache 2.0 License (http://www.apache.org/licenses/LICENSE-2.0.html)")
+    override def bndExecutionEnvironment = Set(Java5, Java6)
     override def bndExportPackage = "com.weiglewilczek.scalamodules;version=\"%s\"".format(projectVersion.value) :: Nil
     override def bndVersionPolicy = Some("[$(@),$(version;=+;$(@)))")
   }
