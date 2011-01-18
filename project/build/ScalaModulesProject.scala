@@ -26,8 +26,7 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
     val OsgiVersion = "4.2.0"
     val PaxExamVersion = "1.2.3"
     val Slf4jVersion = "1.6.1"
-    val Sts = ScalaToolsSnapshots
-    val Slf4sVersion = "1.0.3-SNAPSHOT"
+    val Slf4sVersion = "1.0.3"
     val (specsVersion, mockitoVersion) = buildScalaVersion match {
       case "2.8.0" => "1.6.5" -> "1.8.4"
       case "2.8.1" => "1.6.7" -> "1.8.5"
@@ -60,8 +59,8 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
   override def managedStyle = ManagedStyle.Maven
   override def deliverAction = super.deliverAction dependsOn(publishLocal) // Fix for issue 99!
   Credentials(Path.userHome / ".ivy2" / ".credentials", log)
-//  lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
-  lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
+  lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
+//  lazy val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
 //  lazy val publishTo = Resolver.file("Local Test Repository", Path fileProperty "java.io.tmpdir" asFile)
 
   // ===================================================================================================================
