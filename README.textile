@@ -1,4 +1,4 @@
-p=. !http://github.com/downloads/weiglewilczek/scalamodules/scalamodules-logo-100x100.png!
+h1. ScalaModules
 
 ScalaModules is an elegant and intuitive domain specific language for "OSGi":http://www.osgi.org development written in the "Scala":http://www.scala-lang.org programming language.
 
