@@ -26,15 +26,16 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
     val OsgiVersion = "4.2.0"
     val PaxExamVersion = "1.2.3"
     val Slf4jVersion = "1.6.1"
-    val Slf4sVersion = "1.0.3"
-    val (specsVersion, mockitoVersion) = buildScalaVersion match {
-      case "2.8.0" => "1.6.5" -> "1.8.4"
-      case "2.8.1" => "1.6.7" -> "1.8.5"
+    val (specsVersion, mockitoVersion, slf4sVersion) = buildScalaVersion match {
+      case "2.8.0" => ("1.6.5","1.8.4","1.0.3")
+      case "2.8.1" => ("1.6.7","1.8.5","1.0.3")
+      case "2.9.0" => ("1.6.8","1.8.5","1.0.6")
+      case "2.9.0-1" => ("1.6.8","1.8.5","1.0.6")
       case _ => error("No clue what versions for specs and mockito to use!")
     }
 
     // Compile
-    val slf4s = "com.weiglewilczek.slf4s" %% "slf4s" % Slf4sVersion withSources
+    val slf4s = "com.weiglewilczek.slf4s" %% "slf4s" % slf4sVersion withSources
 
     // Provided
     val osgiCore = "org.osgi" % "org.osgi.core" % OsgiVersion % "provided" withSources
@@ -100,7 +101,7 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
     System.setProperty("scalaModules.version", projectVersion.value.toString)
     System.setProperty("scala.version", buildScalaVersion)
     System.setProperty("slf4j.version", Slf4jVersion)
-    System.setProperty("slf4s.version", Slf4sVersion)
+    System.setProperty("slf4s.version", slf4sVersion)
     System.setProperty("specs.version", specsVersion)
 
     override def libraryDependencies = Set(specs, mockito, paxExam, paxExamJUnit, paxExamCD, junitIF)
