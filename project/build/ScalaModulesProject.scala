@@ -31,6 +31,7 @@ class ScalaModulesProject(info: ProjectInfo) extends ParentProject(info) with Un
       case "2.8.1" => ("1.6.7","1.8.5","1.0.3")
       case "2.9.0" => ("1.6.8","1.8.5","1.0.6")
       case "2.9.0-1" => ("1.6.8","1.8.5","1.0.6")
+      case "2.9.1" => ("1.6.9","1.8.5","1.0.7")
       case _ => error("No clue what versions for specs and mockito to use!")
     }
 
